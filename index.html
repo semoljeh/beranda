@@ -45,21 +45,35 @@
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* Typography Al-Quran Rata Kanan */
-        .arab-block { direction: rtl; text-align: justify; line-height: 2.8; word-spacing: 4px; }
+        /* --- TYPOGRAPHY ALA NU ONLINE --- */
+        .arab-block { 
+            direction: rtl; 
+            text-align: right; /* NU Online menggunakan rata kanan murni */
+            line-height: 2.8; 
+            word-spacing: 2px; 
+            padding: 10px 0;
+        }
+        
+        .ayah-text {
+            font-family: 'LPMQ', serif;
+            font-size: 2.1rem; /* Ukuran pas agar mirip foto */
+            color: #1e293b;
+            font-weight: 400;
+        }
+
         .ayah-number-inline { 
             font-family: 'LPMQ', serif; 
-            font-size: 0.5em; 
-            color: #0d9488; 
-            margin: 0 4px; 
-            display: inline-block; 
+            font-size: 0.5em; /* Kecil seperti permintaan Anda */
+            color: #94a3b8; /* Warna abu lembut seperti di foto */
+            margin-right: 8px;
+            display: inline-block;
             vertical-align: middle;
-            opacity: 0.8; 
+            transform: translateY(-2px); /* Penyesuaian posisi melayang */
         }
         
         /* Audio & Animation */
-        .audio-playing { background-color: #f0fdf4 !important; border-color: #86efac !important; }
-        .audio-btn { width: 36px; height: 36px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
+        .audio-playing { background-color: #f8fafc !important; border-left: 4px solid #0d9488 !important; }
+        .audio-btn { width: 34px; height: 34px; border-radius: 50%; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; }
 
         /* Calendar */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
@@ -121,20 +135,18 @@
         </nav>
     </div>
 
-    <!-- Modal Quran -->
     <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-lg">
-            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="bg-white p-5 border-b flex justify-between items-center">
+            <button onclick="toggleQuran()" class="text-slate-800"><i class="fa-solid fa-arrow-left text-lg"></i></button>
             <div class="text-center">
-                <h2 id="surah-title" class="font-bold text-xs uppercase tracking-widest">Al-Quran Pro</h2>
-                <p id="surah-subtitle" class="text-[8px] opacity-70"></p>
+                <h2 id="surah-title" class="font-bold text-sm text-slate-800 uppercase tracking-tight">Al-Quran</h2>
+                <p id="surah-subtitle" class="text-[9px] text-slate-400 font-bold uppercase"></p>
             </div>
-            <button id="toggle-trans-btn" onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
+            <button id="toggle-trans-btn" onclick="toggleTranslation()" class="text-teal-600"><i class="fa-solid fa-language text-lg"></i></button>
         </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-4 bg-slate-50 pb-24"></div>
+        <div id="quran-content" class="flex-1 overflow-y-auto p-0 bg-white pb-24"></div>
     </div>
 
-    <!-- Modal Kalender -->
     <div id="calendar-modal" class="modal-full">
         <div class="bg-slate-800 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
@@ -153,7 +165,6 @@
         </div>
     </div>
 
-    <!-- Modal Lokasi -->
     <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-slate-900/40 z-[250] hidden opacity-0 transition-opacity backdrop-blur-sm"></div>
     <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto shadow-2xl">
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
@@ -217,7 +228,6 @@
         function toggleTranslation() {
             isTranslationVisible = !isTranslationVisible;
             document.querySelectorAll('.translation-text').forEach(el => el.classList.toggle('hidden', !isTranslationVisible));
-            document.getElementById('toggle-trans-btn').style.opacity = isTranslationVisible ? "1" : "0.4";
         }
 
         async function loadSurahList() {
@@ -226,14 +236,14 @@
             try {
                 const r = await fetch('https://equran.id/api/v2/surat');
                 const j = await r.json();
-                let html = '<div class="space-y-3">';
+                let html = '<div class="p-4 space-y-3">';
                 j.data.forEach(s => {
-                    html += `<div onclick="loadDetailSurah(${s.nomor})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm active:scale-95 transition-all">
+                    html += `<div onclick="loadDetailSurah(${s.nomor})" class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm active:scale-95 transition-all">
                         <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.nomor}</span>
-                            <div><h4 class="font-bold text-sm uppercase">${s.namaLatin}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.arti} • ${s.jumlahAyat} Ayat</p></div>
+                            <span class="w-8 h-8 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center text-[10px] font-bold">${s.nomor}</span>
+                            <div><h4 class="font-bold text-sm text-slate-700">${s.namaLatin}</h4><p class="text-[9px] text-slate-400 uppercase font-bold tracking-tight">${s.arti} • ${s.jumlahAyat} Ayat</p></div>
                         </div>
-                        <span class="font-arab text-2xl text-teal-600">${s.nama}</span>
+                        <span class="font-arab text-2xl text-slate-800">${s.nama}</span>
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
@@ -248,28 +258,31 @@
                 const j = await r.json();
                 const s = j.data; ayahList = s.ayat;
                 document.getElementById('surah-title').innerText = s.namaLatin;
-                document.getElementById('surah-subtitle').innerText = `${s.arti} • ${s.jumlahAyat} Ayat`;
+                document.getElementById('surah-subtitle').innerText = `${s.jumlahAyat} AYAT • ${s.tempatTurun}`;
 
-                let html = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-6 shadow-md"><h3 class="font-arab text-5xl mb-3">${s.nama}</h3><p class="font-bold text-[10px] uppercase">${s.tempatTurun} • ${s.arti}</p></div><div class="space-y-3">`;
+                let html = `<div class="space-y-0">`; // Tanpa gap antar baris ayat seperti NU Online
                 
                 ayahList.forEach((a, i) => {
                     html += `
-                    <div id="ayah-box-${i}" class="p-5 bg-white rounded-2xl border border-slate-100 transition-all shadow-sm">
-                        <div class="flex flex-col gap-6">
-                            <div class="arab-block">
-                                <span class="font-arab text-3xl text-slate-800 leading-[2.5]">
-                                    ${a.teksArab}
-                                    <span class="ayah-number-inline">\u06DD${toArabicNumber(a.nomorAyat)}</span>
-                                </span>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <button onclick="playAudio(${i})" id="audio-btn-${i}" class="audio-btn shrink-0"><i class="fa-solid fa-play text-[10px]"></i></button>
-                                <p class="translation-text text-sm text-slate-500 leading-relaxed font-medium ${isTranslationVisible ? '' : 'hidden'}">${a.teksIndonesia}</p>
-                            </div>
+                    <div id="ayah-box-${i}" class="p-6 border-b border-slate-50 bg-white transition-all">
+                        <div class="arab-block">
+                            <span class="ayah-text">
+                                ${a.teksArab}
+                                <span class="ayah-number-inline">\u06DD${toArabicNumber(a.nomorAyat)}</span>
+                            </span>
+                        </div>
+                        
+                        <div class="mt-4 translation-text ${isTranslationVisible ? '' : 'hidden'}">
+                            <p class="text-[12px] text-teal-600 font-medium mb-1 italic tracking-tight">${a.teksLatin}</p>
+                            <p class="text-[13px] text-slate-600 leading-relaxed font-normal">${a.teksIndonesia}</p>
+                        </div>
+
+                        <div class="mt-4 flex gap-4">
+                             <button onclick="playAudio(${i})" id="audio-btn-${i}" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button>
                         </div>
                     </div>`;
                 });
-                c.innerHTML = html + `<button onclick="loadSurahList()" class="w-full mt-6 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] border-2 border-teal-50">KEMBALI</button></div>`;
+                c.innerHTML = html + `</div>`;
                 c.scrollTo(0,0);
             } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat ayat.</p>'; }
         }
@@ -279,9 +292,7 @@
             stopAudio(); currentAyahIndex = i;
             currentAudio = new Audio(ayahList[i].audio['01']);
             document.getElementById(`audio-btn-${i}`).innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i>';
-            const box = document.getElementById(`ayah-box-${i}`);
-            box.classList.add('audio-playing');
-            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById(`ayah-box-${i}`).classList.add('audio-playing');
             currentAudio.play();
             currentAudio.onended = () => { if (currentAyahIndex < ayahList.length - 1) playAudio(currentAyahIndex + 1); else stopAudio(); };
         }
