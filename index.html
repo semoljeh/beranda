@@ -5,35 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Darussalam</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d9488">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* [GROUP: CORE STYLES] */
         *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; color: #1e293b; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
-        .hidden { display: none; }
-
-        /* [GROUP: HEADER & NAVIGATION] */
-        .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
-        .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; z-index: 20; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
-        .nav-item { color: #0d9488; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; font-weight: 600; }
-
-        /* [GROUP: MODAL SYSTEM] */
+        
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
+        
+        /* HEADER WARNA TEAL (#0d9488) */
         .teal-header { background-color: #0d9488; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* [GROUP: CALENDAR GRID] */
+        /* GRID KALENDER KOTAK-KOTAK */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; }
         .calendar-box { 
             aspect-ratio: 1/1.2; background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; 
@@ -43,66 +30,50 @@
         .date-hijri { font-size: 8px; color: #0d9488; font-weight: 600; margin-top: 2px; }
         .date-weton { font-size: 7px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
         
+        /* STATUS WARNA */
         .is-today { background: #0d9488 !important; border-color: #0d9488; color: white !important; }
         .is-today span { color: white !important; }
         .is-holiday, .is-sunday { color: #ef4444 !important; background-color: #fff1f2; }
         .is-holiday .date-masehi, .is-sunday .date-masehi { color: #ef4444; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #f1f5f9; z-index: 100; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- HEADER BERANDA -->
-        <div class="header-bg">
-            <div class="location-capsule flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/10">
-                <i class="fa-solid fa-location-dot text-[10px] text-white"></i>
-                <span id="location-text" class="text-[11px] font-semibold text-white">Mencari Lokasi...</span>
-            </div>
+        <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 180px; border-radius: 0 0 40px 40px; padding: 40px 20px; color: white;">
+            <h1 class="text-2xl font-bold">Portal Darussalam</h1>
+            <p class="text-xs opacity-80 mt-1">Sistem Kalender Digital & Al-Quran</p>
+        </div>
 
-            <div class="info-capsule">
-                <div class="flex items-center justify-between">
-                    <div class="flex-1 text-center border-r border-slate-100">
-                        <p id="prayer-name" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">---</p>
-                        <h2 id="prayer-time" class="text-4xl font-bold text-slate-800 leading-none">--:--</h2>
-                    </div>
-                    <div class="flex-1 text-center">
-                        <p class="text-[10px] text-red-400 font-bold uppercase tracking-widest mb-1">Mendatang</p>
-                        <span id="countdown" class="text-xl font-semibold text-slate-700 font-mono">-00:00:00</span>
-                    </div>
-                </div>
+        <div class="p-6 grid grid-cols-2 gap-4">
+            <div onclick="App.toggleCalendar()" class="bg-white border p-6 rounded-3xl text-center shadow-sm active:scale-95 transition-all cursor-pointer">
+                <i class="fa-solid fa-calendar-days text-2xl text-teal-600 mb-2"></i>
+                <p class="text-xs font-bold uppercase text-slate-700">Kalender</p>
+            </div>
+            <div class="bg-white border p-6 rounded-3xl text-center opacity-50">
+                <i class="fa-solid fa-book-quran text-2xl text-blue-600 mb-2"></i>
+                <p class="text-xs font-bold uppercase text-slate-700">Al-Quran</p>
             </div>
         </div>
 
-        <!-- DASHBOARD MENU -->
-        <div class="mt-28 grid grid-cols-2 gap-4 p-6">
-            <div onclick="App.toggleCalendar()" class="bg-white border rounded-2xl p-6 text-center active:scale-95 transition-all cursor-pointer">
-                <i class="fa-solid fa-calendar-days text-teal-600 text-2xl mb-2"></i>
-                <span class="block text-xs font-bold text-slate-700 uppercase">Kalender</span>
-            </div>
-            <div class="bg-white border rounded-2xl p-6 text-center opacity-50">
-                <i class="fa-solid fa-book-quran text-blue-600 text-2xl mb-2"></i>
-                <span class="block text-xs font-bold text-slate-700 uppercase">Al-Quran</span>
-            </div>
-        </div>
-
-        <!-- NAVIGATION FOOTER -->
         <nav class="bottom-nav">
-            <a onclick="location.reload()" class="nav-item"><i class="fa-solid fa-house"></i><span class="text-[10px] mt-1">Beranda</span></a>
-            <a onclick="App.toggleCalendar()" class="nav-item"><i class="fa-solid fa-calendar"></i><span class="text-[10px] mt-1">Kalender</span></a>
+            <a onclick="location.reload()" class="flex flex-col items-center text-teal-600 font-bold"><i class="fa-solid fa-house"></i><span class="text-[10px] mt-1">BERANDA</span></a>
+            <a onclick="App.toggleCalendar()" class="flex flex-col items-center text-slate-400 font-bold"><i class="fa-solid fa-calendar"></i><span class="text-[10px] mt-1">KALENDER</span></a>
         </nav>
     </div>
 
-    <!-- MODAL KALENDER -->
     <div id="calendar-modal" class="modal-full">
         <div class="teal-header">
-            <button onclick="App.toggleCalendar()" class="p-2"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="App.toggleCalendar()"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="text-center">
                 <h2 id="cal-month-name" class="font-bold text-sm uppercase tracking-widest">---</h2>
-                <p class="text-[9px] opacity-70 uppercase font-bold">Nasional & Hijriyah</p>
+                <p class="text-[9px] opacity-80 uppercase font-bold">Nasional, Hijriyah & Weton</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="Calendar.changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="Calendar.changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="flex gap-4">
+                <button onclick="Calendar.changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="Calendar.changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
         <div class="flex-1 overflow-y-auto bg-white pb-32">
@@ -111,7 +82,6 @@
             </div>
             <div id="calendar-main-grid" class="calendar-grid"></div>
             
-            <!-- KETERANGAN LIBUR -->
             <div class="px-6 mt-6">
                 <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-circle-info text-teal-600"></i> Keterangan Spesial
@@ -122,24 +92,25 @@
     </div>
 
     <script>
-        /* ============================================================
-           [JS GROUP: GLOBAL & APP SYSTEM]
-           ============================================================ */
         const App = {
-            toggleCalendar() { document.getElementById('calendar-modal').classList.toggle('modal-show'); if(document.getElementById('calendar-modal').classList.contains('modal-show')) Calendar.init(); }
+            toggleCalendar() { 
+                const modal = document.getElementById('calendar-modal');
+                modal.classList.toggle('modal-show');
+                if(modal.classList.contains('modal-show')) Calendar.init();
+            }
         };
 
-        /* ============================================================
-           [JS GROUP: KALENDER API INTEGRATION]
-           ============================================================ */
         const Calendar = {
             curDate: new Date(),
             holidays: {},
-            hijriData: {}, // Cache untuk data hijriyah bulanan
+            hijriData: {},
 
             async init() {
+                const grid = document.getElementById('calendar-main-grid');
+                grid.innerHTML = '<div class="col-span-7 text-center py-10 text-xs text-slate-400">Memuat data...</div>';
+                
                 await this.fetchHolidays();
-                await this.fetchMonthHijri(); // Load Hijriyah satu bulan sekaligus
+                await this.fetchMonthHijri();
                 this.render();
             },
 
@@ -152,26 +123,25 @@
                         this.holidays = {};
                         data.forEach(item => { this.holidays[item.holiday_date] = item.holiday_name; });
                     }
-                } catch (e) { console.error("Gagal load libur nasional"); }
+                } catch (e) { console.error("Gagal load libur"); }
             },
 
-            // API ALADHAN: Mengambil data hijriyah untuk satu bulan masehi
             async fetchMonthHijri() {
-                const month = this.curDate.getMonth() + 1;
-                const year = this.curDate.getFullYear();
+                const m = this.curDate.getMonth() + 1;
+                const y = this.curDate.getFullYear();
                 try {
-                    const res = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${month}/${year}`);
+                    const res = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`);
                     const json = await res.json();
                     this.hijriData = {};
-                    json.data.forEach(day => {
-                        // Simpan dengan key tanggal masehi (DD)
-                        const mDate = parseInt(day.gregorian.day);
-                        this.hijriData[mDate] = day.hijri;
-                    });
-                } catch (e) { console.error("Gagal load data hijri"); }
+                    if(json.data) {
+                        json.data.forEach(day => {
+                            this.hijriData[parseInt(day.gregorian.day)] = day.hijri.day;
+                        });
+                    }
+                } catch (e) { console.error("Gagal load Hijri"); }
             },
 
-            getPasaran(date) {
+            getWeton(date) {
                 const wetons = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
                 const start = new Date(1900, 0, 1);
                 const diff = Math.floor((date - start) / 86400000);
@@ -193,17 +163,15 @@
 
                 for (let d = 1; d <= total; d++) {
                     const date = new Date(y, m, d);
-                    const dateKey = date.toISOString().split('T')[0];
+                    const dateKey = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                     const libur = this.holidays[dateKey];
                     const isToday = date.toDateString() === new Date().toDateString();
-                    
-                    // Ambil dari cache hijriyah
-                    const h = this.hijriData[d] || { day: '?', month: { en: '?' } };
+                    const hDay = this.hijriData[d] || '?';
 
                     grid.innerHTML += `
                         <div class="calendar-box ${isToday ? 'is-today' : ''} ${libur || date.getDay() === 0 ? 'is-holiday' : ''}">
                             <span class="date-masehi">${d}</span>
-                            <span class="date-hijri">${h.day}</span>
+                            <span class="date-hijri">${hDay}</span>
                             <span class="date-weton">${this.getWeton(date)}</span>
                         </div>`;
 
@@ -212,25 +180,16 @@
                             <div class="flex gap-4 p-4 bg-red-50 rounded-2xl border border-red-100">
                                 <div class="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center font-bold shrink-0 text-sm">${d}</div>
                                 <div>
-                                    <p class="text-[9px] text-red-500 font-bold uppercase tracking-wider">Hari Libur Nasional</p>
+                                    <p class="text-[9px] text-red-500 font-bold uppercase tracking-wider">Libur Nasional</p>
                                     <p class="text-xs font-bold text-slate-800 leading-tight">${libur}</p>
                                 </div>
                             </div>`;
                     }
                 }
+                if(info.innerHTML === "") info.innerHTML = '<p class="text-[11px] text-slate-400 italic">Tidak ada hari libur nasional bulan ini.</p>';
             },
             changeMonth(v) { this.curDate.setMonth(this.curDate.getMonth() + v); this.init(); }
         };
-
-        // Minimal Prayer Init
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            const { latitude: lat, longitude: lon } = pos.coords;
-            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-            const json = await res.json();
-            document.getElementById('prayer-name').innerText = "DZUHUR";
-            document.getElementById('prayer-time').innerText = json.data.timings.Dhuhr;
-            document.getElementById('location-text').innerText = "Lokasi Terdeteksi";
-        });
     </script>
 </body>
 </html>
