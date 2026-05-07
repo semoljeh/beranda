@@ -3,40 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Darussalam</title>
+    <title>Portal Darussalam - Kalender Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* [GROUP: CORE & MODAL] */
         *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
-        
-        /* HEADER TEAL (#0d9488) */
-        .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 200px; border-radius: 0 0 40px 40px; padding: 40px 25px; color: white; }
-        
-        /* MODAL SYSTEM */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
-        .teal-header { background-color: #0d9488; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-
-        /* CALENDAR GRID */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; }
-        .calendar-box { 
-            aspect-ratio: 1/1.2; background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-        .date-masehi { font-size: 14px; font-weight: 700; color: #1e293b; }
-        .date-hijri { font-size: 8px; color: #0d9488; font-weight: 600; margin-top: 2px; }
-        .date-weton { font-size: 7px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
         
-        /* HIGHLIGHTS */
-        .is-today { background: #0d9488 !important; border-color: #0d9488; color: white !important; }
+        /* HEADER TEAL (#0d9488) SESUAI WEBSITE */
+        .teal-header { background-color: #0d9488; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); }
+
+        /* [GROUP: GRID CALENDAR] */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 12px; }
+        .calendar-box { 
+            aspect-ratio: 1/1.3; background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .date-masehi { font-size: 15px; font-weight: 700; color: #1e293b; }
+        .date-hijri { font-size: 9px; color: #0d9488; font-weight: 700; margin-top: 1px; }
+        .date-weton { font-size: 7px; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-top: 1px; }
+        
+        /* HIGHLIGHT STATES */
+        .is-today { background: #0d9488 !important; border-color: #0d9488; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3); }
         .is-today span { color: white !important; }
-        .is-holiday, .is-sunday { color: #ef4444 !important; background-color: #fff1f2; }
-        .is-holiday .date-masehi, .is-sunday .date-masehi { color: #ef4444; }
+        .is-holiday, .is-sunday { background-color: #fff1f2; border-color: #fecdd3; }
+        .is-holiday .date-masehi, .is-sunday .date-masehi { color: #e11d48; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 15px 0 30px; border-top: 1px solid #f1f5f9; z-index: 100; }
     </style>
@@ -44,11 +42,11 @@
 <body>
 
     <div class="app-container">
-        <div class="header-bg">
+        <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 180px; border-radius: 0 0 40px 40px; padding: 40px 25px; color: white;">
             <h1 class="text-2xl font-bold">Portal Darussalam</h1>
-            <p class="text-xs opacity-80 mt-1">Sistem Informasi Madrasah Digital</p>
+            <p class="text-xs opacity-80 mt-1">Digital Smart Calendar & Quran</p>
             <div onclick="App.toggleCalendar()" class="mt-6 bg-white/20 p-4 rounded-2xl flex justify-between items-center cursor-pointer border border-white/10">
-                <span class="text-xs font-bold"><i class="fa-solid fa-calendar-day mr-2"></i> Lihat Kalender Lengkap</span>
+                <span class="text-xs font-bold"><i class="fa-solid fa-calendar-check mr-2"></i> Buka Kalender Nasional</span>
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
             </div>
         </div>
@@ -61,24 +59,27 @@
 
     <div id="calendar-modal" class="modal-full">
         <div class="teal-header">
-            <button onclick="App.toggleCalendar()"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="App.toggleCalendar()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="text-center">
                 <h2 id="cal-month-name" class="font-bold text-sm uppercase tracking-widest">---</h2>
-                <p class="text-[9px] opacity-80 uppercase font-bold">Nasional, Hijriyah & Weton</p>
+                <p class="text-[8px] font-bold opacity-80 uppercase">Nasional • Hijriyah • Weton</p>
             </div>
-            <div class="flex gap-4">
-                <button onclick="Calendar.changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="Calendar.changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="flex gap-2">
+                <button onclick="Calendar.changeMonth(-1)" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="Calendar.changeMonth(1)" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
+        
         <div class="flex-1 overflow-y-auto bg-white pb-32">
-            <div class="calendar-grid text-[10px] font-extrabold text-slate-400 text-center mb-1">
+            <div class="calendar-grid text-[10px] font-black text-slate-300 text-center mb-1">
                 <div class="text-red-500">MIN</div><div>SEN</div><div>SEL</div><div>RAB</div><div>KAM</div><div class="text-teal-600">JUM</div><div>SAB</div>
             </div>
             <div id="calendar-main-grid" class="calendar-grid"></div>
             
-            <div class="px-6 mt-6">
-                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Keterangan Spesial</h3>
+            <div class="px-6 mt-4">
+                <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span class="w-2 h-4 bg-teal-500 rounded-full"></span> Keterangan Spesial
+                </h3>
                 <div id="holiday-info" class="space-y-3"></div>
             </div>
         </div>
@@ -100,7 +101,7 @@
 
             async init() {
                 const grid = document.getElementById('calendar-main-grid');
-                grid.innerHTML = '<div class="col-span-7 text-center py-20 text-xs text-slate-400">Sinkronisasi Data...</div>';
+                grid.innerHTML = '<div class="col-span-7 text-center py-20 text-xs text-slate-400">Menyinkronkan data...</div>';
                 
                 await this.fetchHolidays();
                 await this.fetchMonthHijri();
@@ -113,22 +114,23 @@
                     const res = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
                     const data = await res.json();
                     this.holidays = {};
-                    data.forEach(h => { this.holidays[h.holiday_date] = h.holiday_name; });
-                } catch (e) { console.error("Gagal load libur"); }
+                    data.forEach(h => {
+                        this.holidays[h.holiday_date] = h.holiday_name;
+                    });
+                } catch (e) { console.error("Gagal memuat libur"); }
             },
 
             async fetchMonthHijri() {
                 const m = this.curDate.getMonth() + 1;
                 const y = this.curDate.getFullYear();
                 try {
-                    // Menggunakan endpoint Calendar untuk menarik data satu bulan sekaligus agar efisien
                     const res = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`);
                     const json = await res.json();
                     this.hijriCache = {};
                     json.data.forEach(d => {
                         this.hijriCache[parseInt(d.gregorian.day)] = d.hijri.day;
                     });
-                } catch (e) { console.error("Gagal load Hijri"); }
+                } catch (e) { console.error("Gagal memuat Hijriyah"); }
             },
 
             getPasaran(date) {
@@ -166,16 +168,16 @@
 
                     if (libur) {
                         info.innerHTML += `
-                            <div class="flex gap-4 p-4 bg-red-50 rounded-2xl border border-red-100">
-                                <div class="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center font-bold shrink-0 text-sm">${d}</div>
+                            <div class="flex gap-4 p-4 bg-rose-50 rounded-2xl border border-rose-100 shadow-sm">
+                                <div class="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center font-black shrink-0 text-xs">${d}</div>
                                 <div>
-                                    <p class="text-[9px] text-red-500 font-bold uppercase tracking-wider">Libur Nasional</p>
+                                    <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest">Hari Libur Nasional</p>
                                     <p class="text-xs font-bold text-slate-800 leading-tight">${libur}</p>
                                 </div>
                             </div>`;
                     }
                 }
-                if(info.innerHTML === "") info.innerHTML = '<p class="text-[11px] text-slate-400 italic">Tidak ada hari libur nasional bulan ini.</p>';
+                if(info.innerHTML === "") info.innerHTML = '<p class="text-[11px] text-slate-400 italic bg-slate-50 p-4 rounded-xl text-center">Tidak ada hari libur nasional bulan ini.</p>';
             },
             changeMonth(v) { this.curDate.setMonth(this.curDate.getMonth() + v); this.init(); }
         };
