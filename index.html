@@ -119,7 +119,7 @@
     <div id="calendar-modal" class="modal-full">
         <div class="bg-slate-800 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Mei 2026</h2>
+            <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
             <div class="flex gap-2">
                 <button onclick="changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
                 <button onclick="changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
@@ -148,7 +148,7 @@
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
         <h3 class="text-center text-lg font-bold text-slate-800 mb-6 uppercase">Atur Wilayah</h3>
         <div class="space-y-4">
-            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all shadow-sm"><i class="fa-solid fa-crosshairs text-lg"></i><span>Lokasi Otomatis</span></button>
+            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all"><i class="fa-solid fa-crosshairs text-lg"></i><span>Gunakan Lokasi Otomatis</span></button>
             <div class="relative"><input type="text" id="manual-city-input" placeholder="Nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 text-sm border-none focus:ring-2 focus:ring-teal-500 font-medium uppercase tracking-tight"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i></div>
             <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm">Cari Kota</button>
         </div>
@@ -160,12 +160,12 @@
         let nationalHolidays = [];
         let currentAudio = null;
 
-        // --- NAVIGATION FIX ---
+        // --- NAVIGATION ---
         window.addEventListener('popstate', function () {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
             const sheet = document.getElementById('location-sheet');
             const bg = document.getElementById('location-sheet-bg');
-            if (!sheet.classList.contains('translate-y-full')) {
+            if (sheet && !sheet.classList.contains('translate-y-full')) {
                 sheet.classList.add('translate-y-full');
                 bg.classList.remove('opacity-100');
                 setTimeout(() => bg.classList.add('hidden'), 300);
@@ -262,44 +262,76 @@
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
 
-        // --- QURAN API ROBUST ---
+        // --- QURAN API LOGIC (RELIABLE) ---
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 text-slate-400"><i class="fa-solid fa-spinner animate-spin text-3xl mb-4 text-teal-600"></i><p class="text-[10px] font-bold uppercase tracking-widest">Memuat Surah...</p></div>`;
             
-            const sources = ['https://quran-api-id.vercel.app/surahs', 'https://equran.id/api/v2/surat'];
-            for (let url of sources) {
-                try {
-                    const r = await fetch(url); if (!r.ok) throw new Error();
-                    const res = await r.json(); const data = res.data || res;
-                    let h = '<div class="grid grid-cols-1 gap-3">';
-                    data.forEach(s => {
-                        const no = s.number || s.nomor;
-                        const nm = s.name || s.namaLatin;
-                        const ar = s.arab || s.nama;
-                        const tr = s.translation || s.arti;
-                        const ay = s.numberOfAyahs || s.jumlahAyat;
-                        h += `<div onclick="loadDetailSurah(${no})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm"><div class="flex items-center gap-4"><span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${no}</span><div><h4 class="font-bold text-sm text-slate-800 uppercase">${nm}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${tr} • ${ay} Ayat</p></div></div><span class="font-arab text-2xl text-teal-600">${ar}</span></div>`;
-                    });
-                    c.innerHTML = h + '</div>'; return;
-                } catch (e) { console.warn("Switching API..."); }
+            // Mencoba API Utama
+            try {
+                const r = await fetch('https://equran.id/api/v2/surat');
+                const j = await r.json();
+                let html = '<div class="grid grid-cols-1 gap-3">';
+                j.data.forEach(s => {
+                    html += `<div onclick="loadDetailSurah(${s.nomor})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
+                        <div class="flex items-center gap-4">
+                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.nomor}</span>
+                            <div><h4 class="font-bold text-sm text-slate-800 uppercase">${s.namaLatin}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.arti} • ${s.jumlahAyat} Ayat</p></div>
+                        </div>
+                        <span class="font-arab text-2xl text-teal-600">${s.nama}</span>
+                    </div>`;
+                });
+                c.innerHTML = html + '</div>';
+            } catch (e) {
+                c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat daftar surah. Periksa internet.</p>';
             }
-            c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat. Periksa internet.</p>';
         }
 
         async function loadDetailSurah(n) {
             const c = document.getElementById('quran-content');
-            c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
-            try {
-                const r = await fetch(`https://quran-api-id.vercel.app/surahs/${n}`);
-                const s = await r.json();
-                let h = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8 shadow-lg"><h3 class="font-arab text-5xl mb-3">${s.arab}</h3><p class="font-bold text-[10px] uppercase">${s.name} • ${s.translation}</p></div><div class="space-y-12">`;
-                s.ayahs.forEach(a => {
-                    h += `<div class="border-b border-slate-100 pb-10"><div class="flex justify-between items-start gap-4 mb-8"><div class="flex flex-col gap-2"><span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-bold">${a.number.insurah}</span><button onclick="playAudio('${a.audio.alafasy}', this)" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button></div><p class="font-arab text-4xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${a.arab}</p></div><p class="text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-6">${a.translation}</p></div>`;
-                });
-                h += `<button onclick="loadSurahList()" class="w-full mt-10 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] uppercase border-2 border-teal-50">Kembali</button>`;
-                c.innerHTML = h + '</div>'; c.scrollTo(0, 0);
-            } catch (e) { c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat ayat.</p>'; }
+            c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i><p class="text-xs mt-2">Memuat Ayat...</p></div>`;
+            
+            const sources = [
+                `https://equran.id/api/v2/surat/${n}`,
+                `https://quran-api-id.vercel.app/surahs/${n}`
+            ];
+
+            for (let url of sources) {
+                try {
+                    const r = await fetch(url);
+                    if (!r.ok) throw new Error();
+                    const j = await r.json();
+                    const s = j.data || j;
+                    const ayahs = s.ayat || s.ayahs;
+
+                    let h = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8 shadow-lg">
+                        <h3 class="font-arab text-5xl mb-3">${s.nama || s.arab}</h3>
+                        <p class="font-bold text-[10px] uppercase">${s.namaLatin || s.name} • ${s.arti || s.translation}</p>
+                    </div><div class="space-y-12">`;
+                    
+                    ayahs.forEach(a => {
+                        const no = a.nomorAyat || a.number.insurah;
+                        const arab = a.teksArab || a.arab;
+                        const trans = a.teksIndonesia || a.translation;
+                        const audio = a.audio['01'] || a.audio.alafasy;
+
+                        h += `<div class="border-b border-slate-100 pb-10">
+                            <div class="flex justify-between items-start gap-4 mb-8">
+                                <div class="flex flex-col gap-2">
+                                    <span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-bold">${no}</span>
+                                    <button onclick="playAudio('${audio}', this)" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button>
+                                </div>
+                                <p class="font-arab text-4xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${arab}</p>
+                            </div>
+                            <p class="text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-6">${trans}</p>
+                        </div>`;
+                    });
+                    h += `<button onclick="loadSurahList()" class="w-full mt-10 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] uppercase border-2 border-teal-50">Kembali</button>`;
+                    c.innerHTML = h + '</div>'; c.scrollTo(0, 0);
+                    return; // Sukses, keluar dari loop
+                } catch (e) { console.warn("Mencoba API cadangan..."); }
+            }
+            c.innerHTML = '<p class="text-center p-10 text-red-500 font-bold">Gagal memuat ayat.<br><span class="text-xs font-normal">Silakan coba klik kembali beberapa saat lagi.</span></p>';
         }
 
         function playAudio(url, btn) {
@@ -308,7 +340,7 @@
             currentAudio.onended = () => { btn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>'; currentAudio = null; };
         }
 
-        // --- CORE DATA ---
+        // --- PRAYER & LOCATION ---
         async function getCoreData() {
             const cachedLoc = localStorage.getItem('last_location');
             if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
