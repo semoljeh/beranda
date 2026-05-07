@@ -17,26 +17,35 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        @font-face { font-family: 'LPMQ'; src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf'); }
+        
+        @font-face {
+            font-family: 'LPMQ';
+            src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf');
+        }
+
         .font-arab { font-family: 'LPMQ', serif; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; color: #1e293b; overflow-x: hidden; }
-        
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
 
+        /* UI Components */
         .location-capsule { display: flex; align-items: center; gap: 6px; background-color: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; backdrop-filter: blur(4px); transition: transform 0.2s; }
         .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
         .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; }
         .menu-card:active { transform: scale(0.96); background-color: #f8fafc; }
 
+        /* Navigation */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
         .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
         .nav-item.active { font-weight: 700; }
 
+        /* Modals & Sheets */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* Calendar Grid */
+        /* ========================================================
+           MODERN CALENDAR DESIGN (NU STYLE)
+           ======================================================== */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0px; border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; }
         .calendar-date { aspect-ratio: 1/1.2; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background-color: white; padding: 6px; }
         .calendar-empty { background-color: #f8fafc; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
@@ -45,8 +54,6 @@
         .date-hijri-arab { font-family: 'LPMQ'; font-size: 11px; color: #1e293b; line-height: 1; }
         .date-bottom-info { margin-top: auto; text-align: center; width: 100%; }
         .date-pasaran { font-size: 7.5px; color: #64748b; font-weight: 600; text-transform: capitalize; line-height: 1; }
-        
-        /* Tanggal Merah */
         .date-holiday .date-masehi, .date-holiday .date-hijri-arab { color: #ef4444 !important; }
         .date-today { border: 2px solid #0d9488 !important; z-index: 10; background-color: #f0fdfa; }
 
@@ -54,6 +61,7 @@
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
         .ayah-number-arab { font-family: 'LPMQ'; font-size: 1.5rem; color: #0d9488; margin-right: 8px; line-height: 1; }
+        .translation-text.hidden { display: none; }
     </style>
 </head>
 <body>
@@ -104,6 +112,18 @@
         </nav>
     </div>
 
+    <div id="quran-modal" class="modal-full">
+        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
+            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="text-center">
+                <h2 id="surah-title" class="font-bold text-xs uppercase tracking-widest">Al-Quran Pro</h2>
+                <p id="surah-subtitle" class="text-[8px] opacity-70"></p>
+            </div>
+            <button id="toggle-trans-btn" onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
+        </div>
+        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
+    </div>
+
     <div id="calendar-modal" class="modal-full">
         <div class="bg-teal-700 p-5 text-white shadow-md">
             <div class="flex justify-between items-start">
@@ -142,14 +162,6 @@
         </div>
     </div>
 
-    <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="text-center"><h2 id="surah-title" class="font-bold text-xs uppercase tracking-widest">Al-Quran Pro</h2><p id="surah-subtitle" class="text-[8px] opacity-70"></p></div>
-            <button id="toggle-trans-btn" onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
-        </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
-    </div>
     <div id="doa-modal" class="modal-full">
         <div class="bg-teal-800 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleDoa()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
@@ -177,15 +189,42 @@
         let currentAyahIndex = -1;
         let isTranslationVisible = true;
 
-        /* MODAL CONTROLS */
-        window.addEventListener('popstate', () => { document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show')); });
+        /* ========================================================
+           NAVIGATION & MODAL CONTROL
+           ======================================================== */
+        window.addEventListener('popstate', () => {
+            document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
+            const sheet = document.getElementById('location-sheet');
+            const bg = document.getElementById('location-sheet-bg');
+            if (!sheet.classList.contains('translate-y-full')) {
+                sheet.classList.add('translate-y-full');
+                bg.classList.remove('opacity-100');
+                setTimeout(() => bg.classList.add('hidden'), 300);
+            }
+            if(currentAudio) { currentAudio.pause(); currentAudio = null; }
+        });
         function pushState(n) { history.pushState({modal: n}, n, "#"+n); }
-        function toggleQuran() { const el = document.getElementById('quran-modal'); if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); loadSurahList(); pushState('quran'); } else { history.back(); } }
-        function toggleCalendar() { const el = document.getElementById('calendar-modal'); if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); fetchHolidays(); pushState('calendar'); } else { history.back(); } }
-        function toggleDoa() { const el = document.getElementById('doa-modal'); if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); pushState('doa'); } else { history.back(); } }
-        function toggleLocationSheet() { const sheet = document.getElementById('location-sheet'); const bg = document.getElementById('location-sheet-bg'); if (sheet.classList.contains('translate-y-full')) { sheet.classList.remove('translate-y-full'); bg.classList.remove('hidden'); setTimeout(() => bg.classList.add('opacity-100'), 10); pushState('location'); } else { history.back(); } }
+        function toggleQuran() {
+            const el = document.getElementById('quran-modal');
+            if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); loadSurahList(); pushState('quran'); } else { history.back(); }
+        }
+        function toggleCalendar() {
+            const el = document.getElementById('calendar-modal');
+            if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); fetchHolidays(); pushState('calendar'); } else { history.back(); }
+        }
+        function toggleDoa() {
+            const el = document.getElementById('doa-modal');
+            if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); pushState('doa'); } else { history.back(); }
+        }
+        function toggleLocationSheet() {
+            const sheet = document.getElementById('location-sheet');
+            const bg = document.getElementById('location-sheet-bg');
+            if (sheet.classList.contains('translate-y-full')) { sheet.classList.remove('translate-y-full'); bg.classList.remove('hidden'); setTimeout(() => bg.classList.add('opacity-100'), 10); pushState('location'); } else { history.back(); }
+        }
 
-        /* CALENDAR LOGIC */
+        /* ========================================================
+           CALENDAR & DATE ENGINE
+           ======================================================== */
         function toArabicNumber(n) { const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669']; return String(n).split('').map(c => forms[Number(c)]).join(''); }
         function getPasaran(date) { const p = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"]; const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000); return p[(diff + 1) % 5]; }
         function getHijri(date) {
@@ -210,12 +249,11 @@
             const grid = document.getElementById('calendar-days-grid');
             const holEl = document.getElementById('holiday-list');
             grid.innerHTML = ''; holEl.innerHTML = '';
-            
             const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth();
             const start = new Date(y, m, 1).getDay(); const total = new Date(y, m + 1, 0).getDate();
             const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             
-            // Header Info
+            // Header Info Update
             const now = new Date(); const hNow = getHijri(now);
             document.getElementById('header-real-date').innerText = `${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()}`;
             document.getElementById('header-real-hijri').innerText = `${hNow.d} ${hNow.m} ${hNow.y} H`;
@@ -226,7 +264,7 @@
             for (let i = 0; i < start; i++) grid.innerHTML += '<div class="calendar-empty"></div>';
             
             for (let d = 1; d <= total; d++) {
-                const date = new Date(y, m, d); 
+                const date = new Date(y, m, d);
                 const dateStr = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
                 const isHol = nationalHolidays.find(x => x.date === dateStr);
                 const isToday = now.toDateString() === date.toDateString();
@@ -251,7 +289,10 @@
         }
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); fetchHolidays(); }
 
-        /* QURAN LOGIC */
+        /* ========================================================
+           QURAN LOGIC
+           ======================================================== */
+        function toggleTranslation() { isTranslationVisible = !isTranslationVisible; document.querySelectorAll('.translation-text').forEach(el => isTranslationVisible ? el.classList.remove('hidden') : el.classList.add('hidden')); document.getElementById('toggle-trans-btn').style.opacity = isTranslationVisible ? "1" : "0.4"; }
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
@@ -282,7 +323,9 @@
         }
         function stopAudio() { if (currentAudio) { currentAudio.pause(); document.getElementById(`audio-btn-${currentAyahIndex}`).innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>'; document.getElementById(`ayah-box-${currentAyahIndex}`).classList.remove('audio-playing'); } currentAudio = null; }
 
-        /* PRAYER ENGINE */
+        /* ========================================================
+           PRAYER & LOCATION ENGINE
+           ======================================================== */
         async function getCoreData() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -309,7 +352,7 @@
             }, 1000);
         }
 
-        /* INITIALIZE */
+        /* INITIALIZATION */
         getCoreData(); startCountdown();
         setInterval(() => {
             const now = new Date(); const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
