@@ -8,122 +8,163 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f0fdfa; display: flex; justify-content: center; margin:0; }
+        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 40px; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
         
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0fdfa; /* Background kehijauan sangat muda */
-            margin: 0;
-            display: flex;
-            justify-content: center;
-        }
+        .header-bg { background-color: #0d9488; height: 180px; border-radius: 0 0 40px 40px; position: relative; }
 
-        /* Container Utama agar terlihat seperti aplikasi mobile di desktop */
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            background-color: white;
-            min-height: 100vh;
-            position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.05);
-            padding-bottom: 80px;
-        }
-
-        /* Header Melengkung Lebar */
-        .header-bg {
-            background-color: #0d9488; /* Teal color sesuai gambar */
-            height: 250px;
-            border-radius: 0 0 40px 40px;
-            position: relative;
-        }
-
-        /* Foto Profil Melingkar di Tengah */
-        .profile-wrapper {
+        /* Card Kapsul Informasi */
+        .info-capsule {
             position: absolute;
-            bottom: -40px;
+            bottom: -80px;
             left: 50%;
             transform: translateX(-50%);
-        }
-
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            background-color: #e2e8f0;
-            object-fit: cover;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Card Menu (2 Kolom) */
-        .menu-card {
+            width: 85%;
             background: white;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid #f1f5f9;
-            transition: transform 0.2s;
+            border-radius: 25px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #f0fdfa;
+            z-index: 20;
         }
 
-        .menu-card:active {
-            transform: scale(0.95);
+        .menu-card {
+            background: white; border-radius: 16px; padding: 20px; display: flex; flex-direction: column;
+            align-items: center; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9; transition: transform 0.2s;
         }
-
-        .footer-text {
-            color: #0d9488;
-            font-weight: bold;
-            font-size: 14px;
-        }
+        .menu-card:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div class="header-bg">
-            <div class="profile-wrapper">
-                <img src="https://via.placeholder.com/150" alt="Logo" class="profile-img">
+            <div class="info-capsule">
+                <div class="flex justify-between items-center border-b pb-2 mb-2">
+                    <div class="flex items-center gap-2 text-teal-700">
+                        <i class="fa-solid fa-location-dot animate-bounce"></i>
+                        <span id="location-text" class="text-[11px] font-bold truncate w-24">Mencari lokasi...</span>
+                    </div>
+                    <div class="text-right">
+                        <span id="prayer-name" class="text-[10px] text-gray-400 uppercase font-bold">Memuat...</span>
+                        <p id="prayer-time" class="text-sm font-bold text-teal-800">--:--</p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p id="full-date" class="text-[11px] font-semibold text-gray-700 uppercase tracking-wide"></p>
+                    <p id="java-date" class="text-[10px] text-emerald-600 font-medium mt-0.5"></p>
+                </div>
             </div>
         </div>
 
-        <div class="mt-14 text-center px-6">
-            <h1 class="text-xl font-bold text-teal-800">Nama Pondok</h1>
-            <p class="text-xs text-gray-500 mt-1">Pesantren modern berbasis Al-Qur'an dan Sunnah</p>
+        <div class="mt-24 text-center px-6">
+            <h1 class="text-xl font-bold text-teal-800">Darussalam Online</h1>
+            <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Digital Ecosystem</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 p-6 mt-4">
+        <div class="grid grid-cols-2 gap-4 p-6 mt-2">
             <div class="menu-card">
                 <i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i>
-                <span class="text-[13px] font-semibold text-gray-700">Profil Madrasah</span>
+                <span class="text-[12px] font-bold text-gray-700">Profil Madrasah</span>
             </div>
             <div class="menu-card">
                 <i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i>
-                <span class="text-[13px] font-semibold text-gray-700">Kegiatan Santri</span>
+                <span class="text-[12px] font-bold text-gray-700">Kegiatan Santri</span>
             </div>
             <div class="menu-card">
-                <i class="fa-solid fa-file-signature text-3xl text-gray-700 mb-3"></i>
-                <span class="text-[13px] font-semibold text-gray-700">Pendaftaran</span>
+                <i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i>
+                <span class="text-[12px] font-bold text-gray-700">Pendaftaran</span>
             </div>
             <div class="menu-card">
                 <i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i>
-                <span class="text-[13px] font-semibold text-gray-700">Program Donasi</span>
+                <span class="text-[12px] font-bold text-gray-700">Program Donasi</span>
             </div>
         </div>
 
-        <div class="fixed bottom-24 right-6 md:right-[calc(50%-230px)]">
-            <div class="bg-teal-800 w-12 h-12 rounded-full flex items-center justify-center text-yellow-400 shadow-lg border-2 border-white">
-                <i class="fa-solid fa-moon text-xl"></i>
-            </div>
-        </div>
-
-        <footer class="mt-10 mb-10 text-center border-t pt-6 mx-6">
-            <p class="footer-text uppercase tracking-widest">Darussalam</p>
-            <p class="text-[10px] text-gray-400 mt-1">© 2026 All Rights Reserved</p>
+        <footer class="mt-8 mb-8 text-center">
+            <p class="text-[10px] text-gray-400">© 2026 Portal Darussalam • v1.0</p>
         </footer>
     </div>
 
+    <script>
+        // --- LOGIKA PENANGGALAN JAWA ---
+        function getJavaDate() {
+            const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const pasaran = ["Legi", "Paing", "Pon", "Wage", "Kliwon"];
+            const bulanJawa = ["Sura", "Sapar", "Mulud", "Bakda Mulud", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Ruwah", "Pasa", "Syawal", "Sela", "Besar"];
+            
+            const now = new Date();
+            // Referensi 1 Jan 1900 adalah Senin Pahing
+            const refDate = new Date(1900, 0, 1);
+            const diffDays = Math.floor((now - refDate) / (1000 * 60 * 60 * 24));
+            
+            const hariIni = hari[now.getDay()];
+            const pasaranIni = pasaran[(diffDays + 1) % 5]; // +1 karena 1 Jan 1900 adalah Pahing
+            
+            // Estimasi Sederhana Tahun Jawa (Akan lebih akurat jika pakai Library, tapi ini cukup untuk offline)
+            const tahunJawa = now.getFullYear() - 512;
+            
+            return `${hariIni} ${pasaranIni}, 7 Syawal ${tahunJawa} AJ`;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('full-date').innerText = now.toLocaleDateString('id-ID', { weekday:'long', ...options });
+            document.getElementById('java-date').innerText = getJavaDate();
+        }
+
+        // --- LOGIKA LOKASI & SHOLAT ---
+        async function getPrayerTimes() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // Reverse Geocoding Sederhana (Mendapatkan Nama Kota)
+                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const locData = await locRes.json();
+                    const city = locData.address.city || locData.address.town || locData.address.village || "Lokasi Aktif";
+                    document.getElementById('location-text').innerText = city;
+
+                    // Fetch Jadwal Sholat
+                    const date = new Date().getDate();
+                    const month = new Date().getMonth() + 1;
+                    const year = new Date().getFullYear();
+                    const res = await fetch(`https://api.aladhan.com/v1/timings/${date}-${month}-${year}?latitude=${lat}&longitude=${lon}&method=11`);
+                    const data = await res.json();
+                    
+                    displayNextPrayer(data.data.timings);
+                });
+            }
+        }
+
+        function displayNextPrayer(timings) {
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            
+            const schedule = [
+                { name: 'Subuh', time: timings.Fajr },
+                { name: 'Dzuhur', time: timings.Dhuhr },
+                { name: 'Ashar', time: timings.Asr },
+                { name: 'Maghrib', time: timings.Maghrib },
+                { name: 'Isya', time: timings.Isha }
+            ];
+
+            let next = schedule.find(s => {
+                const [h, m] = s.time.split(':');
+                return (parseInt(h) * 60 + parseInt(m)) > currentTime;
+            }) || schedule[0];
+
+            document.getElementById('prayer-name').innerText = next.name;
+            document.getElementById('prayer-time').innerText = next.time + " WIB";
+        }
+
+        updateClock();
+        getPrayerTimes();
+        setInterval(updateClock, 60000);
+    </script>
 </body>
 </html>
