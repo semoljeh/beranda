@@ -27,25 +27,28 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; color: #1e293b; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         
+        /* Header Logic */
         .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
         .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
-        .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
-        .nav-item.active { font-weight: 700; }
+        .nav-item { color: #0d9488; opacity: 0.6; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
+        .nav-item.active { opacity: 1; font-weight: 700; }
 
+        /* Modal Al-Quran */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
+        /* Konten Ayat */
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; transition: background 0.3s; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border: 1px solid #dcfce7; }
         
         .ayah-number-arab {
             font-family: 'LPMQ';
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: #0d9488;
-            margin-left: 8px;
-            vertical-align: middle;
+            margin-right: 8px; /* Jarak setelah teks ayat */
+            line-height: 1;
         }
 
         .translation-text.hidden { display: none; }
@@ -68,14 +71,14 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-slate-50 text-center">
                     <p id="full-date" class="text-[11px] font-medium text-slate-500 mb-1"></p>
-                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight"></p>
+                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight">20 Dzulqo'dah 1447 H</p>
                 </div>
             </div>
         </div>
 
         <div class="mt-24 text-center px-8">
-            <h1 class="text-xl font-bold text-slate-800 tracking-tight">Darussalam Tilawah</h1>
-            <p class="text-xs text-slate-400 font-medium">Fokus & Teliti Membaca</p>
+            <h1 class="text-xl font-bold text-slate-800 tracking-tight">Darussalam Online</h1>
+            <p class="text-xs text-slate-400 font-medium italic">Standard Mushaf Indonesia</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4 p-6 mt-4">
@@ -110,7 +113,7 @@
         let ayahList = [];
         let isTranslationVisible = true;
 
-        // Navigation
+        // Navigation back button HP fix
         window.addEventListener('popstate', () => {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
             stopAudio();
@@ -130,16 +133,15 @@
             document.querySelectorAll('.translation-text').forEach(el => {
                 isTranslationVisible ? el.classList.remove('hidden') : el.classList.add('hidden');
             });
-            const btn = document.getElementById('toggle-trans-btn');
-            btn.style.opacity = isTranslationVisible ? "1" : "0.4";
+            document.getElementById('toggle-trans-btn').style.opacity = isTranslationVisible ? "1" : "0.4";
         }
 
+        // Konversi angka ke Arab
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
             return String(n).split('').map(char => forms[Number(char)]).join('');
         }
 
-        // Quran Logic
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             document.getElementById('surah-title').innerText = "Al-Quran Pro";
@@ -177,22 +179,22 @@
                 let html = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8 shadow-lg">
                     <h3 class="font-arab text-5xl mb-3">${s.nama}</h3>
                     <p class="font-bold text-[10px] uppercase">${s.tempatTurun} • ${s.arti}</p>
-                </div><div class="space-y-4">`;
+                </div><div class="space-y-2">`;
 
                 ayahList.forEach((a, index) => {
                     html += `
                     <div id="ayah-box-${index}" class="p-5 transition-all border-b border-slate-100">
-                        <div class="flex justify-between items-start gap-4 mb-4">
-                            <div class="flex flex-col gap-3">
-                                <span class="bg-teal-50 text-teal-600 text-[9px] w-6 h-6 flex items-center justify-center rounded-lg font-bold">${a.nomorAyat}</span>
-                                <button onclick="playAudio(${index})" id="audio-btn-${index}" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button>
+                        <div class="flex flex-col gap-4">
+                            <div class="w-full flex flex-row-reverse flex-wrap items-center gap-2">
+                                <p class="font-arab text-4xl leading-[2.8] text-slate-800 text-right flex-1" dir="rtl">${a.teksArab}</p>
+                                <span class="ayah-number-arab" dir="rtl">\u06DD${toArabicNumber(a.nomorAyat)}</span>
                             </div>
-                            <div class="w-full text-right">
-                                <p class="font-arab text-4xl leading-[2.8] text-slate-800 inline" dir="rtl">${a.teksArab}</p>
-                                <span class="ayah-number-arab">\u06DD${toArabicNumber(a.nomorAyat)}</span>
+                            
+                            <div class="flex items-center gap-4">
+                                <button onclick="playAudio(${index})" id="audio-btn-${index}" class="audio-btn shrink-0"><i class="fa-solid fa-play text-[10px]"></i></button>
+                                <p class="translation-text text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-4 ${isTranslationVisible ? '' : 'hidden'}">${a.teksIndonesia}</p>
                             </div>
                         </div>
-                        <p class="translation-text text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-4 ${isTranslationVisible ? '' : 'hidden'}">${a.teksIndonesia}</p>
                     </div>`;
                 });
                 html += `<button onclick="loadSurahList()" class="w-full mt-6 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] uppercase border-2 border-teal-50">Kembali Ke Daftar Surah</button></div>`;
@@ -204,29 +206,17 @@
         function playAudio(index) {
             const btn = document.getElementById(`audio-btn-${index}`);
             const box = document.getElementById(`ayah-box-${index}`);
-
-            if (currentAudio && currentAyahIndex === index) {
-                stopAudio();
-                return;
-            }
-
+            if (currentAudio && currentAyahIndex === index) { stopAudio(); return; }
             stopAudio();
             currentAyahIndex = index;
-            const audioUrl = ayahList[index].audio['01'];
-            currentAudio = new Audio(audioUrl);
-            
+            currentAudio = new Audio(ayahList[index].audio['01']);
             btn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i>';
             box.classList.add('audio-playing');
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
             currentAudio.play();
-
             currentAudio.onended = () => {
-                if (currentAyahIndex < ayahList.length - 1) {
-                    playAudio(currentAyahIndex + 1);
-                } else {
-                    stopAudio();
-                }
+                if (currentAyahIndex < ayahList.length - 1) playAudio(currentAyahIndex + 1);
+                else stopAudio();
             };
         }
 
@@ -241,7 +231,7 @@
             currentAudio = null;
         }
 
-        // Prayer Logic
+        // Prayer Info Logic
         async function getCoreData() {
             const now = new Date();
             const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -268,9 +258,6 @@
             const [nH, nM] = next.t.split(':');
             nextPrayerTime = new Date(); nextPrayerTime.setHours(nH, nM, 0);
             if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-            
-            // Simulasikan tanggal Hijriyah
-            document.getElementById('java-hijri').innerText = "20 Dzulqo'dah 1447 H";
         }
 
         function startCountdown() {
