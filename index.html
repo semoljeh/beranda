@@ -27,18 +27,28 @@
 
         body { font-family: 'Poppins', sans-serif; background-color: #f0fdfa; display: flex; justify-content: center; margin:0; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 100px; box-shadow: 0 0 40px rgba(0,0,0,0.08); }
-        .header-bg { background-color: #0d9488; height: 200px; border-radius: 0 0 50px 50px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 30px; }
+        
+        /* Header Modern - Center Aligned */
+        .header-bg { background-color: #0d9488; height: 210px; border-radius: 0 0 50px 50px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 35px; }
+
+        /* Lokasi Capsule - Small & Responsive */
+        .location-capsule {
+            display: flex; align-items: center; gap: 8px; background-color: rgba(255,255,255,0.12);
+            padding: 6px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.25);
+            cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(8px);
+        }
+        .location-capsule:active { transform: scale(0.95); background-color: rgba(255,255,255,0.2); }
 
         .info-capsule {
-            position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%); width: 85%;
+            position: absolute; bottom: -85px; left: 50%; transform: translateX(-50%); width: 88%;
             background: white; border-radius: 35px; padding: 25px;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.12); border: 1px solid #f1f5f9; z-index: 20;
+            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.15); border: 1px solid #f1f5f9; z-index: 20;
         }
 
         .menu-card {
             background: white; border-radius: 24px; padding: 22px; display: flex; flex-direction: column;
             align-items: center; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9; transition: all 0.3s;
         }
         .menu-card:active { transform: scale(0.92); background-color: #f0fdfa; }
 
@@ -48,43 +58,42 @@
             padding: 16px 0; border-top: 1px solid #f1f5f9; box-shadow: 0 -10px 25px rgba(0,0,0,0.04);
             z-index: 100; border-radius: 30px 30px 0 0;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #0d9488; transition: all 0.2s; cursor: pointer; }
-        .nav-item i { font-size: 24px; margin-bottom: 4px; }
-        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
-
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #0d9488; cursor: pointer; }
+        
         #quran-modal { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; }
         .hidden-quran { transform: translateY(100%); }
-        .show-quran { transform: translateY(0); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div class="header-bg">
-            <div onclick="toggleLocationSheet()" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-full border border-white/30 cursor-pointer active:scale-95 transition-all backdrop-blur-sm">
-                <div class="bg-white rounded-full p-1.5 flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-location-dot text-[#0d9488] text-xs"></i>
+            <div onclick="toggleLocationSheet()" class="location-capsule">
+                <div class="bg-white rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-location-dot text-[#0d9488] text-[8px]"></i>
                 </div>
-                <span id="location-text" class="text-xs font-black text-white uppercase tracking-widest italic">Mencari Lokasi...</span>
-                <i class="fa-solid fa-chevron-down text-white/70 text-[10px]"></i>
+                <span id="location-text" class="text-[9px] font-black text-white uppercase tracking-[0.15em] italic truncate max-w-[140px]">
+                    Mencari Lokasi...
+                </span>
+                <i class="fa-solid fa-chevron-down text-white/60 text-[8px]"></i>
             </div>
 
             <div class="info-capsule">
                 <div class="flex items-center justify-between border-b border-dashed border-gray-100 pb-5 mb-4">
                     <div class="flex-1 text-center border-r border-gray-100">
-                        <span id="prayer-name" class="text-[11px] text-teal-600 font-black uppercase tracking-[0.2em] mb-1 block">---</span>
-                        <h2 id="prayer-time" class="text-4xl font-black text-gray-800 tracking-tighter">--:--</h2>
+                        <span id="prayer-name" class="text-[10px] text-teal-600 font-black uppercase tracking-[0.2em] mb-1 block">---</span>
+                        <h2 id="prayer-time" class="text-4xl font-black text-gray-800 tracking-tighter leading-none">--:--</h2>
                     </div>
                     <div class="flex-1 text-center">
-                        <div class="flex items-center justify-center gap-1.5 mb-1 text-red-500 uppercase font-black tracking-tighter">
-                            <span class="text-[10px]">Mendatang</span>
-                            <i class="fa-solid fa-calendar-check text-[10px]"></i>
+                        <div class="flex items-center justify-center gap-1.5 mb-1.5 text-red-500 font-black tracking-tighter">
+                            <span class="text-[9px] uppercase">Mendatang</span>
+                            <i class="fa-solid fa-clock-rotate-left text-[9px]"></i>
                         </div>
-                        <span id="countdown" class="text-sm font-black text-gray-500 font-mono tracking-tight">-00:00:00</span>
+                        <span id="countdown" class="text-xs font-black text-gray-500 font-mono tracking-tight">-00:00:00</span>
                     </div>
                 </div>
                 <div class="text-center">
-                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase font-times tracking-tighter mb-1"></p>
+                    <p id="full-date" class="text-[10px] font-bold text-gray-700 uppercase font-times tracking-tighter mb-0.5"></p>
                     <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium font-arab tracking-wider" dir="rtl"></p>
                 </div>
             </div>
@@ -123,21 +132,21 @@
         </div>
 
         <footer class="mt-4 mb-8 text-center px-10">
-            <p class="text-[9px] text-gray-300 font-times uppercase italic tracking-widest">Versi 2.1 • 2026 Digital Ecosystem</p>
+            <p class="text-[9px] text-gray-300 font-times uppercase italic tracking-widest">Versi 2.2 • 2026 All Rights Reserved</p>
         </footer>
 
         <nav class="bottom-nav">
             <a onclick="location.reload()" class="nav-item">
-                <i class="fa-solid fa-house-chimney"></i>
-                <span class="font-times">Beranda</span>
+                <i class="fa-solid fa-house-user text-xl mb-1"></i>
+                <span class="text-[9px] font-bold">BERANDA</span>
             </a>
             <a onclick="toggleQuran()" class="nav-item">
-                <i class="fa-solid fa-book-quran"></i>
-                <span class="font-times">Al-Quran</span>
+                <i class="fa-solid fa-book-quran text-xl mb-1"></i>
+                <span class="text-[9px] font-bold">AL-QURAN</span>
             </a>
             <a href="#" class="nav-item">
-                <i class="fa-solid fa-hands-praying"></i>
-                <span class="font-times">Doa</span>
+                <i class="fa-solid fa-hands-praying text-xl mb-1"></i>
+                <span class="text-[9px] font-bold">DOA</span>
             </a>
         </nav>
     </div>
@@ -145,24 +154,22 @@
     <div id="quran-modal" class="fixed inset-0 bg-white hidden-quran flex flex-col max-w-[500px] mx-auto shadow-2xl">
         <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-lg">
             <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="font-black text-xs tracking-[0.3em] uppercase">Al-Quran Digital</h2>
-            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg border border-white/20 font-black uppercase tracking-tighter">
-                Hide Translate
-            </button>
+            <h2 class="font-black text-[10px] tracking-[0.3em] uppercase">Al-Quran Digital</h2>
+            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg border border-white/20 font-black uppercase">Hide Translation</button>
         </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 space-y-5 bg-slate-50 pb-24">
+        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24">
             <div class="text-center py-20 text-gray-400">
-                <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-teal-600"></i>
-                <p class="text-[10px] uppercase font-black tracking-[0.5em]">Syncing Data...</p>
+                <i class="fa-solid fa-spinner animate-spin text-3xl mb-4 text-teal-600"></i>
+                <p class="text-[9px] uppercase font-black tracking-[0.5em]">Loading...</p>
             </div>
         </div>
     </div>
 
     <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-black/60 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"></div>
-    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[45px] p-8 translate-y-full transition-transform duration-500 ease-in-out max-w-[500px] mx-auto shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
+    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[45px] p-8 translate-y-full transition-transform duration-500 ease-in-out max-w-[500px] mx-auto shadow-2xl">
         <div class="w-16 h-1.5 bg-gray-100 rounded-full mx-auto mb-8"></div>
-        <h3 class="text-xl font-black text-teal-900 mb-2 uppercase tracking-tighter text-center">Set Lokasi</h3>
-        <p class="text-xs text-gray-400 mb-8 font-times uppercase tracking-widest text-center italic">Atur jadwal sholat sesuai wilayah</p>
+        <h3 class="text-xl font-black text-teal-900 mb-2 uppercase text-center">Set Lokasi</h3>
+        <p class="text-[10px] text-gray-400 mb-8 font-times uppercase tracking-widest text-center italic">Sinkronisasi Jadwal Sholat</p>
         
         <div class="space-y-4">
             <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-5 p-5 rounded-3xl bg-teal-50 border border-teal-100 active:scale-95 transition-all">
@@ -171,12 +178,12 @@
                 </div>
                 <div class="text-left">
                     <p class="text-sm font-black text-teal-900 uppercase">GPS Otomatis</p>
-                    <p class="text-[10px] text-teal-600 uppercase font-black tracking-tighter italic">Gunakan koordinat asli</p>
+                    <p class="text-[10px] text-teal-600 uppercase font-black tracking-tighter italic">Deteksi Akurat</p>
                 </div>
             </button>
 
             <div class="relative">
-                <input type="text" id="manual-city-input" placeholder="Cari kota (misal: Cirebon)" class="w-full p-5 pl-14 rounded-3xl bg-gray-50 border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all font-bold uppercase tracking-tight">
+                <input type="text" id="manual-city-input" placeholder="CARI KOTA..." class="w-full p-5 pl-14 rounded-3xl bg-gray-50 border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all font-bold uppercase tracking-tight">
                 <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <button onclick="handleManualSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-teal-800 text-white text-[9px] px-5 py-3 rounded-2xl font-black uppercase tracking-tighter">Cari</button>
             </div>
@@ -187,6 +194,7 @@
         let nextPrayerTime = null;
         let showTranslation = true;
 
+        // --- CORE FUNCTIONS ---
         function updateDates() {
             const now = new Date();
             const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -209,19 +217,20 @@
                 navigator.geolocation.getCurrentPosition(async (pos) => {
                     const { latitude: lat, longitude: lon } = pos.coords;
                     try {
-                        const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+                        const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
                         const locData = await locRes.json();
-                        const addr = locData.address.city || locData.address.town || locData.address.suburb || "Lokasi Aktif";
+                        const addr = locData.address;
+                        const displayLoc = addr.village || addr.suburb || addr.neighbourhood || addr.city_district || addr.city || "Lokasi Aktif";
                         
-                        document.getElementById('location-text').innerText = addr;
-                        localStorage.setItem('last_location', addr);
+                        document.getElementById('location-text').innerText = displayLoc;
+                        localStorage.setItem('last_location', displayLoc);
 
                         const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                         const json = await res.json();
                         setPrayerUI(json.data.timings);
                         localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
-                    } catch(e) { console.log("Offline mode active."); }
-                });
+                    } catch(e) { console.log("Cache Used."); }
+                }, null, { enableHighAccuracy: true });
             }
         }
 
@@ -258,6 +267,7 @@
             }, 1000);
         }
 
+        // --- INTERFACE FUNCTIONS ---
         function toggleLocationSheet() {
             const sheet = document.getElementById('location-sheet');
             const bg = document.getElementById('location-sheet-bg');
@@ -290,7 +300,7 @@
                     setPrayerUI(json.data.timings);
                     localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
                 }
-            } catch (e) { alert("Internet required for search."); }
+            } catch (e) { alert("Perlu Internet."); }
         }
 
         function toggleQuran() {
@@ -310,7 +320,7 @@
             const transElements = document.querySelectorAll('.translation-text');
             const btn = document.getElementById('btn-trans');
             transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
-            btn.innerText = showTranslation ? 'Hide Translate' : 'Show Translate';
+            btn.innerText = showTranslation ? 'Hide Translation' : 'Show Translation';
         }
 
         async function loadSurahList() {
@@ -320,15 +330,15 @@
                 const data = await res.json();
                 let html = '<div class="grid grid-cols-1 gap-4">';
                 data.data.forEach(surah => {
-                    html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform"><div class="flex items-center gap-4"><span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-[10px] font-black">${surah.nomor}</span><div><h4 class="font-black text-sm text-slate-800 uppercase tracking-tighter">${surah.namaLatin}</h4><p class="text-[9px] text-slate-400 uppercase font-black tracking-widest">${surah.arti} • ${surah.jumlahAyat} Ayat</p></div></div><span class="font-arab text-2xl text-teal-600">${surah.nama}</span></div>`;
+                    html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform"><div class="flex items-center gap-4"><span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-[10px] font-black">${surah.nomor}</span><div><h4 class="font-black text-sm text-slate-800 tracking-tighter uppercase">${surah.namaLatin}</h4><p class="text-[9px] text-slate-400 uppercase font-black tracking-widest">${surah.arti} • ${surah.jumlahAyat} Ayat</p></div></div><span class="font-arab text-2xl text-teal-600">${surah.nama}</span></div>`;
                 });
                 content.innerHTML = html + '</div>';
-            } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-black uppercase text-[10px]">Connection Error.</p>'; }
+            } catch (e) { content.innerHTML = '<p class="text-center py-10">Offline.</p>'; }
         }
 
         async function loadDetailSurah(nomor) {
             const content = document.getElementById('quran-content');
-            content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-4xl text-teal-600"></i></div>`;
+            content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
             try {
                 const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
                 const data = await res.json();
@@ -337,10 +347,11 @@
                 surah.ayat.forEach(ayat => {
                     html += `<div class="border-b border-slate-100 pb-10"><div class="flex justify-between items-start gap-6 mb-8"><span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-black shadow-sm">${ayat.nomorAyat}</span><p class="font-arab text-4xl text-right leading-[2.5] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p></div><p class="translation-text text-sm text-slate-500 font-times italic border-l-4 border-teal-100 pl-6" style="display: ${showTranslation ? 'block' : 'none'}">${ayat.teksIndonesia}</p></div>`;
                 });
-                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-12 py-5 bg-teal-50 text-teal-700 rounded-3xl font-black text-[10px] uppercase tracking-[0.3em] border border-teal-100 shadow-sm active:scale-95 transition-transform">Back to List</button>`;
-            } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Error.</p>'; }
+                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-5 bg-teal-50 text-teal-700 rounded-3xl font-black text-[10px] uppercase border border-teal-100 active:scale-95 transition-transform">KEMBALI</button>`;
+            } catch (e) { content.innerHTML = '<p class="text-center">Error.</p>'; }
         }
 
+        // --- INIT ---
         updateDates(); getCoreData(); startCountdown();
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
