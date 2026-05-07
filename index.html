@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
-
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">   
-<meta name="theme-color" content="#0d9488">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Darussalam">
-<link rel="apple-touch-icon" href="https://via.placeholder.com/192/0d9488/ffffff?text=D">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Darussalam</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Darussalam">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/0d9488/ffffff?text=D">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -53,11 +52,9 @@
         .nav-item i { font-size: 22px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Quran Modal Styles */
         #quran-modal { transition: transform 0.3s ease-in-out; z-index: 200; }
         .hidden-quran { transform: translateY(100%); }
         .show-quran { transform: translateY(0); }
-        .ayat-font { font-family: 'LPMQ', serif; line-height: 2.5; }
     </style>
 </head>
 <body>
@@ -67,7 +64,7 @@
             <div class="info-capsule">
                 <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
                     <div class="flex flex-col items-start">
-                        <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Lokasi Anda</span>
+                        <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter text-nowrap">Lokasi Anda</span>
                         <div class="flex items-center gap-1 text-teal-700 font-times uppercase">
                             <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
                             <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
@@ -137,171 +134,153 @@
         </div>
     </div>
 
-<script>
-    let nextPrayerTime = null;
-    let showTranslation = true;
+    <script>
+        let nextPrayerTime = null;
+        let showTranslation = true;
 
-    // 1. Logika Tanggal
-    function updateDates() {
-        const now = new Date();
-        const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-        const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
-        const refDate = new Date(1900, 0, 1);
-        const diffDays = Math.floor((now - refDate) / (86400000));
-        const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
-        document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaran[(diffDays + 1) % 5]}, ${masehiStr}`;
-        document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
-    }
-
-    // 2. Geolocation & Sholat
-    async function getCoreData() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const { latitude: lat, longitude: lon } = pos.coords;
-                try {
-                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
-                    const locData = await locRes.json();
-                    const addr = locData.address;
-                    document.getElementById('location-text').innerText = addr.amenity || addr.building || addr.road || addr.suburb || addr.city || "Lokasi Aktif";
-                } catch(e) { document.getElementById('location-text').innerText = "Lokasi Aktif"; }
-                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                const json = await res.json();
-                setPrayerUI(json.data.timings);
-            }, null, { enableHighAccuracy: true });
+        // --- 1. FUNGSI WAKTU & LOKASI ---
+        function updateDates() {
+            const now = new Date();
+            const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+            const refDate = new Date(1900, 0, 1);
+            const diffDays = Math.floor((now - refDate) / (86400000));
+            const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
+            document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaran[(diffDays + 1) % 5]}, ${masehiStr}`;
+            document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
         }
-    }
 
-    function setPrayerUI(timings) {
-        const now = new Date();
-        const currentTotal = (now.getHours() * 60) + now.getMinutes();
-        const schedule = [{ name:'Subuh', time:timings.Fajr }, { name:'Dzuhur', time:timings.Dhuhr }, { name:'Ashar', time:timings.Asr }, { name:'Maghrib', time:timings.Maghrib }, { name:'Isya', time:timings.Isha }];
-        let next = schedule.find(s => {
-            const [h, m] = s.time.split(':');
-            return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
-        }) || schedule[0];
-        document.getElementById('prayer-name').innerText = next.name;
-        document.getElementById('prayer-time').innerText = next.time;
-        const [tH, tM] = next.time.split(':');
-        nextPrayerTime = new Date();
-        nextPrayerTime.setHours(parseInt(tH), parseInt(tM), 0);
-        if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-    }
-
-    function startCountdown() {
-        setInterval(() => {
-            if (!nextPrayerTime) return;
-            const diff = nextPrayerTime - new Date();
-            if (diff <= 0) { getCoreData(); return; }
-            const h = Math.floor(diff / 3600000).toString().padStart(2,'0');
-            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
-            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
-            document.getElementById('countdown').innerText = `-${h}:${m}:${s}`;
-        }, 1000);
-    }
-
-
-    // Registrasi Service Worker untuk PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker terdaftar!', reg))
-            .catch(err => console.error('Service Worker gagal:', err));
-    });
-}
-
-    // 3. Logika Al-Quran
-    function toggleQuran() {
-        const modal = document.getElementById('quran-modal');
-        if (modal.classList.contains('hidden-quran')) {
-            modal.classList.remove('hidden-quran');
-            modal.classList.add('show-quran');
-            loadSurahList();
-        } else {
-            modal.classList.remove('show-quran');
-            modal.classList.add('hidden-quran');
+        async function getCoreData() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const { latitude: lat, longitude: lon } = pos.coords;
+                    try {
+                        const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                        const locData = await locRes.json();
+                        const addr = locData.address;
+                        document.getElementById('location-text').innerText = addr.amenity || addr.building || addr.road || addr.suburb || addr.city || "Lokasi Aktif";
+                    } catch(e) { document.getElementById('location-text').innerText = "Lokasi Aktif"; }
+                    
+                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                    const json = await res.json();
+                    setPrayerUI(json.data.timings);
+                }, null, { enableHighAccuracy: true });
+            }
         }
-    }
 
-    function toggleTranslation() {
-        showTranslation = !showTranslation;
-        const transElements = document.querySelectorAll('.translation-text');
-        const btn = document.getElementById('btn-trans');
-        transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
-        btn.innerText = showTranslation ? 'Sembunyikan Terjemah' : 'Tampilkan Terjemah';
-    }
+        function setPrayerUI(timings) {
+            const now = new Date();
+            const currentTotal = (now.getHours() * 60) + now.getMinutes();
+            const schedule = [
+                { name:'Subuh', time:timings.Fajr }, 
+                { name:'Dzuhur', time:timings.Dhuhr }, 
+                { name:'Ashar', time:timings.Asr }, 
+                { name:'Maghrib', time:timings.Maghrib }, 
+                { name:'Isya', time:timings.Isha }
+            ];
+            let next = schedule.find(s => {
+                const [h, m] = s.time.split(':');
+                return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
+            }) || schedule[0];
 
-    async function loadSurahList() {
-        const content = document.getElementById('quran-content');
-        try {
-            const res = await fetch('https://equran.id/api/v2/surat');
-            const data = await res.json();
-            let html = '<div class="grid grid-cols-1 gap-3">';
-            data.data.forEach(surah => {
-                html += `
-                    <div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 bg-teal-50 text-teal-700 rounded-lg flex items-center justify-center text-xs font-bold">${surah.nomor}</span>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-800 font-times">${surah.namaLatin}</h4>
-                                <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">${surah.arti} • ${surah.jumlahAyat} Ayat</p>
+            document.getElementById('prayer-name').innerText = next.name;
+            document.getElementById('prayer-time').innerText = next.time;
+            const [tH, tM] = next.time.split(':');
+            nextPrayerTime = new Date();
+            nextPrayerTime.setHours(parseInt(tH), parseInt(tM), 0);
+            if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+        }
+
+        function startCountdown() {
+            setInterval(() => {
+                if (!nextPrayerTime) return;
+                const diff = nextPrayerTime - new Date();
+                if (diff <= 0) { getCoreData(); return; }
+                const h = Math.floor(diff / 3600000).toString().padStart(2,'0');
+                const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
+                document.getElementById('countdown').innerText = `-${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        // --- 2. FUNGSI AL-QURAN ---
+        function toggleQuran() {
+            const modal = document.getElementById('quran-modal');
+            if (modal.classList.contains('hidden-quran')) {
+                modal.classList.remove('hidden-quran');
+                modal.classList.add('show-quran');
+                loadSurahList();
+            } else {
+                modal.classList.remove('show-quran');
+                modal.classList.add('hidden-quran');
+            }
+        }
+
+        function toggleTranslation() {
+            showTranslation = !showTranslation;
+            const transElements = document.querySelectorAll('.translation-text');
+            const btn = document.getElementById('btn-trans');
+            transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
+            btn.innerText = showTranslation ? 'Sembunyikan Terjemah' : 'Tampilkan Terjemah';
+        }
+
+        async function loadSurahList() {
+            const content = document.getElementById('quran-content');
+            try {
+                const res = await fetch('https://equran.id/api/v2/surat');
+                const data = await res.json();
+                let html = '<div class="grid grid-cols-1 gap-3">';
+                data.data.forEach(surah => {
+                    html += `
+                        <div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 bg-teal-50 text-teal-700 rounded-lg flex items-center justify-center text-xs font-bold">${surah.nomor}</span>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-800 font-times">${surah.namaLatin}</h4>
+                                    <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">${surah.arti} • ${surah.jumlahAyat} Ayat</p>
+                                </div>
                             </div>
-                        </div>
-                        <span class="font-arab text-xl text-teal-600">${surah.nama}</span>
-                    </div>`;
+                            <span class="font-arab text-xl text-teal-600">${surah.nama}</span>
+                        </div>`;
+                });
+                content.innerHTML = html + '</div>';
+            } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-xs">Gagal memuat Al-Quran.</p>'; }
+        }
+
+        async function loadDetailSurah(nomor) {
+            const content = document.getElementById('quran-content');
+            content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
+            try {
+                const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
+                const data = await res.json();
+                const surah = data.data;
+                let html = `<div class="bg-teal-700 p-6 rounded-3xl text-white text-center mb-6 shadow-lg"><h3 class="font-arab text-4xl mb-2">${surah.nama}</h3><p class="font-times font-bold text-teal-100 uppercase text-xs">${surah.namaLatin} • ${surah.arti}</p></div><div class="space-y-10">`;
+                surah.ayat.forEach(ayat => {
+                    html += `<div class="border-b border-slate-100 pb-8"><div class="flex justify-between items-start gap-4 mb-6"><span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-full font-bold">${ayat.nomorAyat}</span><p class="font-arab text-3xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p></div><p class="translation-text text-sm text-slate-500 font-times italic border-l-2 border-teal-100 pl-4" style="display: ${showTranslation ? 'block' : 'none'}">${ayat.teksIndonesia}</p></div>`;
+                });
+                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold text-xs uppercase tracking-widest border border-teal-100">Kembali ke Daftar Surah</button>`;
+            } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Gagal memuat Ayat.</p>'; }
+        }
+
+        // --- 3. INISIALISASI & PWA ---
+        updateDates(); 
+        getCoreData(); 
+        startCountdown();
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA: Service Worker Aktif!', reg.scope))
+                    .catch(err => console.log('PWA: Registrasi Gagal', err));
             });
-            content.innerHTML = html + '</div>';
-        } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-xs">Gagal memuat Al-Quran.</p>'; }
-    }
+        }
 
-    async function loadDetailSurah(nomor) {
-        const content = document.getElementById('quran-content');
-        content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
-        try {
-            const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
-            const data = await res.json();
-            const surah = data.data;
-            let html = `
-                <div class="bg-teal-700 p-6 rounded-3xl text-white text-center mb-6 shadow-lg shadow-teal-100">
-                    <h3 class="font-arab text-4xl mb-2">${surah.nama}</h3>
-                    <p class="font-times font-bold text-teal-100 uppercase tracking-widest text-xs">${surah.namaLatin} • ${surah.arti}</p>
-                </div>
-                <div class="space-y-10">`;
-            surah.ayat.forEach(ayat => {
-                html += `
-                    <div class="border-b border-slate-100 pb-8">
-                        <div class="flex justify-between items-start gap-4 mb-6">
-                            <span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-full font-bold">${ayat.nomorAyat}</span>
-                            <p class="font-arab text-3xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p>
-                        </div>
-                        <p class="translation-text text-sm text-slate-500 leading-relaxed font-times italic border-l-2 border-teal-100 pl-4" style="display: ${showTranslation ? 'block' : 'none'}">
-                            ${ayat.teksIndonesia}
-                        </p>
-                    </div>`;
-            });
-            content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold text-xs uppercase tracking-widest border border-teal-100 shadow-sm active:scale-95 transition-transform">Kembali ke Daftar Surah</button>`;
-        } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Gagal memuat Ayat.</p>'; }
-    }
-
-    updateDates(); getCoreData(); startCountdown();
-
-
-// Registrasi Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('PWA: Service Worker Aktif'))
-            .catch(err => console.log('PWA: Gagal', err));
-    });
-}
-
-// Deteksi tombol instal manual (Opsional untuk testing)
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    console.log("PWA: Siap diinstal!");
-});
-    
-</script>
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log("PWA: Siap diinstal!");
+        });
+    </script>
 </body>
 </html>
