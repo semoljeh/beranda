@@ -142,24 +142,27 @@
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
-    <!-- Calendar Modal -->
-    <div id="calendar-modal" class="modal-full">
-        <div class="bg-slate-800 p-5 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
-            <div class="flex gap-2">
-                <button onclick="changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 bg-white pb-24">
-            <div class="calendar-grid mb-2">
-                <div class="text-center text-[10px] font-bold text-red-500">MIN</div><div class="text-center text-[10px] font-bold">SEN</div><div class="text-center text-[10px] font-bold">SEL</div><div class="text-center text-[10px] font-bold">RAB</div><div class="text-center text-[10px] font-bold">KAM</div><div class="text-center text-[10px] font-bold text-teal-600">JUM</div><div class="text-center text-[10px] font-bold">SAB</div>
-            </div>
-            <div id="calendar-days-grid" class="calendar-grid"></div>
-            <div id="holiday-list" class="mt-6 space-y-2 border-t pt-4"></div>
+
+
+<!-- Calendar Modal -->
+<div id="calendar-modal" class="modal-full">
+    <!-- Di bawah ini kelas bg-slate-800 saya ganti menjadi bg-teal-700 -->
+    <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
+        <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+        <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
+        <div class="flex gap-2">
+            <button onclick="changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
     </div>
+    <div class="flex-1 overflow-y-auto p-4 bg-white pb-24">
+        <div class="calendar-grid mb-2">
+            <div class="text-center text-[10px] font-bold text-red-500">MIN</div><div class="text-center text-[10px] font-bold">SEN</div><div class="text-center text-[10px] font-bold">SEL</div><div class="text-center text-[10px] font-bold">RAB</div><div class="text-center text-[10px] font-bold">KAM</div><div class="text-center text-[10px] font-bold text-teal-600">JUM</div><div class="text-center text-[10px] font-bold">SAB</div>
+        </div>
+        <div id="calendar-days-grid" class="calendar-grid"></div>
+        <div id="holiday-list" class="mt-6 space-y-2 border-t pt-4"></div>
+    </div>
+</div>
 
     <!-- Doa Modal -->
     <div id="doa-modal" class="modal-full">
