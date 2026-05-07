@@ -34,15 +34,21 @@
         }
         .menu-card:active { transform: scale(0.95); background-color: #f0fdfa; }
 
-        /* Navigasi Bawah Seragam */
+        /* Navigasi Bawah Seragam Warna #0d9488 */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
             background-color: white; display: flex; justify-content: space-around;
             padding: 14px 0; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
             z-index: 100; border-radius: 25px 25px 0 0;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #64748b; transition: all 0.2s; }
-        .nav-item.active { color: #0d9488; } /* Warna hanya untuk yang aktif */
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-decoration: none; 
+            color: #0d9488; /* Warna seragam untuk semua menu */
+            transition: all 0.2s; 
+        }
         .nav-item i { font-size: 22px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
@@ -93,7 +99,7 @@
         </footer>
 
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
+            <a href="#" class="nav-item">
                 <i class="fa-solid fa-house"></i>
                 <span class="font-times">Beranda</span>
             </a>
@@ -113,7 +119,7 @@
     function updateDates() {
         const now = new Date();
         const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-        const pasaran = ["Legi", "Paing", "Pon", "Wage", "Kliwon"];
+        const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
         const refDate = new Date(1900, 0, 1);
         const diffDays = Math.floor((now - refDate) / (86400000));
         const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
@@ -126,10 +132,10 @@
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude: lat, longitude: lon } = pos.coords;
                 try {
-                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
                     const locData = await locRes.json();
                     const addr = locData.address;
-                    document.getElementById('location-text').innerText = addr.amenity || addr.road || addr.suburb || addr.city || "Lokasi Aktif";
+                    document.getElementById('location-text').innerText = addr.amenity || addr.building || addr.road || addr.suburb || addr.city || "Lokasi Aktif";
                 } catch(e) { document.getElementById('location-text').innerText = "Lokasi Aktif"; }
                 const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                 const json = await res.json();
