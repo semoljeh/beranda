@@ -1,168 +1,360 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Darussalam</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<title>Portal Darussalam Quran</title>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+<script src="https://cdn.tailwindcss.com"></script>
 
-        @font-face {
-            font-family: 'Uthmanic';
-            src: url('https://cdn.jsdelivr.net/gh/ivandotnet/kuran-data/fonts/KFGQPC-Uthman-Taha-Naskh-Standard.ttf');
-        }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-        body{
-            font-family:'Inter',sans-serif;
-            background:#f8fafc;
-            margin:0;
-            display:flex;
-            justify-content:center;
-        }
+<!-- FONT ARAB OTOMATIS BAGUS -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        .app-container{
-            width:100%;
-            max-width:500px;
-            min-height:100vh;
-            background:white;
-            padding-bottom:120px;
-        }
+<style>
 
-        .header-bg{
-            background:linear-gradient(135deg,#0d9488 0%,#0f766e 100%);
-            height:220px;
-            border-radius:0 0 40px 40px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:white;
-            font-size:24px;
-            font-weight:bold;
-        }
+*{
+    box-sizing:border-box;
+}
 
-        .bottom-nav{
-            position:fixed;
-            bottom:0;
-            width:100%;
-            max-width:500px;
-            background:white;
-            display:flex;
-            justify-content:space-around;
-            padding:12px 0 28px;
-            border-top:1px solid #e2e8f0;
-            z-index:100;
-        }
+body{
+    margin:0;
+    background:#f8fafc;
+    font-family:'Inter',sans-serif;
+    display:flex;
+    justify-content:center;
+    color:#0f172a;
+}
 
-        .nav-item{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            color:#0d9488;
-            text-decoration:none;
-            cursor:pointer;
-        }
+.app{
+    width:100%;
+    max-width:500px;
+    min-height:100vh;
+    background:white;
+    position:relative;
+    padding-bottom:120px;
+}
 
-        .nav-item i{
-            font-size:22px;
-            margin-bottom:4px;
-        }
+/* HEADER */
 
-        .nav-item span{
-            font-size:10px;
-            font-weight:700;
-        }
+.header{
+    height:220px;
+    background:linear-gradient(135deg,#0d9488 0%,#115e59 100%);
+    border-radius:0 0 40px 40px;
+    padding:40px 25px;
+    color:white;
+}
 
-        .modal-full{
-            position:fixed;
-            inset:0;
-            background:white;
-            z-index:200;
-            transform:translateY(100%);
-            transition:0.4s;
-            display:flex;
-            flex-direction:column;
-            max-width:500px;
-            margin:auto;
-        }
+.header h1{
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+}
 
-        .modal-show{
-            transform:translateY(0);
-        }
+.header p{
+    margin-top:10px;
+    font-size:14px;
+    opacity:.8;
+    line-height:1.6;
+}
 
-        .arab-block{
-            direction:rtl;
-            text-align:right;
-            line-height:3.2;
-        }
+/* CARD */
 
-        .ayah-text{
-            font-family:'Uthmanic',serif;
-            font-size:2rem;
-            color:#111827;
-        }
+.card{
+    background:white;
+    margin:-60px 20px 0;
+    border-radius:30px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+    border:1px solid #f1f5f9;
+}
 
-        .ayah-number-inline{
-            font-family:'Uthmanic',serif;
-            font-size:.5em;
-            color:#0d9488;
-            border:1px solid #a7f3d0;
-            width:34px;
-            height:34px;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            border-radius:50%;
-            margin-right:10px;
-            vertical-align:middle;
-        }
+.card-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:8px;
+}
 
-        .latin-block{
-            margin-top:16px;
-            border-left:3px solid #0d9488;
-            padding-left:14px;
-        }
+.card-text{
+    font-size:14px;
+    color:#64748b;
+    line-height:1.7;
+}
 
-        .bismillah-text{
-            font-family:'Uthmanic',serif;
-            font-size:2.3rem;
-            text-align:center;
-            color:#0d9488;
-            margin:20px 0 30px;
-        }
+/* FOOTER */
 
-        .hidden{
-            display:none;
-        }
-    </style>
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    max-width:500px;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:14px 0 30px;
+    border-top:1px solid #e2e8f0;
+    z-index:99;
+}
+
+.nav-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-decoration:none;
+    color:#0d9488;
+    cursor:pointer;
+}
+
+.nav-item i{
+    font-size:20px;
+    margin-bottom:4px;
+}
+
+.nav-item span{
+    font-size:10px;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:999;
+    transform:translateY(100%);
+    transition:.4s;
+    display:flex;
+    flex-direction:column;
+    max-width:500px;
+    margin:auto;
+}
+
+.modal.show{
+    transform:translateY(0);
+}
+
+/* MODAL HEADER */
+
+.modal-header{
+    background:#0f766e;
+    color:white;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-btn{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:14px;
+    background:rgba(255,255,255,.1);
+    color:white;
+    cursor:pointer;
+}
+
+.modal-title{
+    text-align:center;
+}
+
+.modal-title h2{
+    margin:0;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+.modal-title p{
+    margin-top:4px;
+    font-size:10px;
+    opacity:.7;
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+    overflow-y:auto;
+    background:white;
+    padding:18px;
+    padding-bottom:120px;
+}
+
+/* SURAH LIST */
+
+.surah-item{
+    padding:18px;
+    border:1px solid #f1f5f9;
+    border-radius:24px;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.surah-item:active{
+    transform:scale(.98);
+}
+
+.surah-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.surah-number{
+    width:45px;
+    height:45px;
+    border-radius:14px;
+    background:#f0fdfa;
+    color:#0d9488;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:700;
+    font-size:13px;
+}
+
+.surah-name{
+    font-size:14px;
+    font-weight:700;
+}
+
+.surah-info{
+    font-size:10px;
+    color:#94a3b8;
+    margin-top:4px;
+    font-weight:600;
+}
+
+.surah-arab{
+    font-family:'Amiri Quran',serif;
+    font-size:28px;
+    color:#0d9488;
+}
+
+/* AYAT */
+
+.ayah-box{
+    padding:28px 0;
+    border-bottom:1px solid #f8fafc;
+}
+
+.arab{
+    direction:rtl;
+    text-align:right;
+    line-height:3.2;
+}
+
+.arab-text{
+    font-family:'Amiri Quran',serif;
+    font-size:2.2rem;
+    color:#111827;
+}
+
+.ayah-number{
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid #99f6e4;
+    color:#0d9488;
+    font-size:.45em;
+    margin-right:10px;
+    vertical-align:middle;
+}
+
+.translation{
+    margin-top:22px;
+    border-left:3px solid #14b8a6;
+    padding-left:14px;
+}
+
+.translation p{
+    margin:0;
+    font-size:14px;
+    line-height:1.9;
+    color:#475569;
+}
+
+.bismillah{
+    text-align:center;
+    font-family:'Amiri Quran',serif;
+    font-size:2.5rem;
+    color:#0d9488;
+    margin:15px 0 35px;
+}
+
+.loading{
+    text-align:center;
+    padding:80px 20px;
+    color:#0d9488;
+    font-weight:700;
+}
+
+.back-btn{
+    width:100%;
+    margin-top:30px;
+    border:none;
+    padding:18px;
+    border-radius:25px;
+    background:#f0fdfa;
+    color:#0d9488;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.hidden{
+    display:none;
+}
+
+</style>
 </head>
+
 <body>
 
-<div class="app-container">
+<div class="app">
 
-    <div class="header-bg">
-        Portal Darussalam
+    <div class="header">
+
+        <h1>Portal Darussalam</h1>
+
+        <p>
+            Sistem Al-Quran Digital menggunakan API Quran terbaru
+            dengan font arab otomatis dan responsive.
+        </p>
+
     </div>
 
-    <div class="p-6">
-        <div class="bg-white border rounded-2xl p-6 shadow-sm">
-            <h2 class="font-bold text-lg text-slate-700">
-                Selamat Datang
-            </h2>
+    <div class="card">
 
-            <p class="text-slate-500 mt-2 text-sm">
-                Menu Al-Quran sudah terhubung dengan API AlQuran Cloud.
-            </p>
+        <div class="card-title">
+            Al-Quran Digital
         </div>
+
+        <div class="card-text">
+            Klik menu Quran di footer untuk membuka
+            daftar surat dan membaca Al-Quran.
+        </div>
+
     </div>
 
     <!-- FOOTER -->
+
     <nav class="bottom-nav">
 
-        <a onclick="location.reload()" class="nav-item">
+        <a class="nav-item">
             <i class="fa-solid fa-house"></i>
             <span>Beranda</span>
         </a>
@@ -186,219 +378,243 @@
 
 </div>
 
-<!-- MODAL QURAN -->
-<div id="quran-modal" class="modal-full">
+<!-- MODAL -->
 
-    <div class="bg-teal-700 p-5 text-white flex justify-between items-center">
+<div id="quranModal" class="modal">
 
-        <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl">
+    <div class="modal-header">
+
+        <button onclick="toggleQuran()" class="modal-btn">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
 
-        <div class="text-center">
-            <h2 id="surah-title" class="font-bold text-xs uppercase">
-                Al-Quran
-            </h2>
-
-            <p id="surah-subtitle" class="text-[10px] opacity-70 mt-1"></p>
+        <div class="modal-title">
+            <h2 id="surahTitle">AL-QURAN</h2>
+            <p id="surahInfo"></p>
         </div>
 
-        <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl">
+        <button onclick="toggleTranslation()" class="modal-btn">
             <i class="fa-solid fa-language"></i>
         </button>
 
     </div>
 
-    <div id="quran-content"
-         class="flex-1 overflow-y-auto p-4 bg-white pb-24">
-    </div>
+    <div id="content" class="content"></div>
 
 </div>
 
 <script>
 
-    let isTranslationVisible = true;
+let translationVisible = true;
 
-    function toggleQuran(){
+function toggleQuran(){
 
-        const modal = document.getElementById('quran-modal');
+    const modal = document.getElementById('quranModal');
 
-        if(modal.classList.contains('modal-show')){
-            modal.classList.remove('modal-show');
-        }else{
-            modal.classList.add('modal-show');
-            loadSurahList();
-        }
+    if(modal.classList.contains('show')){
+
+        modal.classList.remove('show');
+
+    }else{
+
+        modal.classList.add('show');
+
+        loadSurahList();
     }
+}
 
-    function toggleTranslation(){
+function toggleTranslation(){
 
-        isTranslationVisible = !isTranslationVisible;
+    translationVisible = !translationVisible;
 
-        document.querySelectorAll('.translation-text').forEach(el=>{
-            el.classList.toggle('hidden', !isTranslationVisible);
-        });
-    }
+    document.querySelectorAll('.translation').forEach(el=>{
 
-    function toArabicNumber(n){
+        el.classList.toggle('hidden', !translationVisible);
 
-        const forms = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    });
+}
 
-        return String(n)
-            .split('')
-            .map(c => forms[Number(c)])
-            .join('');
-    }
+function toArabicNumber(n){
 
-    // LOAD LIST SURAH
-    async function loadSurahList(){
+    const ar = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 
-        const c = document.getElementById('quran-content');
+    return String(n)
+        .split('')
+        .map(x => ar[+x])
+        .join('');
+}
 
-        c.innerHTML = `
-        <div class="text-center py-20 text-teal-600 font-bold">
-            Memuat Surah...
-        </div>`;
+/* LOAD SURAH */
 
-        try{
+async function loadSurahList(){
 
-            const r = await fetch('https://api.alquran.cloud/v1/surah');
+    const c = document.getElementById('content');
 
-            const j = await r.json();
+    c.innerHTML = `
+    <div class="loading">
+        Memuat daftar surah...
+    </div>`;
 
-            let html = '<div class="space-y-3">';
+    try{
 
-            j.data.forEach(s=>{
+        /* API QURAN.COM */
 
-                html += `
-                <div onclick="loadDetailSurah(${s.number})"
-                     class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm active:scale-95 transition-all cursor-pointer">
+        const res = await fetch(
+            'https://api.quran.com/api/v4/chapters'
+        );
 
-                    <div class="flex items-center gap-4">
+        const data = await res.json();
 
-                        <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">
-                            ${s.number}
-                        </span>
+        let html = '';
 
-                        <div>
+        data.chapters.forEach(s=>{
 
-                            <h4 class="font-bold text-sm text-slate-700 uppercase">
-                                ${s.englishName}
-                            </h4>
+            html += `
+            <div class="surah-item"
+                 onclick="loadSurah(${s.id})">
 
-                            <p class="text-[10px] text-slate-400 font-bold">
-                                ${s.revelationType} • ${s.numberOfAyahs} Ayat
-                            </p>
+                <div class="surah-left">
 
+                    <div class="surah-number">
+                        ${s.id}
+                    </div>
+
+                    <div>
+
+                        <div class="surah-name">
+                            ${s.name_simple}
+                        </div>
+
+                        <div class="surah-info">
+                            ${s.translated_name.name}
+                            •
+                            ${s.verses_count} Ayat
                         </div>
 
                     </div>
 
-                    <span class="ayah-text text-2xl text-teal-600">
-                        ${s.name}
-                    </span>
+                </div>
 
-                </div>`;
-            });
+                <div class="surah-arab">
+                    ${s.name_arabic}
+                </div>
 
-            html += '</div>';
-
-            c.innerHTML = html;
-
-        }catch(e){
-
-            c.innerHTML = `
-            <div class="text-center py-20 text-red-500 font-bold">
-                Gagal memuat daftar surah
             </div>`;
-        }
-    }
+        });
 
-    // LOAD DETAIL SURAH
-    async function loadDetailSurah(n){
+        c.innerHTML = html;
 
-        const c = document.getElementById('quran-content');
+    }catch(e){
 
         c.innerHTML = `
-        <div class="text-center py-20 text-teal-600 font-bold">
-            Memuat Ayat...
+        <div class="loading">
+            Gagal memuat surah
         </div>`;
+    }
+}
 
-        try{
+/* LOAD DETAIL */
 
-            const r = await fetch(
-                `https://api.alquran.cloud/v1/surah/${n}/editions/quran-uthmani,id.indonesian`
-            );
+async function loadSurah(id){
 
-            const j = await r.json();
+    const c = document.getElementById('content');
 
-            const arab = j.data[0];
-            const indo = j.data[1];
+    c.innerHTML = `
+    <div class="loading">
+        Memuat ayat...
+    </div>`;
 
-            document.getElementById('surah-title').innerText =
-                arab.englishName;
+    try{
 
-            document.getElementById('surah-subtitle').innerText =
-                `${arab.revelationType} • ${arab.numberOfAyahs} Ayat`;
+        /* API ARAB */
 
-            let html = '';
+        const arabRes = await fetch(
+            `https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`
+        );
 
-            if(n != 1 && n != 9){
+        const arabData = await arabRes.json();
 
-                html += `
-                <div class="bismillah-text">
-                    بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
-                </div>`;
-            }
+        /* API TERJEMAH */
 
-            arab.ayahs.forEach((a,i)=>{
+        const indoRes = await fetch(
+            `https://api.quran.com/api/v4/quran/translations/33?chapter_number=${id}`
+        );
 
-                html += `
-                <div class="p-6 bg-white border-b border-slate-50">
+        const indoData = await indoRes.json();
 
-                    <div class="arab-block">
+        /* API CHAPTER INFO */
 
-                        <span class="ayah-text">
+        const infoRes = await fetch(
+            `https://api.quran.com/api/v4/chapters/${id}`
+        );
 
-                            ${a.text}
+        const infoData = await infoRes.json();
 
-                            <span class="ayah-number-inline">
-                                ${toArabicNumber(i+1)}
-                            </span>
+        const surah = infoData.chapter;
 
-                        </span>
+        document.getElementById('surahTitle').innerText =
+            surah.name_simple;
 
-                    </div>
+        document.getElementById('surahInfo').innerText =
+            `${surah.translated_name.name} • ${surah.verses_count} Ayat`;
 
-                    <div class="latin-block translation-text ${isTranslationVisible ? '' : 'hidden'}">
+        let html = '';
 
-                        <p class="text-sm text-slate-500 leading-relaxed">
-                            ${indo.ayahs[i].text}
-                        </p>
-
-                    </div>
-
-                </div>`;
-            });
+        if(id != 1 && id != 9){
 
             html += `
-            <button onclick="loadSurahList()"
-                    class="w-full mt-6 py-5 bg-teal-50 text-teal-700 rounded-3xl font-bold text-[10px] uppercase">
-                Kembali
-            </button>`;
-
-            c.innerHTML = html;
-
-            c.scrollTo(0,0);
-
-        }catch(e){
-
-            c.innerHTML = `
-            <div class="text-center py-20 text-red-500 font-bold">
-                Gagal memuat ayat
+            <div class="bismillah">
+                بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
             </div>`;
         }
+
+        arabData.verses.forEach((v,i)=>{
+
+            html += `
+            <div class="ayah-box">
+
+                <div class="arab">
+
+                    <span class="arab-text">
+
+                        ${v.text_uthmani}
+
+                        <span class="ayah-number">
+                            ${toArabicNumber(i+1)}
+                        </span>
+
+                    </span>
+
+                </div>
+
+                <div class="translation ${translationVisible ? '' : 'hidden'}">
+
+                    <p>
+                        ${indoData.translations[i].text}
+                    </p>
+
+                </div>
+
+            </div>`;
+        });
+
+        html += `
+        <button onclick="loadSurahList()" class="back-btn">
+            Kembali ke Daftar Surah
+        </button>`;
+
+        c.innerHTML = html;
+
+        c.scrollTo(0,0);
+
+    }catch(e){
+
+        c.innerHTML = `
+        <div class="loading">
+            Gagal memuat ayat
+        </div>`;
     }
+}
 
 </script>
 
