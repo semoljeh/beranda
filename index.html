@@ -5,265 +5,249 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Portal Darussalam Quran</title>
 
-    <!-- 
-    ==========================================================================
-    [SECTION: EXTERNAL RESOURCES]
-    Resource dari pihak ketiga (Tailwind, FontAwesome, Google Fonts)
-    ==========================================================================
-    -->
+    <!-- [RESOURCE] EXTERNAL ASSETS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 
-        ==========================================================================
-        [CSS GROUP 1: GLOBAL & LAYOUT]
-        Dasar aplikasi dan pengaturan container utama
-        ==========================================================================
-        */
-        *{ box-sizing: border-box; }
+        /* ============================================================
+           [CSS GROUP 1: CORE LAYOUT]
+           Pengaturan dasar aplikasi dan kontainer utama
+           ============================================================ */
+        *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; color: #0f172a; }
-        .app { width: 100%; max-width: 500px; min-height: 100vh; background: white; position: relative; padding-bottom: 120px; }
+        .app { width: 100%; max-width: 500px; min-height: 100vh; background: white; position: relative; padding-bottom: 100px; }
         .hidden { display: none; }
-        .loading { text-align: center; padding: 80px 20px; color: #0d9488; font-weight: 700; }
 
-        /* 
-        ==========================================================================
-        [CSS GROUP 2: HOME COMPONENT]
-        Gaya tampilan untuk header beranda dan kartu informasi
-        ==========================================================================
-        */
+        /* ============================================================
+           [CSS GROUP 2: HOME COMPONENTS]
+           Gaya untuk Header Beranda dan Card Dashboard
+           ============================================================ */
         .header { height: 220px; background: linear-gradient(135deg, #0d9488 0%, #115e59 100%); border-radius: 0 0 40px 40px; padding: 40px 25px; color: white; }
         .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
         .header p { margin-top: 10px; font-size: 14px; opacity: .8; line-height: 1.6; }
+        
         .card { background: white; margin: -60px 20px 0; border-radius: 30px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,.05); border: 1px solid #f1f5f9; }
-        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
         .card-text { font-size: 14px; color: #64748b; line-height: 1.7; }
 
-        /* 
-        ==========================================================================
-        [CSS GROUP 3: NAVIGATION COMPONENT]
-        Menu navigasi bawah (Footer Nav)
-        ==========================================================================
-        */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 14px 0 30px; border-top: 1px solid #e2e8f0; z-index: 99; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #0d9488; cursor: pointer; text-decoration: none; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
-
-        /* 
-        ==========================================================================
-        [CSS GROUP 4: MODAL SYSTEM]
-        Frame modal yang menampung konten fitur (Quran, Doa, dll)
-        ==========================================================================
-        */
-        .modal { position: fixed; inset: 0; background: white; z-index: 999; transform: translateY(100%); transition: .4s; display: flex; flex-direction: column; max-width: 500px; margin: auto; }
+        /* ============================================================
+           [CSS GROUP 3: MODAL SYSTEM]
+           Kontainer jendela untuk fitur Quran
+           ============================================================ */
+        .modal { position: fixed; inset: 0; background: white; z-index: 999; transform: translateY(100%); transition: .4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; max-width: 500px; margin: auto; }
         .modal.show { transform: translateY(0); }
-        .modal-header { background: #0f766e; color: white; padding: 18px; display: flex; justify-content: space-between; align-items: center; }
-        .modal-btn { width: 40px; height: 40px; border: none; border-radius: 14px; background: rgba(255,255,255,.1); color: white; cursor: pointer; }
+        .modal-header { background: #0f766e; color: white; padding: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .modal-btn { width: 42px; height: 42px; border: none; border-radius: 12px; background: rgba(255,255,255,0.15); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 18px; }
         .modal-title { text-align: center; }
-        .modal-title h2 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        .modal-title p { margin-top: 4px; font-size: 10px; opacity: .7; }
+        .modal-title h2 { margin: 0; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .modal-title p { margin: 2px 0 0; font-size: 11px; opacity: 0.8; }
 
-        /* 
-        ==========================================================================
-        [CSS GROUP 5: QURAN CONTENT STYLE]
-        Gaya untuk daftar surah, ayat, bismillah, dan tombol kembali
-        ==========================================================================
-        */
-        .content { flex: 1; overflow-y: auto; background: white; padding: 18px; padding-bottom: 120px; }
-        /* Item Surah */
-        .surah-item { padding: 18px; border: 1px solid #f1f5f9; border-radius: 24px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: .2s; }
-        .surah-item:active { transform: scale(.98); }
-        .surah-number { width: 45px; height: 45px; border-radius: 14px; background: #f0fdfa; color: #0d9488; display: flex; justify-content: center; align-items: center; font-weight: 700; }
-        .surah-arab { font-family: 'Amiri Quran', serif; font-size: 28px; color: #0d9488; }
-        /* Tampilan Ayat */
-        .ayah-box { padding: 28px 0; border-bottom: 1px solid #f8fafc; }
-        .arab-text { font-family: 'Amiri Quran', serif; font-size: 2.2rem; direction: rtl; line-height: 3.2; display: block; }
-        .ayah-number { display: inline-flex; justify-content: center; align-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #99f6e4; color: #0d9488; font-size: 14px; }
-        .translation { margin-top: 22px; border-left: 3px solid #14b8a6; padding-left: 14px; font-size: 14px; color: #475569; line-height: 1.8; }
-        .bismillah { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2.5rem; color: #0d9488; margin-bottom: 35px; }
-        .back-btn { width: 100%; border: none; padding: 18px; border-radius: 25px; background: #f0fdfa; color: #0d9488; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        /* ============================================================
+           [CSS GROUP 4: QURAN CONTENT & LIST]
+           Gaya untuk daftar surah dan pembungkus ayat
+           ============================================================ */
+        .content { flex: 1; overflow-y: auto; background: white; padding: 20px; }
+        .surah-item { padding: 16px; border: 1px solid #f1f5f9; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .surah-item:active { background: #f0fdfa; transform: scale(0.98); }
+        .surah-number-bg { width: 45px; height: 45px; border-radius: 14px; background: #f0fdfa; color: #0d9488; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 14px; }
+        .surah-arab-name { font-family: 'Amiri Quran', serif; font-size: 26px; color: #0d9488; }
+
+        /* ============================================================
+           [CSS GROUP 5: AYAH READER & NUMBER]
+           Gaya bacaan ayat dengan nomor di tengah lingkaran
+           ============================================================ */
+        .ayah-box { padding: 30px 0; border-bottom: 1px solid #f1f5f9; }
+        .arab-wrap { direction: rtl; line-height: 3.2; text-align: right; }
+        .arab-text { font-family: 'Amiri Quran', serif; font-size: 2.1rem; color: #1e293b; word-spacing: 4px; }
+        
+        /* FIX NOMOR AYAT TENGAH PERSISI */
+        .ayah-number { 
+            display: inline-flex; justify-content: center; align-items: center; 
+            width: 42px; height: 42px; border-radius: 50%; 
+            border: 1.5px solid #99f6e4; background: #f0fdfa;
+            color: #0d9488; font-size: 14px; font-family: 'Inter', sans-serif;
+            font-weight: 700; margin-right: 12px; vertical-align: middle;
+            line-height: 0; position: relative; top: -2px;
+        }
+
+        .translation { margin-top: 20px; border-left: 3.5px solid #14b8a6; padding-left: 15px; font-size: 14.5px; color: #475569; line-height: 1.8; text-align: left; }
+        .bismillah { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2.5rem; color: #0d9488; margin: 10px 0 40px; }
+
+        /* ============================================================
+           [CSS GROUP 6: NAVIGATION & UTILS]
+           Menu bawah dan elemen pendukung
+           ============================================================ */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #e2e8f0; z-index: 100; }
+        .nav-link { display: flex; flex-direction: column; align-items: center; color: #64748b; cursor: pointer; text-decoration: none; transition: 0.3s; }
+        .nav-link.active { color: #0d9488; }
+        .nav-link i { font-size: 20px; margin-bottom: 5px; }
+        .nav-link span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+
+        .loading-state { text-align: center; padding: 100px 20px; color: #0d9488; font-weight: 600; }
+        .back-btn { width: 100%; border: none; padding: 18px; border-radius: 20px; background: #f0fdfa; color: #0d9488; font-weight: 700; cursor: pointer; margin-top: 25px; transition: 0.2s; }
+        .back-btn:active { background: #ccfbf1; }
     </style>
 </head>
 <body>
 
     <div class="app">
-        <!-- 
-        ==========================================================================
-        [HTML GROUP: HOME SECTION]
-        Tampilan beranda awal aplikasi
-        ==========================================================================
-        -->
+        <!-- --- BERANDA --- -->
         <header class="header">
             <h1>Portal Darussalam</h1>
-            <p>Sistem Al-Quran Digital menggunakan API Quran terbaru dengan font otomatis.</p>
+            <p>Al-Quran Digital interaktif dengan sistem API terbaru dan desain responsif.</p>
         </header>
 
-        <main class="card">
-            <div class="card-title">Al-Quran Digital</div>
-            <div class="card-text">Klik menu <b>Quran</b> di bawah untuk membuka daftar surat dan mulai membaca.</div>
-        </main>
+        <section class="card">
+            <div class="card-title">Selamat Datang</div>
+            <div class="card-text">Gunakan menu di bawah untuk mengakses fitur Al-Quran, Kalender, dan kumpulan Doa harian.</div>
+        </section>
 
-        <!-- 
-        ==========================================================================
-        [HTML GROUP: NAVIGATION BAR]
-        Menu navigasi utama footer
-        ==========================================================================
-        -->
+        <!-- --- MENU BAWAH --- -->
         <nav class="bottom-nav">
-            <a class="nav-item"><i class="fa-solid fa-house"></i><span>Beranda</span></a>
-            <a onclick="toggleQuran()" class="nav-item"><i class="fa-solid fa-book-quran"></i><span>Quran</span></a>
-            <a class="nav-item"><i class="fa-solid fa-calendar-days"></i><span>Kalender</span></a>
-            <a class="nav-item"><i class="fa-solid fa-hands-praying"></i><span>Doa</span></a>
+            <a class="nav-link active"><i class="fa-solid fa-house"></i><span>Beranda</span></a>
+            <a onclick="App.toggleQuran()" class="nav-link"><i class="fa-solid fa-book-quran"></i><span>Quran</span></a>
+            <a class="nav-link"><i class="fa-solid fa-calendar-days"></i><span>Kalender</span></a>
+            <a class="nav-link"><i class="fa-solid fa-hands-praying"></i><span>Doa</span></a>
         </nav>
     </div>
 
-    <!-- 
-    ==========================================================================
-    [HTML GROUP: QURAN MODAL]
-    Kontainer untuk menampilkan daftar surah dan bacaan ayat
-    ==========================================================================
-    -->
+    <!-- --- MODAL QURAN --- -->
     <div id="quranModal" class="modal">
         <header class="modal-header">
-            <button onclick="toggleQuran()" class="modal-btn"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="App.toggleQuran()" class="modal-btn"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="modal-title">
-                <h2 id="surahTitle">AL-QURAN</h2>
-                <p id="surahInfo"></p>
+                <h2 id="viewTitle">AL-QURAN</h2>
+                <p id="viewSubtitle">Daftar Surah</p>
             </div>
-            <button onclick="toggleTranslation()" class="modal-btn"><i class="fa-solid fa-language"></i></button>
+            <button onclick="App.toggleTranslation()" class="modal-btn"><i class="fa-solid fa-language"></i></button>
         </header>
-        <div id="content" class="content">
-            <!-- Konten Dinamis (Daftar Surah/Ayat) Masuk Sini -->
-        </div>
+        <div id="mainContent" class="content"></div>
     </div>
 
-    <!-- 
-    ==========================================================================
-    [JAVASCRIPT SECTION]
-    Logika aplikasi dikelompokkan berdasarkan fungsinya
-    ==========================================================================
-    -->
     <script>
         /* 
-        ---------------------------------------------------------
-        [JS GROUP 1: GLOBAL STATE & UTILS]
-        Penyimpanan data sementara dan fungsi bantuan
-        ---------------------------------------------------------
+        ==========================================================================
+        [JS GROUP: API SERVICE]
+        Kelompok fungsi untuk komunikasi dengan server quran.com
+        ==========================================================================
         */
-        let translationVisible = true;
-        let cacheSurahList = null; // Menyimpan daftar surah agar tidak fetch ulang
-
-        function toArabicNumber(n){
-            const ar = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
-            return String(n).split('').map(x => ar[+x]).join('');
-        }
-
-        /* 
-        ---------------------------------------------------------
-        [JS GROUP 2: NAVIGATION LOGIC]
-        Fungsi untuk membuka/menutup modal dan setting tampilan
-        ---------------------------------------------------------
-        */
-        function toggleQuran(){
-            const modal = document.getElementById('quranModal');
-            if(modal.classList.contains('show')){
-                modal.classList.remove('show');
-            } else {
-                modal.classList.add('show');
-                loadSurahList();
+        const QuranAPI = {
+            baseUrl: 'https://api.quran.com/api/v4',
+            
+            async fetchChapters() {
+                const res = await fetch(`${this.baseUrl}/chapters?language=id`);
+                return (await res.json()).chapters;
+            },
+            
+            async fetchAyahs(chapterId) {
+                const [arab, indo, info] = await Promise.all([
+                    fetch(`${this.baseUrl}/quran/verses/uthmani?chapter_number=${chapterId}`).then(r => r.json()),
+                    fetch(`${this.baseUrl}/quran/translations/33?chapter_number=${chapterId}`).then(r => r.json()),
+                    fetch(`${this.baseUrl}/chapters/${chapterId}?language=id`).then(r => r.json())
+                ]);
+                return { verses: arab.verses, translations: indo.translations, details: info.chapter };
             }
-        }
-
-        function toggleTranslation(){
-            translationVisible = !translationVisible;
-            document.querySelectorAll('.translation').forEach(el => {
-                el.classList.toggle('hidden', !translationVisible);
-            });
-        }
+        };
 
         /* 
-        ---------------------------------------------------------
-        [JS GROUP 3: QURAN DATA FETCHING]
-        Fungsi untuk mengambil data dari API (Daftar Surah & Ayat)
-        ---------------------------------------------------------
+        ==========================================================================
+        [JS GROUP: APP LOGIC]
+        Logika utama aplikasi (Navigasi, Rendering, State)
+        ==========================================================================
         */
-        async function loadSurahList(){
-            const c = document.getElementById('content');
-            
-            // Gunakan cache jika sudah pernah dimuat
-            if(cacheSurahList) { c.innerHTML = cacheSurahList; return; }
+        const App = {
+            isTranslationVisible: true,
+            surahCache: null,
 
-            c.innerHTML = `<div class="loading">Memuat daftar surah...</div>`;
-            
-            try {
-                const res = await fetch('https://api.quran.com/api/v4/chapters?language=id');
-                const data = await res.json();
+            // Konversi nomor ke format Arab
+            toArNum(n) {
+                return String(n).split('').map(x => ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'][+x]).join('');
+            },
+
+            // Buka Tutup Modal
+            toggleQuran() {
+                const modal = document.getElementById('quranModal');
+                modal.classList.toggle('show');
+                if(modal.classList.contains('show')) this.renderSurahList();
+            },
+
+            // Sembunyi/Tampilkan Terjemahan
+            toggleTranslation() {
+                this.isTranslationVisible = !this.isTranslationVisible;
+                document.querySelectorAll('.translation').forEach(el => el.classList.toggle('hidden', !this.isTranslationVisible));
+            },
+
+            // Render Daftar Surah
+            async renderSurahList() {
+                const container = document.getElementById('mainContent');
+                document.getElementById('viewTitle').innerText = "AL-QURAN";
+                document.getElementById('viewSubtitle').innerText = "114 Surah";
+
+                if(this.surahCache) { container.innerHTML = this.surahCache; return; }
+
+                container.innerHTML = `<div class="loading-state">Mengunduh daftar surah...</div>`;
                 
-                let html = data.chapters.map(s => `
-                    <div class="surah-item" onclick="loadSurah(${s.id})">
-                        <div class="flex items-center gap-4">
-                            <div class="surah-number">${s.id}</div>
-                            <div>
-                                <div class="font-bold text-sm">${s.name_simple}</div>
-                                <div class="text-[10px] text-slate-400 font-semibold">
-                                    ${s.translated_name.name} • ${s.verses_count} Ayat
+                try {
+                    const chapters = await QuranAPI.fetchChapters();
+                    let html = chapters.map(s => `
+                        <div class="surah-item" onclick="App.renderAyahs(${s.id})">
+                            <div class="flex items-center gap-4">
+                                <div class="surah-number-bg">${s.id}</div>
+                                <div>
+                                    <div class="font-bold text-[14px]">${s.name_simple}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                        ${s.translated_name.name} • ${s.verses_count} Ayat
+                                    </div>
                                 </div>
                             </div>
+                            <div class="surah-arab-name">${s.name_arabic}</div>
                         </div>
-                        <div class="surah-arab">${s.name_arabic}</div>
-                    </div>
-                `).join('');
+                    `).join('');
+                    this.surahCache = html;
+                    container.innerHTML = html;
+                } catch(e) {
+                    container.innerHTML = `<div class="loading-state">Koneksi gagal. Silakan coba lagi.</div>`;
+                }
+            },
 
-                cacheSurahList = html;
-                c.innerHTML = html;
-            } catch(e) {
-                c.innerHTML = `<div class="loading">Gagal memuat daftar surah.</div>`;
-            }
-        }
+            // Render Bacaan Ayat
+            async renderAyahs(id) {
+                const container = document.getElementById('mainContent');
+                container.innerHTML = `<div class="loading-state">Memuat ayat...</div>`;
+                container.scrollTo(0,0);
 
-        async function loadSurah(id){
-            const c = document.getElementById('content');
-            c.innerHTML = `<div class="loading">Memuat ayat...</div>`;
-            
-            try {
-                // Fetch data secara paralel agar lebih cepat
-                const [arabRes, indoRes, infoRes] = await Promise.all([
-                    fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`),
-                    fetch(`https://api.quran.com/api/v4/quran/translations/33?chapter_number=${id}`),
-                    fetch(`https://api.quran.com/api/v4/chapters/${id}?language=id`)
-                ]);
+                try {
+                    const data = await QuranAPI.fetchAyahs(id);
+                    document.getElementById('viewTitle').innerText = data.details.name_simple;
+                    document.getElementById('viewSubtitle').innerText = `${data.details.translated_name.name} • ${data.details.verses_count} Ayat`;
 
-                const arabData = await arabRes.json();
-                const indoData = await indoRes.json();
-                const infoData = await infoRes.json();
+                    let html = (id != 1 && id != 9) ? `<div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>` : '';
 
-                const surah = infoData.chapter;
-                document.getElementById('surahTitle').innerText = surah.name_simple;
-                document.getElementById('surahInfo').innerText = `${surah.translated_name.name} • ${surah.verses_count} Ayat`;
-
-                let html = (id != 1 && id != 9) ? `<div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>` : '';
-
-                arabData.verses.forEach((v, i) => {
-                    html += `
-                        <div class="ayah-box">
-                            <div class="arab"><span class="arab-text">${v.text_uthmani} <span class="ayah-number">${toArabicNumber(i+1)}</span></span></div>
-                            <div class="translation ${translationVisible ? '' : 'hidden'}">
-                                <p>${indoData.translations[i].text}</p>
+                    data.verses.forEach((v, i) => {
+                        html += `
+                            <div class="ayah-box">
+                                <div class="arab-wrap">
+                                    <span class="arab-text">
+                                        ${v.text_uthmani} 
+                                        <span class="ayah-number">${this.toArNum(i+1)}</span>
+                                    </span>
+                                </div>
+                                <div class="translation ${this.isTranslationVisible ? '' : 'hidden'}">
+                                    ${data.translations[i].text}
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
 
-                html += `<button onclick="loadSurahList()" class="back-btn">Kembali ke Daftar Surah</button>`;
-                c.innerHTML = html;
-                c.scrollTo(0,0);
-            } catch(e) {
-                c.innerHTML = `<div class="loading">Gagal memuat ayat.</div>`;
+                    html += `<button onclick="App.renderSurahList()" class="back-btn">Kembali ke Daftar Surah</button>`;
+                    container.innerHTML = html;
+                } catch(e) {
+                    container.innerHTML = `<div class="loading-state">Gagal memuat ayat.</div>`;
+                }
             }
-        }
+        };
     </script>
 </body>
 </html>
