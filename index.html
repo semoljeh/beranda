@@ -15,7 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap');
         
         @font-face {
             font-family: 'LPMQ';
@@ -26,33 +26,33 @@
         .font-times { font-family: 'Times New Roman', Times, serif; }
 
         body { font-family: 'Poppins', sans-serif; background-color: #f0fdfa; display: flex; justify-content: center; margin:0; }
-        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 100px; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
-        .header-bg { background-color: #0d9488; height: 180px; border-radius: 0 0 40px 40px; position: relative; }
+        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 100px; box-shadow: 0 0 40px rgba(0,0,0,0.08); }
+        .header-bg { background-color: #0d9488; height: 200px; border-radius: 0 0 50px 50px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 30px; }
 
         .info-capsule {
-            position: absolute; bottom: -90px; left: 50%; transform: translateX(-50%); width: 90%;
-            background: white; border-radius: 30px; padding: 25px 20px;
-            box-shadow: 0 15px 35px rgba(13, 148, 136, 0.15); border: 1px solid #e2e8f0; z-index: 20;
+            position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%); width: 85%;
+            background: white; border-radius: 35px; padding: 25px;
+            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.12); border: 1px solid #f1f5f9; z-index: 20;
         }
 
         .menu-card {
-            background: white; border-radius: 20px; padding: 22px; display: flex; flex-direction: column;
-            align-items: center; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid #f1f5f9; transition: all 0.2s;
+            background: white; border-radius: 24px; padding: 22px; display: flex; flex-direction: column;
+            align-items: center; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .menu-card:active { transform: scale(0.95); background-color: #f0fdfa; }
+        .menu-card:active { transform: scale(0.92); background-color: #f0fdfa; }
 
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
             background-color: white; display: flex; justify-content: space-around;
-            padding: 14px 0; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-            z-index: 100; border-radius: 25px 25px 0 0;
+            padding: 16px 0; border-top: 1px solid #f1f5f9; box-shadow: 0 -10px 25px rgba(0,0,0,0.04);
+            z-index: 100; border-radius: 30px 30px 0 0;
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #0d9488; transition: all 0.2s; cursor: pointer; }
-        .nav-item i { font-size: 22px; margin-bottom: 4px; }
-        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
 
-        #quran-modal { transition: transform 0.3s ease-in-out; z-index: 200; }
+        #quran-modal { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; }
         .hidden-quran { transform: translateY(100%); }
         .show-quran { transform: translateY(0); }
     </style>
@@ -60,50 +60,75 @@
 <body>
 
     <div class="app-container">
-        <div class="header-bg p-6">
-            <div onclick="toggleLocationSheet()" class="inline-flex items-center gap-2 bg-black/10 hover:bg-black/20 px-4 py-1.5 rounded-full border border-white/20 cursor-pointer active:scale-95 transition-all shadow-sm">
-                <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
-                <span id="location-text" class="text-[10px] font-bold text-white uppercase tracking-wider italic">Mencari...</span>
-                <i class="fa-solid fa-caret-down text-white/50 text-[8px]"></i>
+        <div class="header-bg">
+            <div onclick="toggleLocationSheet()" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-full border border-white/30 cursor-pointer active:scale-95 transition-all backdrop-blur-sm">
+                <div class="bg-white rounded-full p-1.5 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-location-dot text-[#0d9488] text-xs"></i>
+                </div>
+                <span id="location-text" class="text-xs font-black text-white uppercase tracking-widest italic">Mencari Lokasi...</span>
+                <i class="fa-solid fa-chevron-down text-white/70 text-[10px]"></i>
             </div>
 
             <div class="info-capsule">
-                <div class="grid grid-cols-2 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
-                    <div class="flex flex-col items-start border-r border-gray-50 pr-4">
-                        <span id="prayer-name" class="text-[10px] text-teal-600 font-bold uppercase tracking-widest">---</span>
-                        <h2 id="prayer-time" class="text-3xl font-bold text-gray-800 leading-tight">--:--</h2>
+                <div class="flex items-center justify-between border-b border-dashed border-gray-100 pb-5 mb-4">
+                    <div class="flex-1 text-center border-r border-gray-100">
+                        <span id="prayer-name" class="text-[11px] text-teal-600 font-black uppercase tracking-[0.2em] mb-1 block">---</span>
+                        <h2 id="prayer-time" class="text-4xl font-black text-gray-800 tracking-tighter">--:--</h2>
                     </div>
-                    <div class="flex flex-col items-end pl-4">
-                        <span class="text-[9px] text-red-400 uppercase font-bold tracking-tighter">Mendatang</span>
-                        <span id="countdown" class="text-sm font-black text-gray-600 font-mono">-00:00:00</span>
+                    <div class="flex-1 text-center">
+                        <div class="flex items-center justify-center gap-1.5 mb-1 text-red-500 uppercase font-black tracking-tighter">
+                            <span class="text-[10px]">Mendatang</span>
+                            <i class="fa-solid fa-calendar-check text-[10px]"></i>
+                        </div>
+                        <span id="countdown" class="text-sm font-black text-gray-500 font-mono tracking-tight">-00:00:00</span>
                     </div>
                 </div>
                 <div class="text-center">
-                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase font-times tracking-tight"></p>
-                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 font-arab tracking-wide" dir="rtl"></p>
+                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase font-times tracking-tighter mb-1"></p>
+                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium font-arab tracking-wider" dir="rtl"></p>
                 </div>
             </div>
         </div>
 
-        <div class="mt-28 text-center px-6">
-            <h1 class="text-2xl font-black text-teal-900 tracking-tight">Darussalam Online</h1>
-            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-[0.3em]">Digital Hub Platform</p>
+        <div class="mt-32 text-center px-6">
+            <h1 class="text-3xl font-black text-teal-900 tracking-tighter uppercase">Darussalam Online</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-[0.4em]">Digital Hub Platform</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 p-6 mt-2">
-            <div class="menu-card"><i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Profil Madrasah</span></div>
-            <div class="menu-card"><i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Kegiatan Santri</span></div>
-            <div class="menu-card"><i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Pendaftaran</span></div>
-            <div class="menu-card"><i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Program Donasi</span></div>
+        <div class="grid grid-cols-2 gap-5 p-7 mt-2">
+            <div class="menu-card">
+                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-4 text-emerald-700 text-2xl shadow-inner">
+                    <i class="fa-solid fa-mosque"></i>
+                </div>
+                <span class="text-[11px] font-black text-gray-700 font-times uppercase tracking-tight">Profil Madrasah</span>
+            </div>
+            <div class="menu-card">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-4 text-blue-700 text-2xl shadow-inner">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <span class="text-[11px] font-black text-gray-700 font-times uppercase tracking-tight">Kegiatan Santri</span>
+            </div>
+            <div class="menu-card">
+                <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 text-gray-700 text-2xl shadow-inner">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <span class="text-[11px] font-black text-gray-700 font-times uppercase tracking-tight">Pendaftaran</span>
+            </div>
+            <div class="menu-card">
+                <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-4 text-red-600 text-2xl shadow-inner">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <span class="text-[11px] font-black text-gray-700 font-times uppercase tracking-tight">Program Donasi</span>
+            </div>
         </div>
 
         <footer class="mt-4 mb-8 text-center px-10">
-            <p class="text-[9px] text-gray-300 font-times uppercase italic">Versi 2.0 • 2026 All Rights Reserved</p>
+            <p class="text-[9px] text-gray-300 font-times uppercase italic tracking-widest">Versi 2.1 • 2026 Digital Ecosystem</p>
         </footer>
 
         <nav class="bottom-nav">
             <a onclick="location.reload()" class="nav-item">
-                <i class="fa-solid fa-house"></i>
+                <i class="fa-solid fa-house-chimney"></i>
                 <span class="font-times">Beranda</span>
             </a>
             <a onclick="toggleQuran()" class="nav-item">
@@ -118,42 +143,42 @@
     </div>
 
     <div id="quran-modal" class="fixed inset-0 bg-white hidden-quran flex flex-col max-w-[500px] mx-auto shadow-2xl">
-        <div class="bg-teal-700 p-4 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleQuran()" class="p-2"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="font-bold text-sm tracking-wide uppercase">Al-Quran Digital</h2>
-            <button onclick="toggleTranslation()" id="btn-trans" class="text-[9px] bg-teal-600 px-3 py-1.5 rounded-full border border-teal-500 font-bold uppercase">
-                Sembunyikan Terjemah
+        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-lg">
+            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="font-black text-xs tracking-[0.3em] uppercase">Al-Quran Digital</h2>
+            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg border border-white/20 font-black uppercase tracking-tighter">
+                Hide Translate
             </button>
         </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 pb-24">
+        <div id="quran-content" class="flex-1 overflow-y-auto p-5 space-y-5 bg-slate-50 pb-24">
             <div class="text-center py-20 text-gray-400">
-                <i class="fa-solid fa-spinner animate-spin text-3xl mb-2 text-teal-600"></i>
-                <p class="text-xs uppercase font-bold tracking-widest">Memuat Surah...</p>
+                <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-teal-600"></i>
+                <p class="text-[10px] uppercase font-black tracking-[0.5em]">Syncing Data...</p>
             </div>
         </div>
     </div>
 
-    <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-black/50 z-[250] hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[30px] p-6 translate-y-full transition-transform duration-300 ease-in-out max-w-[500px] mx-auto">
-        <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
-        <h3 class="text-lg font-black text-teal-900 mb-2">Pengaturan Lokasi</h3>
-        <p class="text-xs text-gray-500 mb-6 font-times uppercase tracking-wider">Cari kota untuk jadwal sholat</p>
+    <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-black/60 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"></div>
+    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[45px] p-8 translate-y-full transition-transform duration-500 ease-in-out max-w-[500px] mx-auto shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
+        <div class="w-16 h-1.5 bg-gray-100 rounded-full mx-auto mb-8"></div>
+        <h3 class="text-xl font-black text-teal-900 mb-2 uppercase tracking-tighter text-center">Set Lokasi</h3>
+        <p class="text-xs text-gray-400 mb-8 font-times uppercase tracking-widest text-center italic">Atur jadwal sholat sesuai wilayah</p>
         
-        <div class="space-y-3">
-            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 border border-teal-100 active:scale-95 transition-all">
-                <div class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white">
-                    <i class="fa-solid fa-location-crosshairs"></i>
+        <div class="space-y-4">
+            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-5 p-5 rounded-3xl bg-teal-50 border border-teal-100 active:scale-95 transition-all">
+                <div class="w-12 h-12 bg-teal-500 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg">
+                    <i class="fa-solid fa-crosshairs"></i>
                 </div>
                 <div class="text-left">
-                    <p class="text-sm font-bold text-teal-900">Deteksi Otomatis (GPS)</p>
-                    <p class="text-[10px] text-teal-600 uppercase font-bold">Akurat & Real-time</p>
+                    <p class="text-sm font-black text-teal-900 uppercase">GPS Otomatis</p>
+                    <p class="text-[10px] text-teal-600 uppercase font-black tracking-tighter italic">Gunakan koordinat asli</p>
                 </div>
             </button>
 
             <div class="relative">
-                <input type="text" id="manual-city-input" placeholder="Ketik nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-gray-50 border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <button onclick="handleManualSearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-teal-700 text-white text-[10px] px-4 py-2 rounded-xl font-bold uppercase">Cari</button>
+                <input type="text" id="manual-city-input" placeholder="Cari kota (misal: Cirebon)" class="w-full p-5 pl-14 rounded-3xl bg-gray-50 border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all font-bold uppercase tracking-tight">
+                <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <button onclick="handleManualSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-teal-800 text-white text-[9px] px-5 py-3 rounded-2xl font-black uppercase tracking-tighter">Cari</button>
             </div>
         </div>
     </div>
@@ -162,19 +187,17 @@
         let nextPrayerTime = null;
         let showTranslation = true;
 
-        // --- 1. LOGIKA WAKTU & TANGGAL ---
         function updateDates() {
             const now = new Date();
             const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
             const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const refDate = new Date(1900, 0, 1);
-            const diffDays = Math.floor((now - refDate) / (86400000));
+            const diffDays = Math.floor((now - refDate) / 86400000);
             const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
             document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaran[(diffDays + 1) % 5]}, ${masehiStr}`;
             document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
         }
 
-        // --- 2. LOKASI & JADWAL SHOLAT (OFFLINE READY) ---
         async function getCoreData() {
             const cachedLocation = localStorage.getItem('last_location');
             const cachedTimings = localStorage.getItem('last_timings');
@@ -188,7 +211,7 @@
                     try {
                         const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
                         const locData = await locRes.json();
-                        const addr = locData.address.amenity || locData.address.building || locData.address.road || locData.address.city || "Lokasi Aktif";
+                        const addr = locData.address.city || locData.address.town || locData.address.suburb || "Lokasi Aktif";
                         
                         document.getElementById('location-text').innerText = addr;
                         localStorage.setItem('last_location', addr);
@@ -197,7 +220,7 @@
                         const json = await res.json();
                         setPrayerUI(json.data.timings);
                         localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
-                    } catch(e) { console.log("Gagal update data."); }
+                    } catch(e) { console.log("Offline mode active."); }
                 });
             }
         }
@@ -235,7 +258,6 @@
             }, 1000);
         }
 
-        // --- 3. BOTTOM SHEET LOGIC ---
         function toggleLocationSheet() {
             const sheet = document.getElementById('location-sheet');
             const bg = document.getElementById('location-sheet-bg');
@@ -253,7 +275,7 @@
         async function handleManualSearch() {
             const city = document.getElementById('manual-city-input').value;
             if (!city) return;
-            document.getElementById('location-text').innerText = "Mencari...";
+            document.getElementById('location-text').innerText = "...";
             toggleLocationSheet();
             try {
                 const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}&limit=1`);
@@ -268,10 +290,9 @@
                     setPrayerUI(json.data.timings);
                     localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
                 }
-            } catch (e) { alert("Gagal koneksi internet."); }
+            } catch (e) { alert("Internet required for search."); }
         }
 
-        // --- 4. QURAN LOGIC ---
         function toggleQuran() {
             const modal = document.getElementById('quran-modal');
             if (modal.classList.contains('hidden-quran')) {
@@ -289,7 +310,7 @@
             const transElements = document.querySelectorAll('.translation-text');
             const btn = document.getElementById('btn-trans');
             transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
-            btn.innerText = showTranslation ? 'Sembunyikan Terjemah' : 'Tampilkan Terjemah';
+            btn.innerText = showTranslation ? 'Hide Translate' : 'Show Translate';
         }
 
         async function loadSurahList() {
@@ -297,30 +318,29 @@
             try {
                 const res = await fetch('https://equran.id/api/v2/surat');
                 const data = await res.json();
-                let html = '<div class="grid grid-cols-1 gap-3">';
+                let html = '<div class="grid grid-cols-1 gap-4">';
                 data.data.forEach(surah => {
-                    html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform"><div class="flex items-center gap-3"><span class="w-8 h-8 bg-teal-50 text-teal-700 rounded-lg flex items-center justify-center text-xs font-bold">${surah.nomor}</span><div><h4 class="font-bold text-sm text-slate-800 font-times">${surah.namaLatin}</h4><p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">${surah.arti} • ${surah.jumlahAyat} Ayat</p></div></div><span class="font-arab text-xl text-teal-600">${surah.nama}</span></div>`;
+                    html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform"><div class="flex items-center gap-4"><span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-[10px] font-black">${surah.nomor}</span><div><h4 class="font-black text-sm text-slate-800 uppercase tracking-tighter">${surah.namaLatin}</h4><p class="text-[9px] text-slate-400 uppercase font-black tracking-widest">${surah.arti} • ${surah.jumlahAyat} Ayat</p></div></div><span class="font-arab text-2xl text-teal-600">${surah.nama}</span></div>`;
                 });
                 content.innerHTML = html + '</div>';
-            } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-xs">Offline.</p>'; }
+            } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-black uppercase text-[10px]">Connection Error.</p>'; }
         }
 
         async function loadDetailSurah(nomor) {
             const content = document.getElementById('quran-content');
-            content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
+            content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-4xl text-teal-600"></i></div>`;
             try {
                 const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
                 const data = await res.json();
                 const surah = data.data;
-                let html = `<div class="bg-teal-700 p-6 rounded-3xl text-white text-center mb-6 shadow-lg"><h3 class="font-arab text-4xl mb-2">${surah.nama}</h3><p class="font-times font-bold text-teal-100 uppercase text-xs">${surah.namaLatin} • ${surah.arti}</p></div><div class="space-y-10">`;
+                let html = `<div class="bg-teal-700 p-8 rounded-[40px] text-white text-center mb-8 shadow-xl"><h3 class="font-arab text-5xl mb-3">${surah.nama}</h3><p class="font-black text-[10px] text-teal-100 uppercase tracking-[0.4em]">${surah.namaLatin} • ${surah.arti}</p></div><div class="space-y-12">`;
                 surah.ayat.forEach(ayat => {
-                    html += `<div class="border-b border-slate-100 pb-8"><div class="flex justify-between items-start gap-4 mb-6"><span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-full font-bold">${ayat.nomorAyat}</span><p class="font-arab text-3xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p></div><p class="translation-text text-sm text-slate-500 font-times italic border-l-2 border-teal-100 pl-4" style="display: ${showTranslation ? 'block' : 'none'}">${ayat.teksIndonesia}</p></div>`;
+                    html += `<div class="border-b border-slate-100 pb-10"><div class="flex justify-between items-start gap-6 mb-8"><span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-black shadow-sm">${ayat.nomorAyat}</span><p class="font-arab text-4xl text-right leading-[2.5] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p></div><p class="translation-text text-sm text-slate-500 font-times italic border-l-4 border-teal-100 pl-6" style="display: ${showTranslation ? 'block' : 'none'}">${ayat.teksIndonesia}</p></div>`;
                 });
-                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold text-xs uppercase tracking-widest border border-teal-100">Kembali</button>`;
-            } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Offline.</p>'; }
+                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-12 py-5 bg-teal-50 text-teal-700 rounded-3xl font-black text-[10px] uppercase tracking-[0.3em] border border-teal-100 shadow-sm active:scale-95 transition-transform">Back to List</button>`;
+            } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Error.</p>'; }
         }
 
-        // --- 5. PWA & INIT ---
         updateDates(); getCoreData(); startCountdown();
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
