@@ -1,17 +1,20 @@
 {
-  "id": "/darussalam-online/",
   "name": "Darussalam Online",
   "short_name": "Darussalam",
+  "description": "Portal Digital Ecosystem Darussalam",
+  "id": "/",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0d9488",
   "theme_color": "#0d9488",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://github.com/semoljeh/link/blob/main/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
       "src": "https://github.com/semoljeh/link/blob/main/icon-512.png",
