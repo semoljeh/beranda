@@ -17,10 +17,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        @font-face {
-            font-family: 'LPMQ';
-            src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf');
-        }
+       /* Menggunakan font Amiri sebagai alternatif KFG yang tersedia di Google Fonts */
+/* Amiri memiliki estetika yang sangat mirip dengan KFG (Klasik & Elegan) */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+.font-arab { 
+    font-family: 'Amiri', serif; 
+    font-weight: 400;
+}
+
+/* Sesuaikan ukuran nomor ayat jika ganti font */
+.ayah-number-inline { 
+    font-family: 'Inter', sans-serif; /* Nomor ayat lebih bagus pake font standar jika pake Amiri */
+    font-size: 0.4em;
+    vertical-align: middle;
+    margin-right: 10px;
+    color: #94a3b8;
+}
 
         .font-arab { font-family: 'LPMQ', serif; }
         
