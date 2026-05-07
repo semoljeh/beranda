@@ -66,7 +66,7 @@
         .info-capsule {
             position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%;
             background: white; border-radius: 30px; padding: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
             border: 1px solid #f1f5f9; z-index: 20;
         }
 
@@ -80,13 +80,14 @@
 
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
-            background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
             display: flex; justify-content: space-around;
-            padding: 12px 0 24px 0; border-top: 1px solid #f1f5f9; z-index: 100;
+            padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100;
         }
         
-        .nav-item { color: #64748b; transition: color 0.2s; cursor: pointer; }
-        .nav-item.active { color: #0d9488; }
+        /* Warna Menu Footer yang Disamakan */
+        .nav-item { color: #0d9488; opacity: 0.6; transition: all 0.2s; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { opacity: 1; font-weight: 700; }
 
         #quran-modal { transition: transform 0.4s ease; z-index: 200; }
         .hidden-quran { transform: translateY(100%); }
@@ -158,17 +159,21 @@
         </div>
 
         <nav class="bottom-nav">
-            <a onclick="location.reload()" class="nav-item active flex flex-col items-center">
+            <a onclick="location.reload()" class="nav-item active">
                 <i class="fa-solid fa-house-chimney text-xl"></i>
-                <span class="text-[10px] font-bold mt-1">Home</span>
+                <span class="text-[10px] mt-1">Home</span>
             </a>
-            <a onclick="toggleQuran()" class="nav-item flex flex-col items-center">
+            <a onclick="toggleQuran()" class="nav-item">
                 <i class="fa-solid fa-book-quran text-xl"></i>
-                <span class="text-[10px] font-bold mt-1">Quran</span>
+                <span class="text-[10px] mt-1">Quran</span>
             </a>
-            <a href="#" class="nav-item flex flex-col items-center">
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-calendar-days text-xl"></i>
+                <span class="text-[10px] mt-1">Kalender</span>
+            </a>
+            <a href="#" class="nav-item">
                 <i class="fa-solid fa-hands-praying text-xl"></i>
-                <span class="text-[10px] font-bold mt-1">Doa</span>
+                <span class="text-[10px] mt-1">Doa</span>
             </a>
         </nav>
     </div>
@@ -177,30 +182,25 @@
         <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-lg">
             <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <h2 class="font-medium text-[10px] tracking-[0.2em] uppercase">Al-Quran Digital</h2>
-            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg font-medium uppercase">Hide Translation</button>
+            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg font-medium uppercase tracking-tighter">Hide Translation</button>
         </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24">
-            <div class="text-center py-20 text-gray-400">
-                <i class="fa-solid fa-spinner animate-spin text-3xl mb-4 text-teal-600"></i>
-                <p class="text-[10px] uppercase font-bold">Memuat Surah...</p>
-            </div>
-        </div>
+        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-slate-900/40 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"></div>
-    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto shadow-2xl">
+    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto">
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
-        <h3 class="text-center text-lg font-bold text-slate-800 mb-6 tracking-tight">Atur Lokasi</h3>
+        <h3 class="text-center text-lg font-bold text-slate-800 mb-6 tracking-tight">Atur Wilayah</h3>
         <div class="space-y-4">
-            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all">
+            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all shadow-sm">
                 <i class="fa-solid fa-crosshairs text-lg"></i>
-                <span>Gunakan Lokasi Saat Ini</span>
+                <span>Gunakan GPS Otomatis</span>
             </button>
             <div class="relative">
-                <input type="text" id="manual-city-input" placeholder="Cari nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-teal-500 font-medium uppercase tracking-tight">
+                <input type="text" id="manual-city-input" placeholder="Ketik nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-teal-500 font-medium uppercase">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
             </div>
-            <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm active:scale-95 transition-all">Pilih Kota</button>
+            <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm">Cari Kota</button>
         </div>
     </div>
 
@@ -208,23 +208,41 @@
         let nextPrayerTime = null;
         let showTranslation = true;
 
-        // 1. UPDATE TANGGAL & JAM
+        // --- FUNGSI TANGGAL AKURAT (MASEHI, JAWA, HIJRIYAH) ---
         function updateDates() {
             const now = new Date();
+            
+            // 1. Logika Masehi
             const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const bulanMasehi = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            // 2. Logika Pasaran Jawa
             const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
-            const refDate = new Date(1900, 0, 1);
-            const diffDays = Math.floor((now - refDate) / 86400000);
-            const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
-            document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaran[(diffDays + 1) % 5]}, ${masehiStr}`;
-            document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
+            const refDatePasaran = new Date(1900, 0, 1);
+            const diffDaysPasaran = Math.floor((now - refDatePasaran) / 86400000);
+            const pasaranStr = pasaran[(diffDaysPasaran + 1) % 5];
+
+            // 3. Logika Hijriyah (Ummul Qura Sim)
+            const islamicMonths = ["Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir", "Jumadil Ula", "Jumadil Akhira", "Rajab", "Syaban", "Ramadhan", "Syawal", "Dzulqo'dah", "Dzulhijjah"];
+            let jd = Math.floor(now.getTime() / 86400000) + 2440588;
+            let l = jd - 1948440 + 10632;
+            let n = Math.floor((l - 1) / 10631);
+            l = l - 10631 * n + 354;
+            let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) + (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+            l = l - (Math.floor((30 - j) / 20)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 30)) * (Math.floor((15238 * j) / 43)) + 29;
+            let monthHijri = Math.floor((24 * l) / 709);
+            let dayHijri = l - Math.floor((709 * monthHijri) / 24);
+            let yearHijri = 30 * n + j - 30;
+
+            // Render ke UI
+            document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaranStr}, ${now.getDate()} ${bulanMasehi[now.getMonth()]} ${now.getFullYear()} M`;
+            document.getElementById('java-hijri').innerText = `${dayHijri} ${islamicMonths[monthHijri - 1]} ${yearHijri} H • Tahun Jawa 1959 AJ`;
         }
 
-        // 2. AMBIL DATA LOKASI & SHOLAT (OFFLINE READY)
+        // --- LOGIKA LOKASI & SHOLAT ---
         async function getCoreData() {
             const cachedLocation = localStorage.getItem('last_location');
             const cachedTimings = localStorage.getItem('last_timings');
-
             if (cachedLocation) document.getElementById('location-text').innerText = cachedLocation;
             if (cachedTimings) setPrayerUI(JSON.parse(cachedTimings));
 
@@ -234,9 +252,7 @@
                     try {
                         const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
                         const locData = await locRes.json();
-                        const addr = locData.address;
-                        const displayLoc = addr.village || addr.suburb || addr.neighbourhood || addr.city_district || addr.city || "Lokasi Terdeteksi";
-                        
+                        const displayLoc = locData.address.village || locData.address.suburb || locData.address.city || "Lokasi Aktif";
                         document.getElementById('location-text').innerText = displayLoc;
                         localStorage.setItem('last_location', displayLoc);
 
@@ -244,7 +260,7 @@
                         const json = await res.json();
                         setPrayerUI(json.data.timings);
                         localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
-                    } catch(e) { console.log("Cache used."); }
+                    } catch(e) {}
                 });
             }
         }
@@ -261,7 +277,6 @@
                 const [h, m] = s.time.split(':');
                 return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
             }) || schedule[0];
-
             document.getElementById('prayer-name').innerText = next.name;
             document.getElementById('prayer-time').innerText = next.time;
             const [tH, tM] = next.time.split(':');
@@ -282,122 +297,73 @@
             }, 1000);
         }
 
-        // 3. UI HANDLER (BOTTOM SHEET)
+        // --- UI HANDLERS ---
         function toggleLocationSheet() {
             const sheet = document.getElementById('location-sheet');
             const bg = document.getElementById('location-sheet-bg');
             if (sheet.classList.contains('translate-y-full')) {
-                bg.classList.remove('hidden');
-                setTimeout(() => bg.classList.add('opacity-100'), 10);
+                bg.classList.remove('hidden'); setTimeout(() => bg.classList.add('opacity-100'), 10);
                 sheet.classList.remove('translate-y-full');
             } else {
-                bg.classList.remove('opacity-100');
-                sheet.classList.add('translate-y-full');
+                bg.classList.remove('opacity-100'); sheet.classList.add('translate-y-full');
                 setTimeout(() => bg.classList.add('hidden'), 300);
             }
         }
 
         async function handleManualSearch() {
-            const city = document.getElementById('manual-city-input').value;
-            if (!city) return;
-            document.getElementById('location-text').innerText = "Mencari...";
-            toggleLocationSheet();
+            const city = document.getElementById('manual-city-input').value; if (!city) return;
+            document.getElementById('location-text').innerText = "..."; toggleLocationSheet();
             try {
                 const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}&limit=1`);
                 const geoData = await geoRes.json();
                 if (geoData.length > 0) {
                     const { lat, lon, display_name } = geoData[0];
-                    const shortName = display_name.split(',')[0];
-                    document.getElementById('location-text').innerText = shortName;
-                    localStorage.setItem('last_location', shortName);
+                    document.getElementById('location-text').innerText = display_name.split(',')[0];
+                    localStorage.setItem('last_location', display_name.split(',')[0]);
                     const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                     const json = await res.json();
                     setPrayerUI(json.data.timings);
-                    localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
                 }
-            } catch (e) { alert("Perlu koneksi internet untuk mencari kota."); }
+            } catch (e) {}
         }
 
-        // 4. QURAN HANDLER
         function toggleQuran() {
             const modal = document.getElementById('quran-modal');
-            if (modal.classList.contains('hidden-quran')) {
-                modal.classList.remove('hidden-quran');
-                modal.classList.add('show-quran');
-                loadSurahList();
-            } else {
-                modal.classList.remove('show-quran');
-                modal.classList.add('hidden-quran');
-            }
+            modal.classList.toggle('hidden-quran');
+            if (!modal.classList.contains('hidden-quran')) loadSurahList();
         }
 
         async function loadSurahList() {
             const content = document.getElementById('quran-content');
-            try {
-                const res = await fetch('https://equran.id/api/v2/surat');
-                const data = await res.json();
-                let html = '<div class="grid grid-cols-1 gap-3">';
-                data.data.forEach(surah => {
-                    html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-transform">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-[10px] font-bold">${surah.nomor}</span>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-800 uppercase tracking-tight">${surah.namaLatin}</h4>
-                                <p class="text-[9px] text-slate-400 font-medium uppercase">${surah.arti} • ${surah.jumlahAyat} Ayat</p>
-                            </div>
-                        </div>
-                        <span class="font-arab text-2xl text-teal-600">${surah.nama}</span>
-                    </div>`;
-                });
-                content.innerHTML = html + '</div>';
-            } catch (e) { content.innerHTML = '<p class="text-center p-10">Gagal memuat Al-Quran.</p>'; }
+            const res = await fetch('https://equran.id/api/v2/surat');
+            const data = await res.json();
+            let html = '<div class="grid grid-cols-1 gap-3">';
+            data.data.forEach(surah => {
+                html += `<div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-transform">
+                    <div class="flex items-center gap-4">
+                        <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-[10px] font-bold">${surah.nomor}</span>
+                        <div><h4 class="font-bold text-sm text-slate-800 uppercase tracking-tight">${surah.namaLatin}</h4></div>
+                    </div>
+                    <span class="font-arab text-2xl text-teal-600">${surah.nama}</span>
+                </div>`;
+            });
+            content.innerHTML = html + '</div>';
         }
 
         async function loadDetailSurah(nomor) {
             const content = document.getElementById('quran-content');
             content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
-            try {
-                const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
-                const data = await res.json();
-                const surah = data.data;
-                let html = `<div class="bg-teal-700 p-8 rounded-[40px] text-white text-center mb-8 shadow-lg">
-                    <h3 class="font-arab text-5xl mb-3">${surah.nama}</h3>
-                    <p class="font-bold text-[10px] uppercase tracking-widest">${surah.namaLatin} • ${surah.arti}</p>
-                </div><div class="space-y-12">`;
-                surah.ayat.forEach(ayat => {
-                    html += `<div class="border-b border-slate-100 pb-10">
-                        <div class="flex justify-between items-start gap-6 mb-8">
-                            <span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-bold">${ayat.nomorAyat}</span>
-                            <p class="font-arab text-4xl text-right leading-[2.5] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p>
-                        </div>
-                        <p class="translation-text text-sm italic border-l-4 border-teal-100 pl-6 font-medium text-slate-500" style="display: ${showTranslation ? 'block' : 'none'}">${ayat.teksIndonesia}</p>
-                    </div>`;
-                });
-                content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-5 bg-teal-50 text-teal-700 rounded-3xl font-bold text-[10px] uppercase border border-teal-100">Kembali ke Daftar</button>`;
-            } catch (e) { content.innerHTML = '<p class="text-center">Error memuat detail surah.</p>'; }
-        }
-
-        function toggleTranslation() {
-            showTranslation = !showTranslation;
-            const transElements = document.querySelectorAll('.translation-text');
-            const btn = document.getElementById('btn-trans');
-            transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
-            btn.innerText = showTranslation ? 'Hide Translation' : 'Show Translation';
-        }
-
-        // INIT
-        updateDates(); 
-        getCoreData(); 
-        startCountdown();
-
-        // SERVICE WORKER REGISTRATION
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('SW Aktif'))
-                .catch(err => console.log('SW Gagal'));
+            const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
+            const data = await res.json();
+            const surah = data.data;
+            let html = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8"><h3 class="font-arab text-4xl mb-2">${surah.nama}</h3></div><div class="space-y-10">`;
+            surah.ayat.forEach(ayat => {
+                html += `<div class="border-b border-slate-100 pb-8"><div class="flex justify-between items-start mb-6"><span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-lg">${ayat.nomorAyat}</span><p class="font-arab text-3xl text-right leading-[2.5] w-full" dir="rtl">${ayat.teksArab}</p></div><p class="text-sm italic text-slate-500">${ayat.teksIndonesia}</p></div>`;
             });
+            content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold uppercase text-[10px]">Kembali</button>`;
         }
+
+        updateDates(); getCoreData(); startCountdown();
     </script>
 </body>
 </html>
