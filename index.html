@@ -3,157 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Darussalam - Al-Mukhtar</title>
+    <title>Portal Darussalam</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Amiri+Quran&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Amiri+Quran&display=swap');
         
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f1f5f9; 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f0fdfa; 
             display: flex; 
             justify-content: center; 
             margin:0; 
         }
-        
+
         .app-container { 
             width: 100%; 
             max-width: 500px; 
             background-color: white; 
             min-height: 100vh; 
             position: relative; 
-            padding-bottom: 40px; 
-            box-shadow: 0 10px 50px rgba(0,0,0,0.1); 
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+            padding-bottom: 40px;
         }
-        
-        /* Header Modern dengan Gradasi Halus */
+
+        /* Kembali ke Header Teal Solid sesuai Gambar */
         .header-bg { 
-            background: linear-gradient(180deg, #0d9488 0%, #14b8a6 100%); 
+            background-color: #0d9488; 
             height: 220px; 
-            border-radius: 0 0 50px 50px; 
-            position: relative; 
+            border-radius: 0 0 40px 40px; 
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 40px;
+            padding-top: 20px;
         }
 
-        /* Kaligrafi Modern (Menyatu dengan Latar) */
-        .calligraphy-modern {
+        .calligraphy {
             font-family: 'Amiri Quran', serif;
-            font-size: 56px;
+            font-size: 45px;
             color: white;
-            opacity: 0.15; /* Efek watermark transparan agar menyatu */
-            position: absolute;
-            top: 20px;
-            user-select: none;
+            margin-bottom: 10px;
         }
 
-        .header-title-modern {
-            font-family: 'Amiri Quran', serif;
-            font-size: 42px;
-            color: white;
-            z-index: 5;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            letter-spacing: -1px;
-        }
-
-        /* Card Kapsul Glassmorphism */
+        /* Card Kapsul Putih Bersih (Tanpa Transparansi) */
         .info-capsule {
             position: absolute;
-            bottom: -70px;
+            bottom: -75px;
             left: 50%;
             transform: translateX(-50%);
-            width: 92%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 35px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 88%;
+            background: white;
+            border-radius: 25px;
+            padding: 18px 22px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
             z-index: 20;
         }
 
         .menu-card {
-            background: white; border-radius: 24px; padding: 22px; display: flex; flex-direction: column;
-            align-items: center; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-            border: 1px solid #f1f5f9; transition: all 0.3s ease;
+            background: white; 
+            border-radius: 16px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #f1f5f9;
         }
-        .menu-card:hover { transform: translateY(-5px); border-color: #14b8a6; }
+
+        .footer-text {
+            color: #0d9488;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div class="header-bg">
-            <div class="calligraphy-modern" dir="rtl">المختار</div>
+            <div class="calligraphy" dir="rtl">المختار</div>
             
-            <div class="header-title-modern" dir="rtl">المختار</div>
-
             <div class="info-capsule">
-                <div class="grid grid-cols-3 items-center border-b border-slate-100 pb-4 mb-4">
+                <div class="grid grid-cols-3 items-center border-b pb-3 mb-3">
                     <div class="flex flex-col">
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Lokasi</span>
-                        <div class="flex items-center gap-1 text-teal-600">
-                            <i class="fa-solid fa-location-dot text-[10px]"></i>
-                            <span id="location-text" class="text-[11px] font-bold truncate w-24 italic uppercase">Mencari...</span>
-                        </div>
+                        <span class="text-[9px] text-gray-400 font-bold uppercase">Lokasi</span>
+                        <span id="location-text" class="text-[11px] font-bold text-teal-700 truncate w-20 italic">Mencari...</span>
                     </div>
-
                     <div class="flex flex-col items-center">
-                        <span id="prayer-name" class="text-[11px] text-teal-500 font-extrabold uppercase tracking-[0.2em] mb-1">---</span>
-                        <h2 id="prayer-time" class="text-3xl font-extrabold text-slate-800 tracking-tighter">--:--</h2>
+                        <span id="prayer-name" class="text-[10px] text-teal-600 font-bold uppercase tracking-widest">---</span>
+                        <h2 id="prayer-time" class="text-2xl font-bold text-gray-800 tracking-tighter">--:--</h2>
                     </div>
-
                     <div class="flex flex-col items-end">
-                        <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1">Mendatang</span>
-                        <span id="countdown" class="text-xs font-black text-slate-600 font-mono tracking-widest bg-slate-100 px-2 py-1 rounded-lg">-00:00:00</span>
+                        <span class="text-[9px] text-red-400 font-bold uppercase tracking-tighter">Mendatang</span>
+                        <span id="countdown" class="text-[11px] font-bold text-gray-600 font-mono">-00:00:00</span>
                     </div>
                 </div>
 
                 <div class="text-center">
-                    <p id="full-date" class="text-[12px] font-bold text-slate-700 tracking-tight"></p>
-                    <p id="java-hijri" class="text-[10px] text-teal-600 font-semibold mt-1 bg-teal-50 inline-block px-3 py-0.5 rounded-full"></p>
+                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase"></p>
+                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 tracking-wide"></p>
                 </div>
             </div>
         </div>
 
-        <div class="mt-28 text-center px-6">
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Darussalam Online</h1>
-            <p class="text-[11px] text-slate-400 mt-1 font-bold uppercase tracking-[0.4em]">Digital Platform</p>
+        <div class="mt-24 text-center px-6">
+            <h1 class="text-xl font-bold text-teal-800">Darussalam Online</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Pesantren Digital Ecosystem</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4 p-6 mt-4">
             <div class="menu-card">
-                <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-4 text-emerald-600">
-                    <i class="fa-solid fa-mosque text-2xl"></i>
-                </div>
-                <span class="text-[13px] font-bold text-slate-700">Profil Madrasah</span>
+                <i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i>
+                <span class="text-[13px] font-semibold text-gray-700">Profil Madrasah</span>
             </div>
             <div class="menu-card">
-                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-4 text-blue-600">
-                    <i class="fa-solid fa-book-open text-2xl"></i>
-                </div>
-                <span class="text-[13px] font-bold text-slate-700">Kegiatan Santri</span>
+                <i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i>
+                <span class="text-[13px] font-semibold text-gray-700">Kegiatan Santri</span>
             </div>
             <div class="menu-card">
-                <div class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 text-slate-500">
-                    <i class="fa-solid fa-file-signature text-2xl"></i>
-                </div>
-                <span class="text-[13px] font-bold text-slate-700">Pendaftaran</span>
+                <i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i>
+                <span class="text-[13px] font-semibold text-gray-700">Pendaftaran</span>
             </div>
             <div class="menu-card">
-                <div class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center mb-4 text-rose-600">
-                    <i class="fa-solid fa-heart-pulse text-2xl"></i>
-                </div>
-                <span class="text-[13px] font-bold text-slate-700">Program Donasi</span>
+                <i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i>
+                <span class="text-[13px] font-semibold text-gray-700">Program Donasi</span>
             </div>
         </div>
 
-        <footer class="mt-12 mb-8 text-center border-t border-slate-50 pt-8 mx-12">
-            <p class="text-[11px] font-extrabold text-teal-800 tracking-[0.5em] mb-1 uppercase">Darussalam</p>
-            <p class="text-[9px] text-slate-300">© 2026 Integrated Digital Ecosystem</p>
+        <footer class="mt-10 mb-10 text-center border-t pt-6 mx-6">
+            <p class="footer-text uppercase">Darussalam</p>
+            <p class="text-[10px] text-gray-400 mt-1">© 2026 2026 M / 1447 H • All Rights Reserved</p>
         </footer>
     </div>
 
@@ -166,6 +148,7 @@
             const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const refDate = new Date(1900, 0, 1);
             const diffDays = Math.floor((now - refDate) / (86400000));
+            
             const masehiStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' }) + " 2026 M";
             document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaran[(diffDays + 1) % 5]}, ${masehiStr}`;
             document.getElementById('java-hijri').innerText = `1959 AJ / 1447 H`;
@@ -174,7 +157,9 @@
         async function getCoreData() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+
                     try {
                         const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
                         const locData = await locRes.json();
