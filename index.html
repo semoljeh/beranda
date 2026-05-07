@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Darussalam</title>
     
+    <!-- =================================================================
+         1. META & PWA CONFIG
+         ================================================================== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,8 +15,12 @@
     <meta name="apple-mobile-web-app-title" content="Darussalam">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png">
 
+    <!-- =================================================================
+         2. EXTERNAL RESOURCES (Tailwind, Icons, Fonts)
+         ================================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -22,29 +29,30 @@
             src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf');
         }
 
+        /* --- Custom Typography --- */
         .font-arab { font-family: 'LPMQ', serif; }
-        
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; color: #1e293b; overflow-x: hidden; }
-        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         
+        /* --- Layout Containers --- */
+        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
 
+        /* --- UI Components --- */
         .location-capsule { display: flex; align-items: center; gap: 6px; background-color: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; backdrop-filter: blur(4px); transition: transform 0.2s; }
-        
         .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
-
         .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; }
         .menu-card:active { transform: scale(0.96); background-color: #f8fafc; }
 
+        /* --- Navigation --- */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
-        
         .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
         .nav-item.active { font-weight: 700; }
 
+        /* --- Modals & Sheets --- */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* Calendar & List */
+        /* --- Calendar Specifics --- */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .calendar-date { aspect-ratio: 1/1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; position: relative; border: 1px solid #f8fafc; }
         .date-masehi { font-size: 13px; font-weight: 700; }
@@ -53,6 +61,7 @@
         .date-today { background: #0d9488; color: white !important; }
         .date-holiday { color: #ef4444; }
 
+        /* --- Quran & Audio --- */
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
         .ayah-number-arab { font-family: 'LPMQ'; font-size: 1.5rem; color: #0d9488; margin-right: 8px; line-height: 1; }
@@ -62,6 +71,9 @@
 <body>
 
     <div class="app-container">
+        <!-- =================================================================
+             3. HEADER SECTION (Location & Prayer Info)
+             ================================================================== -->
         <div class="header-bg">
             <div onclick="toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
@@ -87,6 +99,9 @@
             </div>
         </div>
 
+        <!-- =================================================================
+             4. MAIN CONTENT (Logo & Menu Cards)
+             ================================================================== -->
         <div class="mt-24 text-center px-8">
             <h1 class="text-xl font-bold text-slate-800 tracking-tight">Portal Darussalam</h1>
             <p class="text-xs text-slate-400 font-medium">Digital Madrasah Ecosystem</p>
@@ -99,6 +114,9 @@
             <div class="menu-card"><div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-heart-pulse"></i></div><span class="text-xs font-semibold text-slate-700 uppercase">Donasi</span></div>
         </div>
 
+        <!-- =================================================================
+             5. BOTTOM NAVIGATION
+             ================================================================== -->
         <nav class="bottom-nav">
             <a onclick="location.reload()" class="nav-item active"><i class="fa-solid fa-house-chimney text-xl"></i><span class="text-[10px] mt-1">Beranda</span></a>
             <a onclick="toggleQuran()" class="nav-item"><i class="fa-solid fa-book-quran text-xl"></i><span class="text-[10px] mt-1">Quran</span></a>
@@ -107,6 +125,11 @@
         </nav>
     </div>
 
+    <!-- =================================================================
+         6. MODALS SECTION (Quran, Calendar, Doa, Location)
+         ================================================================== -->
+    
+    <!-- Quran Modal -->
     <div id="quran-modal" class="modal-full">
         <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
@@ -119,6 +142,7 @@
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
+    <!-- Calendar Modal -->
     <div id="calendar-modal" class="modal-full">
         <div class="bg-slate-800 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
@@ -137,6 +161,7 @@
         </div>
     </div>
 
+    <!-- Doa Modal -->
     <div id="doa-modal" class="modal-full">
         <div class="bg-teal-800 p-5 text-white flex justify-between items-center shadow-md">
             <button onclick="toggleDoa()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
@@ -146,6 +171,7 @@
         <div class="flex-1 p-10 text-center text-slate-400 italic">Fitur Doa Segera Hadir...</div>
     </div>
 
+    <!-- Location Sheet -->
     <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-slate-900/40 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"></div>
     <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto shadow-2xl">
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
@@ -157,7 +183,11 @@
         </div>
     </div>
 
+    <!-- =================================================================
+         7. JAVASCRIPT LOGIC
+         ================================================================== -->
     <script>
+        /* --- GLOBAL STATE --- */
         let nextPrayerTime = null;
         let currentCalDate = new Date();
         let nationalHolidays = [];
@@ -166,7 +196,7 @@
         let ayahList = [];
         let isTranslationVisible = true;
 
-        // Navigation Back Button Fix
+        /* --- NAVIGATION SYSTEM --- */
         window.addEventListener('popstate', function () {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
             const sheet = document.getElementById('location-sheet');
@@ -212,7 +242,7 @@
             } else { history.back(); }
         }
 
-        // --- CALENDAR & DATE LOGIC ---
+        /* --- CALENDAR & DATE LOGIC --- */
         function getPasaran(date) {
             const p = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000);
@@ -267,7 +297,7 @@
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
 
-        // --- QURAN LOGIC ---
+        /* --- QURAN LOGIC --- */
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
             return String(n).split('').map(c => forms[Number(c)]).join('');
@@ -351,7 +381,7 @@
             currentAudio = null;
         }
 
-        // --- PRAYER & LOCATION ---
+        /* --- PRAYER & LOCATION LOGIC --- */
         async function getCoreData() {
             const cachedLoc = localStorage.getItem('last_location');
             if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
@@ -390,7 +420,10 @@
             }, 1000);
         }
 
-        updateDates(); getCoreData(); startCountdown();
+        /* --- INITIALIZATION --- */
+        updateDates(); 
+        getCoreData(); 
+        startCountdown();
     </script>
 </body>
 </html>
