@@ -150,23 +150,40 @@
             document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
         }
 
-        async function getCoreData() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    try {
-                        const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
-                        const locData = await locRes.json();
-                        const addr = locData.address;
-                        document.getElementById('location-text').innerText = addr.amenity || addr.building || addr.road || addr.suburb || addr.city || "Lokasi Aktif";
-                    } catch(e) { document.getElementById('location-text').innerText = "Lokasi Aktif"; }
-                    
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json();
-                    setPrayerUI(json.data.timings);
-                }, null, { enableHighAccuracy: true });
-            }
-        }
+       async function getCoreData() {
+    // 1. Ambil data dari memori HP (jika sebelumnya pernah buka aplikasi)
+    const cachedLocation = localStorage.getItem('last_location');
+    const cachedTimings = localStorage.getItem('last_timings');
+
+    if (cachedLocation) {
+        document.getElementById('location-text').innerText = cachedLocation;
+    }
+    if (cachedTimings) {
+        setPrayerUI(JSON.parse(cachedTimings));
+    }
+
+    // 2. Jika ada internet, baru tarik data baru dari satelit/API
+    if (navigator.onLine && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            try {
+                // Update Nama Lokasi
+                const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+                const locData = await locRes.json();
+                const addr = locData.address.amenity || locData.address.building || locData.address.road || "Lokasi Aktif";
+                
+                document.getElementById('location-text').innerText = addr;
+                localStorage.setItem('last_location', addr); // Simpan ke HP
+
+                // Update Jadwal Sholat
+                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                const json = await res.json();
+                setPrayerUI(json.data.timings);
+                localStorage.setItem('last_timings', JSON.stringify(json.data.timings)); // Simpan ke HP
+            } catch(e) { console.log("Gagal update data, menggunakan cache."); }
+        });
+    }
+}
 
         function setPrayerUI(timings) {
             const now = new Date();
