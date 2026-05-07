@@ -48,35 +48,34 @@
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
             gap: 0px; 
-            border-top: 1px solid #e5e7eb;
-            border-left: 1px solid #e5e7eb;
+            border-top: 1px solid #e2e8f0;
+            border-left: 1px solid #e2e8f0;
         }
         .calendar-date { 
             aspect-ratio: 1/1.2; 
             display: flex; 
             flex-direction: column; 
             position: relative; 
-            border-right: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
             background-color: white;
             padding: 6px;
         }
-        .calendar-empty { background-color: #f9fafb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
+        .calendar-empty { background-color: #f8fafc; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
         
         /* Inner Date Layout */
         .date-top-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
         .date-masehi { font-size: 15px; font-weight: 700; color: #1e293b; line-height: 1; }
-        .date-hijri-arab { font-family: 'LPMQ'; font-size: 11px; color: #ef4444; line-height: 1; }
+        /* Tanggal Hijriah Arab sekarang Hitam sesuai permintaan */
+        .date-hijri-arab { font-family: 'LPMQ'; font-size: 11px; color: #1e293b; line-height: 1; }
         .date-bottom-info { margin-top: auto; text-align: center; width: 100%; }
         .date-pasaran { font-size: 7.5px; color: #64748b; font-weight: 600; text-transform: capitalize; line-height: 1; }
         
         .date-holiday .date-masehi, .date-holiday .date-hijri-arab { color: #ef4444 !important; }
-        .date-today { border: 2.5px solid #0d9488 !important; z-index: 10; background-color: #f0fdfa; }
+        .date-today { border: 2px solid #0d9488 !important; z-index: 10; background-color: #f0fdfa; }
 
-        /* Quran Audio Styles */
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
-        .translation-text.hidden { display: none; }
     </style>
 </head>
 <body>
@@ -128,21 +127,19 @@
     </div>
 
     <div id="calendar-modal" class="modal-full">
-        <div class="bg-teal-700 p-4 text-white shadow-md">
-            <div class="flex justify-between items-center mb-4">
-                <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl">
+        <div class="bg-teal-700 p-5 text-white shadow-md">
+            <div class="flex justify-between items-start">
+                <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl mt-1">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
-                <div class="text-right">
-                    <p id="header-masehi" class="text-[10px] font-medium opacity-90"></p>
-                    <p id="header-hijri" class="text-[10px] font-bold"></p>
-                </div>
-                <div class="flex gap-2">
-                    <button class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-circle-info"></i></button>
-                    <button class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-gear"></i></button>
+                <div class="text-right pr-2">
+                    <p class="text-[10px] font-bold tracking-wider leading-tight">HARI INI</p>
+                    <p id="header-real-date" class="text-[11px] font-medium opacity-90 leading-tight"></p>
+                    <p id="header-real-hijri" class="text-[11px] font-bold leading-tight"></p>
                 </div>
             </div>
-            <div class="flex justify-between items-center px-2">
+            
+            <div class="flex justify-between items-center px-2 mt-6">
                 <button onclick="changeMonth(-1)" class="text-xl opacity-70"><i class="fa-solid fa-chevron-left"></i></button>
                 <div class="text-center">
                     <h2 id="calendar-month-name" class="font-bold text-lg uppercase leading-none">Mei 2026</h2>
@@ -163,7 +160,14 @@
                 <div class="text-center text-[10px] py-3 font-bold text-slate-600">Sabtu</div>
             </div>
             <div id="calendar-days-grid" class="calendar-grid"></div>
-            <div id="holiday-list" class="mt-8 space-y-3"></div>
+            
+            <div class="mt-8">
+                <h3 class="flex items-center gap-2 font-bold text-slate-800 text-sm mb-4">
+                    <span class="w-1 h-4 bg-red-600 rounded-full"></span>
+                    Hari Libur Nasional
+                </h3>
+                <div id="holiday-list" class="space-y-3"></div>
+            </div>
         </div>
     </div>
 
@@ -180,7 +184,7 @@
             return String(n).split('').map(c => forms[Number(c)]).join('');
         }
 
-        /* MODAL CONTROL */
+        /* NAVIGATION */
         window.addEventListener('popstate', () => {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
         });
@@ -190,7 +194,7 @@
             if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); if(nationalHolidays.length===0) fetchHolidays(); renderCalendar(); pushState('calendar'); } else { history.back(); }
         }
 
-        /* CALENDAR ENGINE */
+        /* DATE & HIJRI ENGINE */
         function getPasaran(date) {
             const p = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000);
@@ -210,7 +214,13 @@
         }
 
         async function fetchHolidays() {
-            try { const res = await fetch(`https://libur.deno.dev/api?year=${currentCalDate.getFullYear()}`); nationalHolidays = await res.json(); renderCalendar(); } catch (e) {}
+            try { 
+                const res = await fetch(`https://libur.deno.dev/api?year=${currentCalDate.getFullYear()}`);
+                const data = await res.json();
+                // Filter: HANYA Libur Nasional (bukan Cuti Bersama)
+                nationalHolidays = data.filter(h => h.holiday_type === "Libur Nasional");
+                renderCalendar(); 
+            } catch (e) { console.error("Gagal ambil hari libur"); }
         }
 
         function renderCalendar() {
@@ -222,13 +232,14 @@
             const start = new Date(y, m, 1).getDay(); const total = new Date(y, m + 1, 0).getDate();
             const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             
-            // Update Header
+            // Update Header Real-time
             const now = new Date();
             const hNow = getHijri(now);
-            document.getElementById('header-masehi').innerText = `${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()}`;
-            document.getElementById('header-hijri').innerText = `${hNow.d} ${hNow.m} ${hNow.y}`;
-            document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
+            document.getElementById('header-real-date').innerText = `${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('header-real-hijri').innerText = `${hNow.d} ${hNow.m} ${hNow.y} H`;
             
+            // Update Info Navigasi
+            document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
             const firstH = getHijri(new Date(y, m, 1));
             const lastH = getHijri(new Date(y, m + 1, 0));
             document.getElementById('calendar-hijri-range').innerText = `${firstH.m} - ${lastH.m} ${lastH.y} H`;
@@ -252,35 +263,19 @@
                         </div>
                     </div>`;
                 
-                if (isHol) holEl.innerHTML += `<div class="flex gap-2 text-[10px] items-start"><span class="font-bold text-red-500">${d}</span><p class="text-slate-600 font-medium">${isHol.name}</p></div>`;
+                if (isHol) {
+                    holEl.innerHTML += `
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="bg-red-100 text-red-600 font-bold text-xs px-2 py-1 rounded-lg">${d}</div>
+                            <p class="text-[11px] font-semibold text-slate-700">${isHol.name}</p>
+                        </div>`;
+                }
             }
         }
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
         
-        /* PRAYER ENGINE (Tetap berfungsi) */
-        async function getCoreData() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json();
-                    setPrayerUI(json.data.timings);
-                });
-            }
-        }
-        function setPrayerUI(t) {
-            const now = new Date(); const cur = (now.getHours() * 60) + now.getMinutes();
-            const s = [{n:'Subuh', t:t.Fajr}, {n:'Dzuhur', t:t.Dhuhr}, {n:'Ashar', t:t.Asr}, {n:'Maghrib', t:t.Maghrib}, {n:'Isya', t:t.Isha}];
-            let next = s.find(x => (parseInt(x.t.split(':')[0])*60 + parseInt(x.t.split(':')[1])) > cur) || s[0];
-            document.getElementById('prayer-name').innerText = next.n; 
-            document.getElementById('prayer-time').innerText = next.t;
-            const [nH, nM] = next.t.split(':'); nextPrayerTime = new Date(); 
-            nextPrayerTime.setHours(nH, nM, 0); if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-        }
-
-        // Init
-        getCoreData();
+        /* INITIALIZE */
         renderCalendar();
         setInterval(() => {
             const now = new Date();
