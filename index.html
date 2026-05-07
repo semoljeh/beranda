@@ -1,3 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Darussalam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f0fdfa; display: flex; justify-content: center; margin:0; }
+        .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 40px; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
+        .header-bg { background-color: #0d9488; height: 180px; border-radius: 0 0 40px 40px; position: relative; }
+
+        /* Card Kapsul Informasi */
+        .info-capsule {
+            position: absolute;
+            bottom: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(13, 148, 136, 0.15);
+            border: 1px solid #e2e8f0;
+            z-index: 20;
+        }
+
+        .menu-card {
+            background: white; border-radius: 20px; padding: 22px; display: flex; flex-direction: column;
+            align-items: center; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9; transition: all 0.2s;
+        }
+        .menu-card:active { transform: scale(0.95); background-color: #f0fdfa; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header-bg">
+            <div class="info-capsule">
+                <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
+                    <div class="flex flex-col items-start">
+                        <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Lokasi Anda</span>
+                        <div class="flex items-center gap-1 text-teal-700">
+                            <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
+                            <span id="location-text" class="text-[11px] font-bold truncate w-20">Mencari...</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <span id="prayer-name" class="text-[10px] text-teal-600 font-bold uppercase tracking-widest">---</span>
+                        <h2 id="prayer-time" class="text-3xl font-bold text-gray-800 leading-tight">--:--</h2>
+                    </div>
+
+                    <div class="flex flex-col items-end">
+                        <span class="text-[9px] text-red-400 uppercase font-bold tracking-tighter">Mendatang</span>
+                        <span id="countdown" class="text-xs font-black text-gray-600 font-mono">-00:00:00</span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase tracking-tight"></p>
+                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 tracking-wide"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-28 text-center px-6">
+            <h1 class="text-2xl font-black text-teal-900 tracking-tight">Darussalam Online</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-[0.3em]">Digital Hub Platform</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 p-6 mt-2">
+            <div class="menu-card">
+                <i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i>
+                <span class="text-[12px] font-bold text-gray-700">Profil Madrasah</span>
+            </div>
+            <div class="menu-card">
+                <i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i>
+                <span class="text-[12px] font-bold text-gray-700">Kegiatan Santri</span>
+            </div>
+            <div class="menu-card">
+                <i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i>
+                <span class="text-[12px] font-bold text-gray-700">Pendaftaran</span>
+            </div>
+            <div class="menu-card">
+                <i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i>
+                <span class="text-[12px] font-bold text-gray-700">Program Donasi</span>
+            </div>
+        </div>
+
+        <footer class="mt-12 mb-8 text-center border-t pt-6 mx-10 border-gray-50">
+            <p class="text-[10px] font-bold text-teal-800 tracking-widest">DARUSSALAM ECOSYSTEM</p>
+            <p class="text-[9px] text-gray-300 mt-1">Versi 2.0 • 2026 All Rights Reserved</p>
+        </footer>
+    </div>
+
 <script>
     let nextPrayerTime = null;
 
@@ -108,3 +207,5 @@
     getCoreData();
     startCountdown();
 </script>
+</body>
+</html>
