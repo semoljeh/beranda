@@ -42,11 +42,9 @@
         .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
         .nav-item.active { font-weight: 700; }
 
-        /* Modal Settings */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* Calendar Grid */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .calendar-day-head { text-align: center; font-size: 10px; font-weight: 800; color: #94a3b8; padding: 10px 0; }
         .calendar-date { aspect-ratio: 1/1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; position: relative; border: 1px solid #f8fafc; }
@@ -57,9 +55,8 @@
         .date-today .date-hijri, .date-today .date-pasaran { color: white; }
         .date-holiday { color: #ef4444; }
 
-        /* Audio Player Styling */
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; transition: all 0.2s; border: 1px solid #dcfce7; }
-        .audio-btn:active { transform: scale(0.9); background: #0d9488; color: white; }
+        .audio-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
@@ -151,14 +148,8 @@
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
         <h3 class="text-center text-lg font-bold text-slate-800 mb-6 uppercase">Atur Wilayah</h3>
         <div class="space-y-4">
-            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all shadow-sm">
-                <i class="fa-solid fa-crosshairs text-lg"></i>
-                <span>Gunakan Lokasi Otomatis</span>
-            </button>
-            <div class="relative">
-                <input type="text" id="manual-city-input" placeholder="Nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 text-sm border-none focus:ring-2 focus:ring-teal-500 font-medium uppercase tracking-tight">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-            </div>
+            <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all shadow-sm"><i class="fa-solid fa-crosshairs text-lg"></i><span>Lokasi Otomatis</span></button>
+            <div class="relative"><input type="text" id="manual-city-input" placeholder="Nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 text-sm border-none focus:ring-2 focus:ring-teal-500 font-medium uppercase tracking-tight"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i></div>
             <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm">Cari Kota</button>
         </div>
     </div>
@@ -169,7 +160,7 @@
         let nationalHolidays = [];
         let currentAudio = null;
 
-        // --- NAVIGATION ---
+        // --- NAVIGATION FIX ---
         window.addEventListener('popstate', function () {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
             const sheet = document.getElementById('location-sheet');
@@ -230,7 +221,9 @@
             let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) + (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
             l = l - (Math.floor((30 - j) / 20)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 30)) * (Math.floor((15238 * j) / 43)) + 29;
             const ms = ["Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir", "Jumadil Ula", "Jumadil Akhira", "Rajab", "Syaban", "Ramadhan", "Syawal", "Dzulqo'dah", "Dzulhijjah"];
-            return { d: l - Math.floor((709 * Math.floor((24 * l) / 709)) / 24), m: ms[Math.floor((24 * l) / 709) - 1], y: 30 * n + j - 30 };
+            let resMonth = Math.floor((24 * l) / 709);
+            let resDay = l - Math.floor((709 * resMonth) / 24);
+            return { d: resDay, m: ms[resMonth - 1], y: 30 * n + j - 30 };
         }
 
         function updateDates() {
@@ -269,60 +262,56 @@
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
 
-        // --- QURAN API (KEMENAG STYLE) ---
+        // --- QURAN API ROBUST ---
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 text-slate-400"><i class="fa-solid fa-spinner animate-spin text-3xl mb-4 text-teal-600"></i><p class="text-[10px] font-bold uppercase tracking-widest">Memuat Surah...</p></div>`;
-            try {
-                const r = await fetch('https://quran-api-id.vercel.app/surahs'); const data = await r.json();
-                let h = '<div class="grid grid-cols-1 gap-3">';
-                data.forEach(s => h += `
-                    <div onclick="loadDetailSurah(${s.number})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.number}</span>
-                            <div><h4 class="font-bold text-sm text-slate-800 uppercase">${s.name}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translation} • ${s.numberOfAyahs} Ayat</p></div>
-                        </div>
-                        <span class="font-arab text-2xl text-teal-600">${s.arab}</span>
-                    </div>`);
-                c.innerHTML = h + '</div>';
-            } catch (e) { c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat Al-Quran.</p>'; }
+            
+            const sources = ['https://quran-api-id.vercel.app/surahs', 'https://equran.id/api/v2/surat'];
+            for (let url of sources) {
+                try {
+                    const r = await fetch(url); if (!r.ok) throw new Error();
+                    const res = await r.json(); const data = res.data || res;
+                    let h = '<div class="grid grid-cols-1 gap-3">';
+                    data.forEach(s => {
+                        const no = s.number || s.nomor;
+                        const nm = s.name || s.namaLatin;
+                        const ar = s.arab || s.nama;
+                        const tr = s.translation || s.arti;
+                        const ay = s.numberOfAyahs || s.jumlahAyat;
+                        h += `<div onclick="loadDetailSurah(${no})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm"><div class="flex items-center gap-4"><span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${no}</span><div><h4 class="font-bold text-sm text-slate-800 uppercase">${nm}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${tr} • ${ay} Ayat</p></div></div><span class="font-arab text-2xl text-teal-600">${ar}</span></div>`;
+                    });
+                    c.innerHTML = h + '</div>'; return;
+                } catch (e) { console.warn("Switching API..."); }
+            }
+            c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat. Periksa internet.</p>';
         }
 
         async function loadDetailSurah(n) {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
             try {
-                const r = await fetch(`https://quran-api-id.vercel.app/surahs/${n}`); const s = await r.json();
+                const r = await fetch(`https://quran-api-id.vercel.app/surahs/${n}`);
+                const s = await r.json();
                 let h = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8 shadow-lg"><h3 class="font-arab text-5xl mb-3">${s.arab}</h3><p class="font-bold text-[10px] uppercase">${s.name} • ${s.translation}</p></div><div class="space-y-12">`;
-                s.ayahs.forEach(a => h += `
-                    <div class="border-b border-slate-100 pb-10">
-                        <div class="flex justify-between items-start gap-4 mb-8">
-                            <div class="flex flex-col gap-2">
-                                <span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-bold">${a.number.insurah}</span>
-                                <button onclick="playAudio('${a.audio.alafasy}', this)" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button>
-                            </div>
-                            <p class="font-arab text-4xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${a.arab}</p>
-                        </div>
-                        <p class="text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-6">${a.translation}</p>
-                    </div>`);
+                s.ayahs.forEach(a => {
+                    h += `<div class="border-b border-slate-100 pb-10"><div class="flex justify-between items-start gap-4 mb-8"><div class="flex flex-col gap-2"><span class="bg-teal-50 text-teal-600 text-[10px] w-8 h-8 flex items-center justify-center rounded-xl font-bold">${a.number.insurah}</span><button onclick="playAudio('${a.audio.alafasy}', this)" class="audio-btn"><i class="fa-solid fa-play text-[10px]"></i></button></div><p class="font-arab text-4xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${a.arab}</p></div><p class="text-sm italic text-slate-500 font-medium border-l-4 border-teal-100 pl-6">${a.translation}</p></div>`;
+                });
                 h += `<button onclick="loadSurahList()" class="w-full mt-10 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] uppercase border-2 border-teal-50">Kembali</button>`;
                 c.innerHTML = h + '</div>'; c.scrollTo(0, 0);
-            } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat.</p>'; }
+            } catch (e) { c.innerHTML = '<p class="text-center p-10 text-red-500">Gagal memuat ayat.</p>'; }
         }
 
         function playAudio(url, btn) {
             if (currentAudio) { currentAudio.pause(); btn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>'; if(currentAudio.src === url) { currentAudio = null; return; } }
-            currentAudio = new Audio(url);
-            btn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i>';
-            currentAudio.play();
+            currentAudio = new Audio(url); btn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i>'; currentAudio.play();
             currentAudio.onended = () => { btn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i>'; currentAudio = null; };
         }
 
-        // --- PRAYER & LOCATION ---
+        // --- CORE DATA ---
         async function getCoreData() {
             const cachedLoc = localStorage.getItem('last_location');
             if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
-
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
                     const { latitude: lat, longitude: lon } = pos.coords;
@@ -366,8 +355,9 @@
                 const geoData = await geoRes.json();
                 if (geoData.length > 0) {
                     const { lat, lon, display_name } = geoData[0];
-                    document.getElementById('location-text').innerText = display_name.split(',')[0];
-                    localStorage.setItem('last_location', display_name.split(',')[0]);
+                    const name = display_name.split(',')[0];
+                    document.getElementById('location-text').innerText = name;
+                    localStorage.setItem('last_location', name);
                     const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                     const json = await res.json(); setPrayerUI(json.data.timings);
                 }
