@@ -1,9 +1,13 @@
 const CACHE_NAME = 'darussalam-v2';
 const ASSETS_TO_CACHE = [
-  'index.html',
-  'manifest.json',
+  '/link/',
+  '/link/index.html',
+  '/link/manifest.json',
+  '/link/icon-192.png',
+  '/link/icon-512.png',
   'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+  'https://kemenag.go.id/assets/fonts/lpmq.ttf' // Font Arab juga diche
 ];
 
 // Tahap Install
