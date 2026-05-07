@@ -14,6 +14,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -33,25 +34,34 @@
         
         .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
 
-        .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; }
+        .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; cursor: pointer; }
         .menu-card:active { transform: scale(0.96); background-color: #f8fafc; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
         
-        .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; }
+        .nav-item { color: #0d9488; transition: all 0.2s ease; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-weight: 500; text-decoration: none; }
         .nav-item.active { font-weight: 700; }
 
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* Calendar & List */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-        .calendar-date { aspect-ratio: 1/1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; position: relative; border: 1px solid #f8fafc; }
-        .date-masehi { font-size: 13px; font-weight: 700; }
-        .date-hijri { font-size: 8px; color: #0d9488; font-weight: 600; }
-        .date-pasaran { font-size: 7px; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
-        .date-today { background: #0d9488; color: white !important; }
-        .date-holiday { color: #ef4444; }
+        /* [MODAL HEADER CUSTOM] */
+        .modal-header-teal { background-color: #0d9488; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* [CALENDAR GRID MODERN] */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; }
+        .calendar-box { 
+            aspect-ratio: 1/1.2; background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .date-masehi { font-size: 14px; font-weight: 700; }
+        .date-hijri { font-size: 8px; color: #0d9488; font-weight: 600; margin-top: 2px; }
+        .date-weton { font-size: 7px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        
+        .date-today { background: #0d9488 !important; border-color: #0d9488; color: white !important; }
+        .date-today span { color: white !important; }
+        .date-holiday, .date-sunday { color: #ef4444 !important; background-color: #fff1f2; }
+        .date-holiday .date-masehi, .date-sunday .date-masehi { color: #ef4444; }
 
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
@@ -62,6 +72,7 @@
 <body>
 
     <div class="app-container">
+        <!-- --- BERANDA --- -->
         <div class="header-bg">
             <div onclick="toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
@@ -107,8 +118,9 @@
         </nav>
     </div>
 
+    <!-- --- MODAL QURAN --- -->
     <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
+        <div class="modal-header-teal shadow-md">
             <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="text-center">
                 <h2 id="surah-title" class="font-bold text-xs uppercase tracking-widest">Al-Quran Pro</h2>
@@ -119,26 +131,36 @@
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
+    <!-- --- MODAL KALENDER --- -->
     <div id="calendar-modal" class="modal-full">
-        <div class="bg-slate-800 p-5 text-white flex justify-between items-center shadow-md">
+        <div class="modal-header-teal shadow-md">
             <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
+            <div class="text-center">
+                <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
+                <p class="text-[8px] opacity-70 font-bold uppercase">Nasional • Hijriyah • Weton</p>
+            </div>
             <div class="flex gap-2">
-                <button onclick="changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="changeMonth(-1)" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="changeMonth(1)" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 bg-white pb-24">
-            <div class="calendar-grid mb-2">
-                <div class="text-center text-[10px] font-bold text-red-500">MIN</div><div class="text-center text-[10px] font-bold">SEN</div><div class="text-center text-[10px] font-bold">SEL</div><div class="text-center text-[10px] font-bold">RAB</div><div class="text-center text-[10px] font-bold">KAM</div><div class="text-center text-[10px] font-bold text-teal-600">JUM</div><div class="text-center text-[10px] font-bold">SAB</div>
+        <div class="flex-1 overflow-y-auto p-2 bg-white pb-32">
+            <div class="calendar-grid text-[10px] font-extrabold text-slate-400 text-center mb-1">
+                <div class="text-red-500">MIN</div><div>SEN</div><div>SEL</div><div>RAB</div><div>KAM</div><div class="text-teal-600">JUM</div><div>SAB</div>
             </div>
             <div id="calendar-days-grid" class="calendar-grid"></div>
-            <div id="holiday-list" class="mt-6 space-y-2 border-t pt-4"></div>
+            
+            <div class="px-6 mt-6">
+                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-teal-600"></i> Keterangan Spesial
+                </h3>
+                <div id="holiday-list" class="space-y-3"></div>
+            </div>
         </div>
     </div>
 
     <div id="doa-modal" class="modal-full">
-        <div class="bg-teal-800 p-5 text-white flex justify-between items-center shadow-md">
+        <div class="modal-header-teal shadow-md">
             <button onclick="toggleDoa()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <h2 class="font-bold text-xs uppercase tracking-widest">Doa Harian</h2>
             <div class="w-10"></div>
@@ -160,7 +182,7 @@
     <script>
         let nextPrayerTime = null;
         let currentCalDate = new Date();
-        let nationalHolidays = [];
+        let nationalHolidays = {};
         let currentAudio = null;
         let currentAyahIndex = -1;
         let ayahList = [];
@@ -171,7 +193,7 @@
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
             const sheet = document.getElementById('location-sheet');
             const bg = document.getElementById('location-sheet-bg');
-            if (!sheet.classList.contains('translate-y-full')) {
+            if (sheet && !sheet.classList.contains('translate-y-full')) {
                 sheet.classList.add('translate-y-full');
                 bg.classList.remove('opacity-100');
                 setTimeout(() => bg.classList.add('hidden'), 300);
@@ -191,8 +213,7 @@
         function toggleCalendar() {
             const el = document.getElementById('calendar-modal');
             if (!el.classList.contains('modal-show')) {
-                el.classList.add('modal-show'); if (nationalHolidays.length === 0) fetchHolidays();
-                renderCalendar(); pushState('calendar');
+                el.classList.add('modal-show'); fetchHolidays(); pushState('calendar');
             } else { history.back(); }
         }
 
@@ -212,7 +233,7 @@
             } else { history.back(); }
         }
 
-        // --- CALENDAR & DATE LOGIC ---
+        // --- CALENDAR LOGIC ---
         function getPasaran(date) {
             const p = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000);
@@ -231,41 +252,65 @@
             return { d: l - Math.floor((709 * mIdx) / 24), m: ms[mIdx - 1], y: 30 * n + j - 30 };
         }
 
-        function updateDates() {
-            const now = new Date(); const h = getHijri(now);
-            const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-            const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('full-date').innerText = `${ds[now.getDay()]} ${getPasaran(now)}, ${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()} M`;
-            document.getElementById('java-hijri').innerText = `${h.d} ${h.m} ${h.y} H`;
-        }
-
         async function fetchHolidays() {
+            const year = currentCalDate.getFullYear();
             try {
-                const res = await fetch(`https://libur.deno.dev/api?year=${currentCalDate.getFullYear()}`);
-                nationalHolidays = await res.json(); renderCalendar();
-            } catch (e) {}
+                const res = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    nationalHolidays = {};
+                    data.forEach(item => {
+                        nationalHolidays[item.holiday_date] = item.holiday_name;
+                    });
+                }
+                renderCalendar();
+            } catch (e) {
+                renderCalendar();
+            }
         }
 
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             const holEl = document.getElementById('holiday-list');
             grid.innerHTML = ''; holEl.innerHTML = '';
-            const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth();
-            const start = new Date(y, m, 1).getDay(); const total = new Date(y, m + 1, 0).getDate();
-            const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
+            
+            const y = currentCalDate.getFullYear(), m = currentCalDate.getMonth();
+            const start = new Date(y, m, 1).getDay(), total = new Date(y, m + 1, 0).getDate();
+            const msNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            document.getElementById('calendar-month-name').innerText = `${msNames[m]} ${y}`;
 
             for (let i = 0; i < start; i++) grid.innerHTML += '<div></div>';
+
             for (let d = 1; d <= total; d++) {
-                const date = new Date(y, m, d); const h = getHijri(date);
-                const isHol = nationalHolidays.find(x => x.date === date.toISOString().split('T')[0]);
-                const isToday = new Date().toDateString() === date.toDateString();
-                grid.innerHTML += `<div class="calendar-date ${isToday ? 'date-today' : ''} ${isHol || date.getDay() === 0 ? 'date-holiday' : ''}"><span class="date-masehi">${d}</span><span class="date-hijri">${h.d}</span><span class="date-pasaran">${getPasaran(date)}</span></div>`;
-                if (isHol) holEl.innerHTML += `<div class="flex gap-2 text-[10px] items-start"><span class="font-bold text-red-500">${d}</span><p class="text-slate-600 font-medium">${isHol.name}</p></div>`;
+                const date = new Date(y, m, d);
+                const dateKey = date.toISOString().split('T')[0];
+                const isToday = date.toDateString() === new Date().toDateString();
+                const libur = nationalHolidays[dateKey];
+                const h = getHijri(date);
+
+                grid.innerHTML += `
+                    <div class="calendar-box ${isToday ? 'date-today' : ''} ${libur || date.getDay() === 0 ? 'date-holiday' : ''}">
+                        <span class="date-masehi">${d}</span>
+                        <span class="date-hijri">${h.d}</span>
+                        <span class="date-weton">${getPasaran(date)}</span>
+                    </div>`;
+
+                if (libur) {
+                    holEl.innerHTML += `
+                        <div class="flex gap-4 p-4 bg-red-50 rounded-2xl border border-red-100">
+                            <div class="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center font-bold shrink-0">${d}</div>
+                            <div>
+                                <p class="text-[9px] text-red-500 font-bold uppercase">Libur Nasional</p>
+                                <p class="text-xs font-bold text-slate-800">${libur}</p>
+                            </div>
+                        </div>`;
+                }
             }
+            if(holEl.innerHTML === "") holEl.innerHTML = '<p class="text-[11px] text-slate-400 italic">Tidak ada hari libur nasional bulan ini.</p>';
         }
 
-        function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
+        function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); fetchHolidays(); }
 
         // --- QURAN LOGIC ---
         function toArabicNumber(n) {
@@ -325,7 +370,7 @@
                         </div>
                     </div>`;
                 });
-                html += `<button onclick="loadSurahList()" class="w-full mt-6 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] border-2 border-teal-50">KEMBALI</button>`;
+                html += `<button onclick="loadSurahList()" class="w-full mt-6 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] border-2 border-teal-50 shadow-sm">KEMBALI</button>`;
                 c.innerHTML = html; c.scrollTo(0,0);
             } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat ayat.</p>'; }
         }
@@ -390,7 +435,16 @@
             }, 1000);
         }
 
-        updateDates(); getCoreData(); startCountdown();
+        const nowD = new Date();
+        const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        document.getElementById('full-date').innerText = `${ds[nowD.getDay()]} ${getPasaran(nowD)}, ${nowD.getDate()} ${ms[nowD.getMonth()]} ${nowD.getFullYear()} M`;
+        
+        const h = getHijri(nowD);
+        document.getElementById('java-hijri').innerText = `${h.d} ${h.m} ${h.y} H`;
+
+        getCoreData(); 
+        startCountdown();
     </script>
 </body>
 </html>
