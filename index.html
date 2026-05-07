@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Darussalam - Kalender Nasional</title>
+    <title>Portal Darussalam - Kalender Lengkap</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,10 +14,11 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         
+        /* MODAL SYSTEM */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
         
-        /* HEADER WARNA TEAL DARUSSALAM */
+        /* HEADER TEAL (#0d9488) */
         .teal-header { background-color: #0d9488; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); }
 
         /* GRID KALENDER */
@@ -27,8 +28,8 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
         .date-masehi { font-size: 15px; font-weight: 700; color: #1e293b; }
-        .date-hijri { font-size: 9px; color: #0d9488; font-weight: 700; }
-        .date-weton { font-size: 7px; color: #94a3b8; font-weight: 800; text-transform: uppercase; }
+        .date-hijri { font-size: 9px; color: #0d9488; font-weight: 700; margin-top: 1px; }
+        .date-weton { font-size: 7px; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-top: 1px; }
         
         /* HIGHLIGHT STATES */
         .is-today { background: #0d9488 !important; border-color: #0d9488; color: white !important; }
@@ -44,9 +45,9 @@
     <div class="app-container">
         <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 180px; border-radius: 0 0 40px 40px; padding: 40px 25px; color: white;">
             <h1 class="text-2xl font-bold">Portal Darussalam</h1>
-            <p class="text-xs opacity-80 mt-1">Kalender Nasional & Hijriyah</p>
-            <button onclick="App.toggleCalendar()" class="mt-6 bg-white/20 px-6 py-3 rounded-2xl text-xs font-bold border border-white/20">
-                <i class="fa-solid fa-calendar-alt mr-2"></i> BUKA KALENDER
+            <p class="text-xs opacity-80 mt-1">Kalender Nasional, Hijriyah & Weton</p>
+            <button onclick="App.toggleCalendar()" class="mt-6 bg-white/20 px-6 py-3 rounded-2xl text-xs font-bold border border-white/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-calendar-days mr-2"></i> BUKA KALENDER LENGKAP
             </button>
         </div>
 
@@ -61,7 +62,7 @@
             <button onclick="App.toggleCalendar()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <div class="text-center">
                 <h2 id="cal-month-name" class="font-bold text-sm uppercase tracking-widest">---</h2>
-                <p class="text-[8px] font-bold opacity-80">API ALADHAN & HARILIBUR</p>
+                <p class="text-[8px] font-bold opacity-80 uppercase">Nasional • Hijriyah • Weton</p>
             </div>
             <div class="flex gap-2">
                 <button onclick="Calendar.changeMonth(-1)" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl"><i class="fa-solid fa-chevron-left"></i></button>
@@ -77,7 +78,7 @@
             
             <div class="px-6 mt-4">
                 <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span class="w-2 h-4 bg-teal-500 rounded-full"></span> Keterangan Spesial
+                    <span class="w-2 h-4 bg-red-500 rounded-full"></span> Keterangan Spesial (Libur)
                 </h3>
                 <div id="holiday-info" class="space-y-3"></div>
             </div>
@@ -100,14 +101,14 @@
 
             async init() {
                 const grid = document.getElementById('calendar-main-grid');
-                grid.innerHTML = '<div class="col-span-7 text-center py-20 text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menarik Data API...</div>';
+                grid.innerHTML = '<div class="col-span-7 text-center py-20 text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sinkronisasi API...</div>';
                 
                 await this.fetchHolidays();
                 await this.fetchMonthHijri();
                 this.render();
             },
 
-            // INTEGRASI API LIBUR NASIONAL
+            // AMBIL DATA LIBUR NASIONAL
             async fetchHolidays() {
                 const year = this.curDate.getFullYear();
                 try {
@@ -115,13 +116,15 @@
                     const data = await res.json();
                     this.holidays = {};
                     data.forEach(h => {
-                        // Simpan dengan key YYYY-MM-DD
-                        this.holidays[h.holiday_date] = h.holiday_name;
+                        // Simpan dengan format YYYY-MM-DD agar sinkron dengan looping render
+                        const d = new Date(h.holiday_date);
+                        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                        this.holidays[key] = h.holiday_name;
                     });
-                } catch (e) { console.error("API Libur Gagal"); }
+                } catch (e) { console.error("Gagal ambil libur"); }
             },
 
-            // INTEGRASI API HIJRIYAH (ALADHAN) - Load 1 Bulan Sekaligus
+            // AMBIL DATA HIJRIYAH (ALADHAN)
             async fetchMonthHijri() {
                 const m = this.curDate.getMonth() + 1;
                 const y = this.curDate.getFullYear();
@@ -134,14 +137,14 @@
                             this.hijriCache[parseInt(d.gregorian.day)] = d.hijri.day;
                         });
                     }
-                } catch (e) { console.error("API Hijriah Gagal"); }
+                } catch (e) { console.error("Gagal ambil Hijriah"); }
             },
 
-            // LOGIKA WETON SESUAI RUMUSMU
-            getPasaran(date) {
-                const weton = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
+            // HITUNG WETON (ETONYA)
+            getWeton(date) {
+                const pasaran = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
                 const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000);
-                return weton[(diff + 1) % 5];
+                return pasaran[(diff + 1) % 5];
             },
 
             render() {
@@ -155,8 +158,10 @@
                 
                 document.getElementById('cal-month-name').innerText = `${monthNames[m]} ${y}`;
 
+                // Padding awal bulan
                 for (let i = 0; i < start; i++) grid.innerHTML += '<div></div>';
 
+                // Looping Tanggal
                 for (let d = 1; d <= total; d++) {
                     const date = new Date(y, m, d);
                     const dateKey = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -164,21 +169,21 @@
                     const liburName = this.holidays[dateKey];
                     const isSunday = date.getDay() === 0;
                     const isToday = date.toDateString() === new Date().toDateString();
-                    const hDay = this.hijriCache[d] || '?';
+                    const hijriDay = this.hijriCache[d] || '?';
 
                     grid.innerHTML += `
                         <div class="calendar-box ${isToday ? 'is-today' : ''} ${liburName || isSunday ? 'is-holiday' : ''}">
                             <span class="date-masehi">${d}</span>
-                            <span class="date-hijri">${hDay}</span>
-                            <span class="date-weton">${this.getPasaran(date)}</span>
+                            <span class="date-hijri">${hijriDay}</span>
+                            <span class="date-weton">${this.getWeton(date)}</span>
                         </div>`;
 
                     if (liburName) {
                         info.innerHTML += `
-                            <div class="flex gap-4 p-4 bg-rose-50 rounded-2xl border border-rose-100">
-                                <div class="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center font-black shrink-0 text-xs">${d}</div>
+                            <div class="flex gap-4 p-4 bg-red-50 rounded-2xl border border-red-100 shadow-sm">
+                                <div class="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center font-black shrink-0 text-xs">${d}</div>
                                 <div>
-                                    <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest">Hari Libur Nasional</p>
+                                    <p class="text-[9px] text-red-600 font-bold uppercase tracking-widest">Libur Nasional</p>
                                     <p class="text-xs font-bold text-slate-800 leading-tight">${liburName}</p>
                                 </div>
                             </div>`;
