@@ -1,0 +1,21 @@
+{
+  "name": "Darussalam Online",
+  "short_name": "Darussalam",
+  "description": "Portal Digital Ecosystem Darussalam",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d9488",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/0d9488/ffffff?text=D",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/0d9488/ffffff?text=Darussalam",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
