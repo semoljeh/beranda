@@ -153,10 +153,18 @@
     <style>
         .font-arab { font-family: 'LPMQ', serif; }
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
-        .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
-        .ayah-number-arab { font-family: 'LPMQ'; font-size: 1.5rem; color: #0d9488; margin-right: 8px; line-height: 1; }
         
-        /* Style baru untuk tombol murottal yang melayang/stand alone */
+        /* Style Nomor Ayat Arab di Akhir Teks */
+        .ayah-end-number {
+            font-family: 'LPMQ';
+            font-size: 1.8rem;
+            color: #0d9488;
+            margin-left: 8px;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        
         .murottal-control-btn {
             display: flex;
             align-items: center;
@@ -174,7 +182,7 @@
             transition: all 0.3s ease;
         }
         .murottal-control-btn.playing {
-            background: #ef4444; /* Warna merah saat pause */
+            background: #ef4444;
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
         }
     </style>
@@ -215,7 +223,13 @@
 
         let currentAudio = null;
         let isTranslationVisible = true;
-        let currentAudioUrl = ""; // Simpan URL audio yang sedang aktif
+        let currentAudioUrl = "";
+
+        // Fungsi Konversi Angka ke Angka Arab
+        function toArabicNumber(n) {
+            const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
+            return String(n).split('').map(c => forms[Number(c)]).join('');
+        }
 
         function toggleQuran() {
             const el = document.getElementById('quran-modal');
@@ -260,7 +274,67 @@
                 
                 document.getElementById('surah-title').innerText = name;
                 document.getElementById('surah-subtitle').innerText = arti;
-                currentAudioUrl = audio.audio_url; // Simpan URL untuk fungsi play/pause
+                currentAudioUrl = audio.audio_url;
+
+                let html = `
+                    <div class="text-center py-4">
+                        <button id="murottal-btn" onclick="handleMurottal()" class="murottal-control-btn">
+                            <i class="fa-solid fa-play"></i> <span>Putar Murottal</span>
+                        </button>
+                    </div>`;
+
+                arab.forEach((a, i) => {
+                    const ayahNum = i + 1;
+                    html += `<div class="p-5 border-b border-slate-100 bg-white mb-2 rounded-2xl shadow-sm">
+                        <div class="w-full text-right" dir="rtl">
+                            <span class="font-arab text-4xl leading-[2.8] text-slate-800">${a.text_uthmani}</span>
+                            <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
+                        </div>
+                        <div class="flex items-start gap-4 mt-4">
+                            <span class="text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0">${ayahNum}</span>
+                            <p class="translation-text text-sm text-slate-500 italic ${isTranslationVisible ? '' : 'hidden'}">${indo[i].text.replace(/<(?:.|\n)*?>/gm, '')}</p>
+                        </div>
+                    </div>`;
+                });
+                
+                c.innerHTML = html; 
+                c.scrollTo(0,0);
+                if(currentAudio && !currentAudio.paused) updateMurottalBtn(true);
+            } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat ayat.</p>'; }
+        }
+
+        function handleMurottal() {
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                updateMurottalBtn(false);
+            } else {
+                if (!currentAudio || currentAudio.src !== currentAudioUrl) {
+                    currentAudio = new Audio(currentAudioUrl);
+                    currentAudio.onended = () => updateMurottalBtn(false);
+                }
+                currentAudio.play();
+                updateMurottalBtn(true);
+            }
+        }
+
+        function updateMurottalBtn(isPlaying) {
+            const btn = document.getElementById('murottal-btn');
+            if(!btn) return;
+            if (isPlaying) {
+                btn.classList.add('playing');
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>Jeda Murottal</span>`;
+            } else {
+                btn.classList.remove('playing');
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>Putar Murottal</span>`;
+            }
+        }
+
+        function stopAudio() {
+            if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+            updateMurottalBtn(false);
+        }
+    </script>
+</section>
 
                 // BAGIAN HEADER BARU (Hanya tombol Murottal, Tanpa Kotak)
                 let html = `
