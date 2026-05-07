@@ -39,11 +39,15 @@
         }
         .location-capsule:active { transform: scale(0.95); background-color: rgba(255,255,255,0.2); }
 
-        .info-capsule {
-            position: absolute; bottom: -85px; left: 50%; transform: translateX(-50%); width: 88%;
-            background: white; border-radius: 35px; padding: 25px;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.15); border: 1px solid #f1f5f9; z-index: 20;
-        }
+        <div class="flex-1 text-center">
+    <div class="flex items-center justify-center gap-2 mb-2 text-red-500 font-black tracking-tighter">
+        <span class="text-[12px] uppercase">Mendatang</span>
+        <i class="fa-solid fa-clock-rotate-left text-[14px] animate-pulse"></i>
+    </div>
+    <span id="countdown" class="text-xl font-black text-gray-700 font-mono tracking-tighter">
+        -00:00:00
+    </span>
+</div>
 
         .menu-card {
             background: white; border-radius: 24px; padding: 22px; display: flex; flex-direction: column;
