@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Import Font Poppins & LPMQ Isep Misbah */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         
         /* Font LPMQ Isep Misbah via CDN */
@@ -16,7 +15,7 @@
             src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf');
         }
 
-        /* 2 Jenis Font Default sesuai permintaan */
+        /* 2 Jenis Font Default */
         .font-arab { font-family: 'LPMQ', serif; }
         .font-times { font-family: 'Times New Roman', Times, serif; }
 
@@ -55,7 +54,8 @@
                 <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
                     <div class="flex flex-col items-start">
                         <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Lokasi Anda</span>
-                        <div class="flex items-center gap-1 text-teal-700 font-times"> <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
+                        <div class="flex items-center gap-1 text-teal-700 font-times">
+                            <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
                             <span id="location-text" class="text-[11px] font-bold truncate w-20">Mencari...</span>
                         </div>
                     </div>
@@ -72,23 +72,25 @@
                 </div>
 
                 <div class="text-center">
-                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase tracking-tight font-times"></p> <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 tracking-wide font-arab" dir="rtl"></p> </div>
+                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase tracking-tight font-times"></p>
+                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 tracking-wide font-arab" dir="rtl"></p>
+                </div>
             </div>
         </div>
 
         <div class="mt-28 text-center px-6">
-            <h1 class="text-2xl font-black text-teal-900 tracking-tight">المختار</h1>
-            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-[0.3em]">Do'a | Dzikir | Rotib | Maulid</p>
+            <h1 class="text-2xl font-black text-teal-900 tracking-tight">Darussalam Online</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-[0.3em]">Digital Hub Platform</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 p-6 mt-2">
+        <div class="grid grid-cols-2 gap-4 p-6 pb-0 mt-2">
             <div class="menu-card">
                 <i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i>
                 <span class="text-[12px] font-bold text-gray-700 font-times">Profil Madrasah</span>
             </div>
             <div class="menu-card">
                 <i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i>
-                <span class="text-[12px] font-bold text-gray-700">Kegiatan Santri</span>
+                <span class="text-[12px] font-bold text-gray-700 font-times">Kegiatan Santri</span>
             </div>
             <div class="menu-card">
                 <i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i>
@@ -96,13 +98,27 @@
             </div>
             <div class="menu-card">
                 <i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i>
-                <span class="text-[12px] font-bold text-gray-700">Program Donasi</span>
+                <span class="text-[12px] font-bold text-gray-700 font-times">Program Donasi</span>
             </div>
         </div>
 
-        <footer class="mt-12 mb-8 text-center border-t pt-6 mx-10 border-gray-50 font-times">
-            <p class="text-[10px] font-bold text-teal-800 tracking-widest">DARUSSALAM ECOSYSTEM</p>
-            <p class="text-[9px] text-gray-300 mt-1">Versi 2.0 • 2026 All Rights Reserved</p>
+        <div class="grid grid-cols-3 gap-4 p-6 pt-4">
+            <div class="menu-card !py-4">
+                <i class="fa-solid fa-book-quran text-2xl text-emerald-600 mb-2"></i>
+                <span class="text-[10px] font-bold text-gray-700 font-times uppercase">Al-Quran</span>
+            </div>
+            <div class="menu-card !py-4">
+                <i class="fa-solid fa-clock-rotate-left text-2xl text-amber-600 mb-2"></i>
+                <span class="text-[10px] font-bold text-gray-700 font-times uppercase">Jadwal</span>
+            </div>
+            <div class="menu-card !py-4">
+                <i class="fa-solid fa-hands-praying text-2xl text-indigo-600 mb-2"></i>
+                <span class="text-[10px] font-bold text-gray-700 font-times uppercase">Doa</span>
+            </div>
+        </div>
+
+        <footer class="mt-8 mb-8 text-center border-t pt-6 mx-10 border-gray-50">
+            <p class="text-[9px] text-gray-300 font-times uppercase italic">Versi 2.0 • 2026 All Rights Reserved</p>
         </footer>
     </div>
 
@@ -128,7 +144,6 @@
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-
                 try {
                     const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
                     const locData = await locRes.json();
@@ -138,17 +153,12 @@
                 } catch(e) { 
                     document.getElementById('location-text').innerText = "Lokasi Aktif"; 
                 }
-
                 const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                 const json = await res.json();
                 setPrayerUI(json.data.timings);
             }, (err) => {
-                document.getElementById('location-text').innerText = "Akses Lokasi Ditolak";
-            }, {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-            });
+                document.getElementById('location-text').innerText = "GPS OFF";
+            }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
         }
     }
 
@@ -166,10 +176,8 @@
             const [h, m] = s.time.split(':');
             return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
         }) || schedule[0];
-
         document.getElementById('prayer-name').innerText = next.name;
         document.getElementById('prayer-time').innerText = next.time;
-        
         const [tH, tM] = next.time.split(':');
         nextPrayerTime = new Date();
         nextPrayerTime.setHours(parseInt(tH), parseInt(tM), 0);
