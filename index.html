@@ -47,7 +47,15 @@
 
         /* Typography Al-Quran Rata Kanan */
         .arab-block { direction: rtl; text-align: justify; line-height: 2.8; word-spacing: 4px; }
-        .ayah-number-inline { font-family: 'LPMQ', serif; font-size: 1.2em; color: #0d9488; margin: 0 6px; display: inline-block; vertical-align: middle; }
+        .ayah-number-inline { 
+    font-family: 'LPMQ', serif; 
+    font-size: 0.5em; /* Nilai ini akan mengecilkan nomor ayat secara drastis */
+    color: #0d9488; 
+    margin: 0 4px; 
+    display: inline-block; 
+    vertical-align: middle;
+    opacity: 0.8; /* Opsional: sedikit transparan agar tidak terlalu mencolok */
+}
         
         /* Audio & Animation */
         .audio-playing { background-color: #f0fdf4 !important; border-color: #86efac !important; }
