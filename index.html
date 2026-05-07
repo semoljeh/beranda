@@ -149,20 +149,36 @@
         <!-- =============================================
              KLP 4: MODUL AL-QURAN (API QURAN.COM)
              ============================================= -->
-      <section id="module-quran">
+<section id="module-quran">
     <style>
-        .font-arab { font-family: 'LPMQ', serif; }
+        /* Memuat Font Khat Utsmani Otentik */
+        @font-face {
+            font-family: 'Uthmani';
+            src: url('https://raw.githubusercontent.com/olivier-m/quran-fonts/master/fonts/UthmanicHafs.ttf');
+        }
+
+        .font-arab { 
+            font-family: 'Uthmani', serif; 
+            font-weight: normal;
+        }
+
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         
         /* Style Nomor Ayat Arab di Akhir Teks */
         .ayah-end-number {
-            font-family: 'LPMQ';
-            font-size: 1.1rem;
+            font-family: 'Uthmani';
+            font-size: 1.4rem;
             color: #0d9488;
             margin-left: 8px;
             display: inline-block;
             vertical-align: middle;
             line-height: 1;
+        }
+
+        /* Container khusus teks Arab agar baris tidak bertabrakan */
+        .quran-text-container {
+            line-height: 3.5;
+            padding: 10px 0;
         }
         
         .murottal-control-btn {
@@ -208,6 +224,7 @@
                 const data = await response.json(); return data.chapters;
             },
             async getArabicVerses(chapterId) {
+                // Mengambil versi Uthmani untuk font Khat Utsmani
                 const response = await fetch(`${this.baseUrl}/quran/verses/uthmani?chapter_number=${chapterId}`);
                 const data = await response.json(); return data.verses;
             },
@@ -278,7 +295,6 @@
                 document.getElementById('surah-subtitle').innerText = arti;
                 currentAudioUrl = audio.audio_url;
 
-                // Template Header (Tombol Murottal)
                 let html = `
                     <div class="text-center py-4">
                         <button id="murottal-btn" onclick="handleMurottal()" class="murottal-control-btn">
@@ -286,12 +302,11 @@
                         </button>
                     </div>`;
 
-                // Loop Ayat
                 arab.forEach((a, i) => {
                     const ayahNum = i + 1;
                     html += `<div class="p-5 border-b border-slate-100 bg-white mb-2 rounded-2xl shadow-sm">
-                        <div class="w-full text-right" dir="rtl">
-                            <span class="font-arab text-4xl leading-[2.8] text-slate-800">${a.text_uthmani}</span>
+                        <div class="w-full text-right quran-text-container" dir="rtl">
+                            <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
                             <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
                         </div>
                         <div class="flex items-start gap-4 mt-4">
