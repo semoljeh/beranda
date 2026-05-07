@@ -3,9 +3,10 @@
 <head>
 
 
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d9488">
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">   
+<meta name="theme-color" content="#0d9488">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Darussalam">
 <link rel="apple-touch-icon" href="https://via.placeholder.com/192/0d9488/ffffff?text=D">
@@ -282,6 +283,25 @@ if ('serviceWorker' in navigator) {
     }
 
     updateDates(); getCoreData(); startCountdown();
+
+
+// Registrasi Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('PWA: Service Worker Aktif'))
+            .catch(err => console.log('PWA: Gagal', err));
+    });
+}
+
+// Deteksi tombol instal manual (Opsional untuk testing)
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log("PWA: Siap diinstal!");
+});
+    
 </script>
 </body>
 </html>
