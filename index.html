@@ -65,10 +65,11 @@
                 <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
                     <div class="flex flex-col items-start">
                         <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter text-nowrap">Lokasi Anda</span>
-                        <div class="flex items-center gap-1 text-teal-700 font-times uppercase">
-                            <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
-                            <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
-                        </div>
+                       <div onclick="setManualLocation()" class="flex items-center gap-1 text-teal-700 font-times uppercase cursor-pointer active:scale-95 transition-transform">
+    <i class="fa-solid fa-location-dot text-[10px]"></i>
+    <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
+    <i class="fa-solid fa-caret-down text-[8px]"></i>
+</div>
                     </div>
                     <div class="flex flex-col items-center">
                         <span id="prayer-name" class="text-[10px] text-teal-600 font-bold uppercase tracking-widest">---</span>
@@ -135,6 +136,45 @@
     </div>
 
     <script>
+
+// Fungsi untuk mengatur lokasi secara manual
+async function setManualLocation() {
+    const manualCity = prompt("Masukkan Nama Kota/Kecamatan:", localStorage.getItem('last_location') || "Jakarta");
+    
+    if (manualCity) {
+        document.getElementById('location-text').innerText = "Loading...";
+        try {
+            // Mencari koordinat berdasarkan nama kota (Geocoding)
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${manualCity}&limit=1`);
+            const geoData = await geoRes.json();
+            
+            if (geoData.length > 0) {
+                const { lat, lon, display_name } = geoData[0];
+                const shortName = display_name.split(',')[0]; // Ambil nama depan saja
+                
+                // Simpan ke LocalStorage agar saat offline tetap muncul kota ini
+                document.getElementById('location-text').innerText = shortName;
+                localStorage.setItem('last_location', shortName);
+                
+                // Update Jadwal Sholat berdasarkan koordinat kota baru
+                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                const json = await res.json();
+                setPrayerUI(json.data.timings);
+                localStorage.setItem('last_timings', JSON.stringify(json.data.timings));
+                
+                alert("Lokasi berhasil diatur ke: " + shortName);
+            } else {
+                alert("Kota tidak ditemukan.");
+                getCoreData(); // Kembali ke otomatis jika gagal
+            }
+        } catch (e) {
+            alert("Gagal mengambil data. Pastikan internet aktif saat ganti lokasi.");
+            getCoreData();
+        }
+    }
+}
+
+        
         let nextPrayerTime = null;
         let showTranslation = true;
 
