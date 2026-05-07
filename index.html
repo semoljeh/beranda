@@ -63,12 +63,14 @@
         <div class="header-bg">
             <div class="info-capsule">
                 <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
-                    <div class="flex flex-col items-start">
-                        <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter text-nowrap">Lokasi Anda</span>
-                       <div onclick="setManualLocation()" class="flex items-center gap-1 text-teal-700 font-times uppercase cursor-pointer active:scale-95 transition-transform">
-    <i class="fa-solid fa-location-dot text-[10px]"></i>
-    <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
-    <i class="fa-solid fa-caret-down text-[8px]"></i>
+<div class="flex flex-col items-start">
+    <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter text-nowrap">Lokasi Anda</span>
+    
+    <div onclick="toggleLocationSheet()" class="flex items-center gap-1 text-teal-700 font-times uppercase cursor-pointer active:opacity-50 transition-opacity">
+        <i class="fa-solid fa-location-dot text-[10px]"></i>
+        <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
+        <i class="fa-solid fa-caret-down text-[8px]"></i>
+    </div>
 </div>
                     </div>
                     <div class="flex flex-col items-center">
