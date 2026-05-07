@@ -78,6 +78,7 @@
         }
         .menu-card:active { transform: scale(0.96); background-color: #f8fafc; }
 
+        /* --- Footer Konsisten --- */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
             background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
@@ -86,15 +87,21 @@
         }
         
         .nav-item { 
-            color: #0d9488; 
-            opacity: 0.5; 
+            color: #0d9488; /* Warna Teal Solid sama rata */
             transition: all 0.2s ease; 
             cursor: pointer; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            font-weight: 500;
         }
-        .nav-item.active, .nav-item:active { opacity: 1; font-weight: 700; transform: translateY(-2px); }
+
+        .nav-item.active { 
+            font-weight: 700; 
+            transform: translateY(-2px); 
+        }
+
+        .nav-item:active { transform: scale(0.9); }
 
         #quran-modal { transition: transform 0.4s ease; z-index: 200; }
         .hidden-quran { transform: translateY(100%); }
@@ -128,7 +135,7 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-slate-50 text-center">
                     <p id="full-date" class="text-[11px] font-medium text-slate-500 mb-1"></p>
-                    <p id="java-hijri" class="text-xs text-teal-600 font-medium tracking-tight" dir="ltr"></p>
+                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight" dir="ltr"></p>
                 </div>
             </div>
         </div>
@@ -189,7 +196,7 @@
         <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-lg">
             <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
             <h2 class="font-medium text-[10px] tracking-[0.2em] uppercase">Al-Quran Digital</h2>
-            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg font-medium uppercase tracking-tighter">Hide Translation</button>
+            <button onclick="toggleTranslation()" id="btn-trans" class="text-[8px] bg-white/20 px-3 py-2 rounded-lg font-medium uppercase">Hide Translation</button>
         </div>
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
@@ -197,7 +204,7 @@
     <div id="location-sheet-bg" onclick="toggleLocationSheet()" class="fixed inset-0 bg-slate-900/40 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"></div>
     <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto">
         <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
-        <h3 class="text-center text-lg font-bold text-slate-800 mb-6 tracking-tight uppercase">Atur Wilayah</h3>
+        <h3 class="text-center text-lg font-bold text-slate-800 mb-6 uppercase tracking-tight">Atur Wilayah</h3>
         <div class="space-y-4">
             <button onclick="getCoreData(); toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-semibold active:scale-95 transition-all shadow-sm">
                 <i class="fa-solid fa-crosshairs text-lg"></i>
@@ -207,7 +214,7 @@
                 <input type="text" id="manual-city-input" placeholder="Nama kota..." class="w-full p-4 pl-12 rounded-2xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-teal-500 font-medium uppercase tracking-tight">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
             </div>
-            <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm">Cari Kota</button>
+            <button onclick="handleManualSearch()" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold text-sm active:scale-95 transition-all">Cari Kota</button>
         </div>
     </div>
 
@@ -215,22 +222,16 @@
         let nextPrayerTime = null;
         let showTranslation = true;
 
-        // --- FUNGSI TANGGAL LENGKAP ---
         function updateDates() {
             const now = new Date();
-            
-            // Masehi
             const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
             const bulanMasehi = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            
-            // Pasaran Jawa
             const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const refDatePasaran = new Date(1900, 0, 1);
             const diffDaysPasaran = Math.floor((now - refDatePasaran) / 86400000);
             const pasaranStr = pasaran[(diffDaysPasaran + 1) % 5];
-
-            // Hijriyah
             const islamicMonths = ["Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir", "Jumadil Ula", "Jumadil Akhira", "Rajab", "Syaban", "Ramadhan", "Syawal", "Dzulqo'dah", "Dzulhijjah"];
+            
             let jd = Math.floor(now.getTime() / 86400000) + 2440588;
             let l = jd - 1948440 + 10632;
             let n = Math.floor((l - 1) / 10631);
@@ -242,7 +243,8 @@
             let yearHijri = 30 * n + j - 30;
 
             document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaranStr}, ${now.getDate()} ${bulanMasehi[now.getMonth()]} ${now.getFullYear()} M`;
-            document.getElementById('java-hijri').innerText = `${dayHijri} ${islamicMonths[monthHijri - 1]} ${yearHijri} H • Tahun Jawa 1959 AJ`;
+            // Tampilan Hijriyah Bersih tanpa AJ
+            document.getElementById('java-hijri').innerText = `${dayHijri} ${islamicMonths[monthHijri - 1]} ${yearHijri} H`;
         }
 
         async function getCoreData() {
@@ -250,17 +252,15 @@
             const cachedTimings = localStorage.getItem('last_timings');
             if (cachedLocation) document.getElementById('location-text').innerText = cachedLocation;
             if (cachedTimings) setPrayerUI(JSON.parse(cachedTimings));
-
             if (navigator.onLine && navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
                     const { latitude: lat, longitude: lon } = pos.coords;
                     try {
                         const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
                         const locData = await locRes.json();
-                        const displayLoc = locData.address.village || locData.address.suburb || locData.address.city || "Lokasi Aktif";
-                        document.getElementById('location-text').innerText = displayLoc;
-                        localStorage.setItem('last_location', displayLoc);
-
+                        const addr = locData.address.village || locData.address.suburb || locData.address.city || "Lokasi Aktif";
+                        document.getElementById('location-text').innerText = addr;
+                        localStorage.setItem('last_location', addr);
                         const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                         const json = await res.json();
                         setPrayerUI(json.data.timings);
@@ -354,11 +354,19 @@
             const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
             const data = await res.json();
             const surah = data.data;
-            let html = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8"><h3 class="font-arab text-4xl mb-2">${surah.nama}</h3></div><div class="space-y-10">`;
+            let html = `<div class="bg-teal-700 p-8 rounded-[32px] text-white text-center mb-8 shadow-lg"><h3 class="font-arab text-4xl mb-2">${surah.nama}</h3></div><div class="space-y-10">`;
             surah.ayat.forEach(ayat => {
                 html += `<div class="border-b border-slate-100 pb-8"><div class="flex justify-between items-start mb-6"><span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-lg">${ayat.nomorAyat}</span><p class="font-arab text-3xl text-right leading-[2.5] w-full" dir="rtl">${ayat.teksArab}</p></div><p class="text-sm italic text-slate-500">${ayat.teksIndonesia}</p></div>`;
             });
             content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold uppercase text-[10px]">Kembali</button>`;
+        }
+
+        function toggleTranslation() {
+            showTranslation = !showTranslation;
+            const transElements = document.querySelectorAll('.translation-text');
+            const btn = document.getElementById('btn-trans');
+            transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
+            btn.innerText = showTranslation ? 'Hide Translation' : 'Show Translation';
         }
 
         updateDates(); getCoreData(); startCountdown();
