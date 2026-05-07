@@ -10,7 +10,6 @@
     <meta name="theme-color" content="#0d9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Darussalam">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png">
 
     <!-- [SECTION: RESOURCES] -->
@@ -19,20 +18,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* [GROUP: FONTS & CORE] */
-        @font-face { font-family: 'LPMQ'; src: url('https://kemenag.go.id/assets/fonts/lpmq.ttf'); }
-
+        /* [GROUP: CORE STYLES] */
         *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; margin:0; color: #1e293b; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 500px; background-color: white; min-height: 100vh; position: relative; padding-bottom: 120px; }
         .hidden { display: none; }
 
-        /* [GROUP: HEADER & INFO CARD] */
+        /* [GROUP: HEADER & NAVIGATION] */
         .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
-        .location-capsule { display: flex; align-items: center; gap: 6px; background-color: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; backdrop-filter: blur(4px); }
-        .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
-
-        /* [GROUP: NAVIGATION] */
+        .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; z-index: 20; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 28px 0; border-top: 1px solid #f1f5f9; z-index: 100; }
         .nav-item { color: #0d9488; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; }
 
@@ -40,33 +34,37 @@
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
+        /* [GROUP: MODERN CALENDAR GRID] */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 10px; }
+        .calendar-day-label { text-align: center; font-size: 10px; font-weight: 800; color: #94a3b8; padding-bottom: 8px; }
+        .calendar-box { 
+            aspect-ratio: 1/1.2; background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            position: relative; transition: 0.2s;
+        }
+        .calendar-box:active { background: #f0fdfa; transform: scale(0.95); }
+        .date-masehi { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .date-hijri { font-size: 8px; font-weight: 600; color: #0d9488; margin-top: 2px; }
+        .date-weton { font-size: 7px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 1px; }
+        
+        .is-today { background: #0d9488 !important; border-color: #0d9488; }
+        .is-today .date-masehi, .is-today .date-hijri, .is-today .date-weton { color: white !important; }
+        .is-holiday, .is-sunday { color: #ef4444 !important; }
+        .is-holiday .date-masehi, .is-sunday .date-masehi { color: #ef4444; }
+
         /* [GROUP: QURAN STYLES] */
         .font-arab { font-family: 'Amiri Quran', serif; }
-        .ayah-number { 
-            display: inline-flex; justify-content: center; align-items: center; 
-            width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #99f6e4; 
-            color: #0d9488; font-size: 14px; font-weight: 700; font-family: 'Inter';
-            margin-right: 12px; vertical-align: middle; background: #f0fdfa;
-            line-height: 0;
-        }
-        .audio-playing { background-color: #f0fdf4; }
-        .audio-btn { width: 35px; height: 35px; border-radius: 50%; background: #f0fdfa; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #ccfbf1; }
-
-        /* [GROUP: CALENDAR STYLES] */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-        .calendar-date { aspect-ratio: 1/1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 12px; border: 1px solid #f8fafc; }
-        .date-today { background: #0d9488; color: white !important; }
+        .ayah-number { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #99f6e4; color: #0d9488; font-size: 12px; font-weight: 700; margin-right: 10px; vertical-align: middle; background: #f0fdfa; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- HEADER & PRAYER INFO -->
+        <!-- HEADER PRAYER INFO -->
         <div class="header-bg">
             <div onclick="App.toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
-                <span id="location-text" class="text-[11px] font-semibold text-white truncate max-w-[150px]">Mencari...</span>
-                <i class="fa-solid fa-chevron-down text-white/50 text-[9px]"></i>
+                <span id="location-text" class="text-[11px] font-semibold text-white">Mencari Lokasi...</span>
             </div>
 
             <div class="info-capsule">
@@ -77,34 +75,19 @@
                     </div>
                     <div class="flex-1 text-center">
                         <p class="text-[10px] text-red-400 font-bold uppercase tracking-widest mb-1">Mendatang</p>
-                        <span id="countdown" class="text-xl font-semibold text-slate-700 font-mono tracking-tighter">-00:00:00</span>
+                        <span id="countdown" class="text-xl font-semibold text-slate-700 font-mono">-00:00:00</span>
                     </div>
-                </div>
-                <div class="mt-4 pt-4 border-t border-slate-50 text-center">
-                    <p id="full-date" class="text-[11px] font-medium text-slate-500 mb-1"></p>
-                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold"></p>
                 </div>
             </div>
         </div>
 
         <!-- DASHBOARD MENU -->
-        <div class="mt-24 text-center px-8">
-            <h1 class="text-xl font-bold text-slate-800">Portal Darussalam</h1>
-            <p class="text-xs text-slate-400 font-medium">Digital Madrasah Ecosystem</p>
+        <div class="mt-28 grid grid-cols-2 gap-4 p-6">
+            <div class="bg-white border rounded-2xl p-5 text-center"><i class="fa-solid fa-mosque text-teal-600 mb-2"></i><br><span class="text-xs font-bold">PROFIL</span></div>
+            <div class="bg-white border rounded-2xl p-5 text-center"><i class="fa-solid fa-book-open text-blue-600 mb-2"></i><br><span class="text-xs font-bold">KEGIATAN</span></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 p-6">
-            <div class="bg-white border rounded-2xl p-5 text-center active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl mx-auto flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-mosque"></i></div>
-                <span class="text-xs font-semibold text-slate-700 uppercase">Profil</span>
-            </div>
-            <div class="bg-white border rounded-2xl p-5 text-center active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl mx-auto flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-book-open"></i></div>
-                <span class="text-xs font-semibold text-slate-700 uppercase">Kegiatan</span>
-            </div>
-        </div>
-
-        <!-- BOTTOM NAVIGATION -->
+        <!-- BOTTOM NAV -->
         <nav class="bottom-nav">
             <a onclick="location.reload()" class="nav-item"><i class="fa-solid fa-house-chimney text-xl"></i><span class="text-[10px] mt-1">Beranda</span></a>
             <a onclick="App.toggleQuran()" class="nav-item"><i class="fa-solid fa-book-quran text-xl"></i><span class="text-[10px] mt-1">Quran</span></a>
@@ -113,217 +96,173 @@
         </nav>
     </div>
 
-    <!-- MODAL: QURAN (QURAN.COM API) -->
-    <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center">
-            <button onclick="App.toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="text-center">
-                <h2 id="view-title" class="font-bold text-xs uppercase">Al-Quran Pro</h2>
-                <p id="view-subtitle" class="text-[8px] opacity-70"></p>
-            </div>
-            <button onclick="App.toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
-        </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
-    </div>
-
     <!-- MODAL: CALENDAR -->
     <div id="calendar-modal" class="modal-full">
-        <div class="bg-slate-800 p-5 text-white flex justify-between items-center">
-            <button onclick="App.toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="cal-month-name" class="font-bold text-xs uppercase">Kalender</h2>
+        <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
+            <button onclick="App.toggleCalendar()" class="p-2"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="text-center">
+                <h2 id="cal-month-name" class="font-bold text-sm uppercase tracking-widest">---</h2>
+                <p id="cal-hijri-range" class="text-[9px] text-teal-400 font-bold"></p>
+            </div>
             <div class="flex gap-2">
                 <button onclick="Calendar.changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
                 <button onclick="Calendar.changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
-        <div id="calendar-content" class="flex-1 overflow-y-auto p-4 bg-white pb-24"></div>
+        <div class="flex-1 overflow-y-auto p-2 bg-white pb-24">
+            <div class="calendar-grid">
+                <div class="calendar-day-label is-sunday">MIN</div><div class="calendar-day-label">SEN</div><div class="calendar-day-label">SEL</div>
+                <div class="calendar-day-label">RAB</div><div class="calendar-day-label">KAM</div><div class="calendar-day-label text-teal-600">JUM</div><div class="calendar-day-label">SAB</div>
+            </div>
+            <div id="calendar-main-grid" class="calendar-grid"></div>
+            <div id="holiday-info" class="p-5 mt-4 space-y-2 border-t border-slate-50"></div>
+        </div>
     </div>
 
-    <!-- SHEET: LOCATION -->
-    <div id="location-sheet-bg" onclick="App.toggleLocationSheet()" class="fixed inset-0 bg-slate-900/40 z-[250] hidden backdrop-blur-sm"></div>
-    <div id="location-sheet" class="fixed bottom-0 left-0 right-0 bg-white z-[300] rounded-t-[32px] p-8 translate-y-full transition-transform duration-500 max-w-[500px] mx-auto">
-        <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
-        <h3 class="text-center text-lg font-bold text-slate-800 mb-6 uppercase">Atur Wilayah</h3>
-        <button onclick="Prayer.getGPSData(); App.toggleLocationSheet()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-teal-50 text-teal-700 font-bold active:scale-95 transition-all"><i class="fa-solid fa-crosshairs text-lg"></i><span>Gunakan Lokasi Saat Ini</span></button>
+    <!-- MODAL: QURAN -->
+    <div id="quran-modal" class="modal-full">
+        <div class="bg-teal-700 p-5 text-white flex justify-between items-center">
+            <button onclick="App.toggleQuran()" class="p-2"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="view-title" class="font-bold text-xs uppercase">Quran Digital</h2>
+            <div class="w-10"></div>
+        </div>
+        <div id="quran-content" class="flex-1 overflow-y-auto p-5 pb-24"></div>
     </div>
 
     <script>
         /* ============================================================
-           [JS GROUP: GLOBAL & APP SYSTEM]
+           [JS GROUP: GLOBAL & SYSTEM]
            ============================================================ */
         const App = {
-            isTranslationVisible: true,
-            currentAudio: null,
-            currentAyahIndex: -1,
-            surahCache: null,
-
             pushState(n) { history.pushState({modal: n}, n, "#"+n); },
-
+            toggleCalendar() {
+                const el = document.getElementById('calendar-modal');
+                if (!el.classList.contains('modal-show')) {
+                    el.classList.add('modal-show'); Calendar.init(); this.pushState('calendar');
+                } else { history.back(); }
+            },
             toggleQuran() {
                 const el = document.getElementById('quran-modal');
                 if (!el.classList.contains('modal-show')) {
                     el.classList.add('modal-show'); Quran.loadList(); this.pushState('quran');
                 } else { history.back(); }
-            },
-
-            toggleCalendar() {
-                const el = document.getElementById('calendar-modal');
-                if (!el.classList.contains('modal-show')) {
-                    el.classList.add('modal-show'); Calendar.render(); this.pushState('calendar');
-                } else { history.back(); }
-            },
-
-            toggleLocationSheet() {
-                const sheet = document.getElementById('location-sheet');
-                const bg = document.getElementById('location-sheet-bg');
-                if (sheet.classList.contains('translate-y-full')) {
-                    sheet.classList.remove('translate-y-full'); bg.classList.remove('hidden'); this.pushState('location');
-                } else { history.back(); }
-            },
-
-            toggleTranslation() {
-                this.isTranslationVisible = !this.isTranslationVisible;
-                document.querySelectorAll('.translation-text').forEach(el => el.classList.toggle('hidden', !this.isTranslationVisible));
-            },
-
-            toArNum(n) {
-                return String(n).split('').map(x => ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'][+x]).join('');
             }
         };
 
-        window.onpopstate = () => {
-            document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
-            document.getElementById('location-sheet').classList.add('translate-y-full');
-            document.getElementById('location-sheet-bg').classList.add('hidden');
-            if(App.currentAudio) { App.currentAudio.pause(); App.currentAudio = null; }
-        };
+        window.onpopstate = () => { document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show')); };
 
         /* ============================================================
-           [JS GROUP: QURAN LOGIC (QURAN.COM API)]
-           ============================================================ */
-        const Quran = {
-            baseUrl: 'https://api.quran.com/api/v4',
-
-            async loadList() {
-                const c = document.getElementById('quran-content');
-                document.getElementById('view-title').innerText = "Al-Quran Pro";
-                if(App.surahCache) { c.innerHTML = App.surahCache; return; }
-
-                c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-circle-notch animate-spin text-3xl text-teal-600"></i></div>`;
-                try {
-                    const r = await fetch(`${this.baseUrl}/chapters?language=id`);
-                    const j = await r.json();
-                    let html = j.chapters.map(s => `
-                        <div onclick="Quran.loadDetail(${s.id})" class="bg-white p-5 rounded-2xl border mb-3 flex justify-between items-center active:scale-95 transition-all">
-                            <div class="flex items-center gap-4">
-                                <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
-                                <div><h4 class="font-bold text-sm uppercase">${s.name_simple}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name} • ${s.verses_count} Ayat</p></div>
-                            </div>
-                            <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
-                        </div>`).join('');
-                    App.surahCache = html;
-                    c.innerHTML = html;
-                } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat surah.</p>'; }
-            },
-
-            async loadDetail(id) {
-                const c = document.getElementById('quran-content');
-                c.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-circle-notch animate-spin text-3xl text-teal-600"></i></div>`;
-                try {
-                    const [arab, indo, info] = await Promise.all([
-                        fetch(`${this.baseUrl}/quran/verses/uthmani?chapter_number=${id}`).then(r => r.json()),
-                        fetch(`${this.baseUrl}/quran/translations/33?chapter_number=${id}`).then(r => r.json()),
-                        fetch(`${this.baseUrl}/chapters/${id}?language=id`).then(r => r.json())
-                    ]);
-
-                    const s = info.chapter;
-                    document.getElementById('view-title').innerText = s.name_simple;
-                    document.getElementById('view-subtitle').innerText = `${s.translated_name.name} • ${s.verses_count} Ayat`;
-
-                    let html = (id != 1 && id != 9) ? `<div class="bismillah font-arab text-4xl text-center text-teal-700 mb-8">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>` : '';
-                    
-                    arab.verses.forEach((v, i) => {
-                        html += `
-                        <div class="p-5 border-b border-slate-100 transition-all">
-                            <div class="flex flex-col gap-4">
-                                <div class="w-full flex flex-row-reverse flex-wrap items-center gap-2">
-                                    <p class="font-arab text-4xl leading-[2.8] text-slate-800 text-right flex-1" dir="rtl">${v.text_uthmani}</p>
-                                    <span class="ayah-number">${App.toArNum(i+1)}</span>
-                                </div>
-                                <p class="translation-text text-sm text-slate-500 font-medium border-l-4 border-teal-100 pl-4 ${App.isTranslationVisible ? '' : 'hidden'}">${indo.translations[i].text}</p>
-                            </div>
-                        </div>`;
-                    });
-                    c.innerHTML = html + `<button onclick="Quran.loadList()" class="w-full mt-6 py-5 bg-white text-teal-700 rounded-3xl font-bold text-[10px] border-2">KEMBALI</button>`;
-                    c.scrollTo(0,0);
-                } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat ayat.</p>'; }
-            }
-        };
-
-        /* ============================================================
-           [JS GROUP: PRAYER & LOCATION SERVICE]
-           ============================================================ */
-        const Prayer = {
-            nextTime: null,
-            async getGPSData() {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    document.getElementById('location-text').innerText = "Lokasi GPS Aktif";
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json();
-                    this.setUI(json.data.timings);
-                });
-            },
-            setUI(t) {
-                const now = new Date(); const cur = (now.getHours() * 60) + now.getMinutes();
-                const s = [{n:'Subuh', t:t.Fajr}, {n:'Dzuhur', t:t.Dhuhr}, {n:'Ashar', t:t.Asr}, {n:'Maghrib', t:t.Maghrib}, {n:'Isya', t:t.Isha}];
-                let next = s.find(x => (parseInt(x.t.split(':')[0])*60 + parseInt(x.t.split(':')[1])) > cur) || s[0];
-                document.getElementById('prayer-name').innerText = next.n;
-                document.getElementById('prayer-time').innerText = next.t;
-                const [nH, nM] = next.t.split(':'); this.nextTime = new Date(); this.nextTime.setHours(nH, nM, 0);
-                if (this.nextTime < now) this.nextTime.setDate(this.nextTime.getDate() + 1);
-            },
-            startTick() {
-                setInterval(() => {
-                    if (!this.nextTime) return;
-                    const diff = this.nextTime - new Date();
-                    if (diff <= 0) { this.getGPSData(); return; }
-                    const h = Math.floor(diff/3600000).toString().padStart(2,'0');
-                    const m = Math.floor((diff%3600000)/60000).toString().padStart(2,'0');
-                    const s = Math.floor((diff%60000)/1000).toString().padStart(2,'0');
-                    document.getElementById('countdown').innerText = `-${h}:${m}:${s}`;
-                }, 1000);
-            }
-        };
-
-        /* ============================================================
-           [JS GROUP: CALENDAR & DATE]
+           [JS GROUP: CALENDAR, HIJRI, WETON, HOLIDAY]
            ============================================================ */
         const Calendar = {
-            cur: new Date(),
-            render() {
-                const c = document.getElementById('calendar-content');
-                const y = this.cur.getFullYear(); const m = this.cur.getMonth();
-                const start = new Date(y, m, 1).getDay(); const total = new Date(y, m + 1, 0).getDate();
-                const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                document.getElementById('cal-month-name').innerText = `${ms[m]} ${y}`;
-                
-                let html = `<div class="calendar-grid mb-2 text-[10px] font-bold text-center"><div class="text-red-500">MIN</div><div>SEN</div><div>SEL</div><div>RAB</div><div>KAM</div><div class="text-teal-600">JUM</div><div>SAB</div></div><div class="calendar-grid">`;
-                for (let i = 0; i < start; i++) html += '<div></div>';
-                for (let d = 1; d <= total; d++) {
-                    const isToday = new Date().toDateString() === new Date(y, m, d).toDateString();
-                    html += `<div class="calendar-date ${isToday ? 'date-today' : ''}">${d}</div>`;
-                }
-                c.innerHTML = html + '</div>';
+            curDate: new Date(),
+            holidays: [],
+
+            async init() {
+                if (this.holidays.length === 0) await this.fetchHolidays();
+                this.render();
             },
-            changeMonth(v) { this.cur.setMonth(this.cur.getMonth() + v); this.render(); }
+
+            async fetchHolidays() {
+                try {
+                    const res = await fetch(`https://dayoffapi.vercel.app/api?year=${this.curDate.getFullYear()}`);
+                    this.holidays = await res.json();
+                } catch (e) { console.error("Gagal load libur"); }
+            },
+
+            getWeton(date) {
+                const wetons = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+                const start = new Date(1900, 0, 1); // Referensi 1 Jan 1900 adalah Senin Pahing
+                const diff = Math.floor((date - start) / (1000 * 60 * 60 * 24));
+                return wetons[(diff + 1) % 5];
+            },
+
+            getHijri(date) {
+                // Algoritma Kuwaiti Sederhana
+                let jd = Math.floor(date.getTime() / 86400000) + 2440588;
+                let l = jd - 1948440 + 10632;
+                let n = Math.floor((l - 1) / 10631);
+                l = l - 10631 * n + 354;
+                let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) + (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+                l = l - (Math.floor((30 - j) / 20)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 30)) * (Math.floor((15238 * j) / 43)) + 29;
+                let m = Math.floor((24 * l) / 709);
+                let d = l - Math.floor((709 * m) / 24);
+                let y = 30 * n + j - 30;
+                const months = ["Muharram","Safar","Rabiul Awal","Rabiul Akhir","Jumadil Ula","Jumadil Akhira","Rajab","Syaban","Ramadhan","Syawal","Dzulqo'dah","Dzulhijjah"];
+                return { d, m: months[m-1], y };
+            },
+
+            render() {
+                const grid = document.getElementById('calendar-main-grid');
+                const holList = document.getElementById('holiday-info');
+                grid.innerHTML = ''; holList.innerHTML = '';
+                
+                const y = this.curDate.getFullYear();
+                const m = this.curDate.getMonth();
+                const firstDay = new Date(y, m, 1).getDay();
+                const lastDate = new Date(y, m + 1, 0).getDate();
+                const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+                
+                document.getElementById('cal-month-name').innerText = `${monthNames[m]} ${y}`;
+
+                // Kosongkan awal grid
+                for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
+
+                for (let d = 1; d <= lastDate; d++) {
+                    const date = new Date(y, m, d);
+                    const isToday = date.toDateString() === new Date().toDateString();
+                    const isSunday = date.getDay() === 0;
+                    const weton = this.getWeton(date);
+                    const hijri = this.getHijri(date);
+                    const holiday = this.holidays.find(h => h.tanggal === date.toISOString().split('T')[0]);
+
+                    grid.innerHTML += `
+                        <div class="calendar-box ${isToday ? 'is-today' : ''} ${holiday || isSunday ? 'is-holiday' : ''}">
+                            <span class="date-masehi">${d}</span>
+                            <span class="date-hijri">${hijri.d} ${hijri.m.substring(0,3)}</span>
+                            <span class="date-weton">${weton}</span>
+                        </div>
+                    `;
+
+                    if (holiday) {
+                        holList.innerHTML += `<div class="flex gap-3 text-[10px] items-start"><span class="bg-red-500 text-white px-2 py-0.5 rounded-full font-bold">${d}</span><p class="font-bold text-slate-700">${holiday.keterangan}</p></div>`;
+                    }
+                }
+            },
+            changeMonth(v) { this.curDate.setMonth(this.curDate.getMonth() + v); this.render(); }
         };
 
-        // Init
-        const now = new Date();
-        document.getElementById('full-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        Prayer.getGPSData();
-        Prayer.startTick();
+        /* ============================================================
+           [JS GROUP: PRAYER & QURAN API]
+           ============================================================ */
+        const Quran = {
+            async loadList() {
+                const c = document.getElementById('quran-content');
+                c.innerHTML = '<p class="text-center">Loading Surah...</p>';
+                const res = await fetch('https://api.quran.com/api/v4/chapters?language=id');
+                const data = await res.json();
+                c.innerHTML = data.chapters.map(s => `<div onclick="Quran.loadAyah(${s.id})" class="p-4 border-b flex justify-between items-center"><div class="text-xs font-bold">${s.id}. ${s.name_simple}</div><div class="font-arab text-teal-600">${s.name_arabic}</div></div>`).join('');
+            },
+            async loadAyah(id) {
+                const c = document.getElementById('quran-content');
+                c.innerHTML = '<p class="text-center">Loading Ayat...</p>';
+                const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
+                const data = await res.json();
+                c.innerHTML = data.verses.map((a, i) => `<div class="py-6 border-b"><p class="font-arab text-3xl text-right leading-[3]">${a.text_uthmani} <span class="ayah-number">${i+1}</span></p></div>`).join('') + `<button onclick="Quran.loadList()" class="w-full p-4 mt-4 bg-slate-100 rounded-xl font-bold text-xs">KEMBALI</button>`;
+                c.scrollTo(0,0);
+            }
+        };
+
+        // Initialize Prayer (Minimal Version)
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+            const data = await res.json();
+            const t = data.data.timings;
+            document.getElementById('prayer-name').innerText = "DZUHUR";
+            document.getElementById('prayer-time').innerText = t.Dhuhr;
+            document.getElementById('location-text').innerText = "Lokasi Terdeteksi";
+        });
     </script>
 </body>
 </html>
