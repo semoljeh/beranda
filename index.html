@@ -13,7 +13,6 @@
     <style>
         /* ============================================================
            [CSS GROUP 1: CORE LAYOUT]
-           Pengaturan dasar aplikasi dan kontainer utama
            ============================================================ */
         *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; color: #0f172a; }
@@ -22,7 +21,6 @@
 
         /* ============================================================
            [CSS GROUP 2: HOME COMPONENTS]
-           Gaya untuk Header Beranda dan Card Dashboard
            ============================================================ */
         .header { height: 220px; background: linear-gradient(135deg, #0d9488 0%, #115e59 100%); border-radius: 0 0 40px 40px; padding: 40px 25px; color: white; }
         .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
@@ -34,7 +32,6 @@
 
         /* ============================================================
            [CSS GROUP 3: MODAL SYSTEM]
-           Kontainer jendela untuk fitur Quran
            ============================================================ */
         .modal { position: fixed; inset: 0; background: white; z-index: 999; transform: translateY(100%); transition: .4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; max-width: 500px; margin: auto; }
         .modal.show { transform: translateY(0); }
@@ -46,7 +43,6 @@
 
         /* ============================================================
            [CSS GROUP 4: QURAN CONTENT & LIST]
-           Gaya untuk daftar surah dan pembungkus ayat
            ============================================================ */
         .content { flex: 1; overflow-y: auto; background: white; padding: 20px; }
         .surah-item { padding: 16px; border: 1px solid #f1f5f9; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
@@ -56,13 +52,11 @@
 
         /* ============================================================
            [CSS GROUP 5: AYAH READER & NUMBER]
-           Gaya bacaan ayat dengan nomor di tengah lingkaran
            ============================================================ */
         .ayah-box { padding: 30px 0; border-bottom: 1px solid #f1f5f9; }
         .arab-wrap { direction: rtl; line-height: 3.2; text-align: right; }
         .arab-text { font-family: 'Amiri Quran', serif; font-size: 2.1rem; color: #1e293b; word-spacing: 4px; }
         
-        /* FIX NOMOR AYAT TENGAH PERSISI */
         .ayah-number { 
             display: inline-flex; justify-content: center; align-items: center; 
             width: 42px; height: 42px; border-radius: 50%; 
@@ -77,7 +71,6 @@
 
         /* ============================================================
            [CSS GROUP 6: NAVIGATION & UTILS]
-           Menu bawah dan elemen pendukung
            ============================================================ */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #e2e8f0; z-index: 100; }
         .nav-link { display: flex; flex-direction: column; align-items: center; color: #64748b; cursor: pointer; text-decoration: none; transition: 0.3s; }
@@ -130,7 +123,6 @@
         /* 
         ==========================================================================
         [JS GROUP: API SERVICE]
-        Kelompok fungsi untuk komunikasi dengan server quran.com
         ==========================================================================
         */
         const QuranAPI = {
@@ -153,42 +145,47 @@
 
         /* 
         ==========================================================================
-        [JS GROUP: APP LOGIC]
-        Logika utama aplikasi (Navigasi, Rendering, State)
+        [JS GROUP: APP LOGIC & HISTORY]
         ==========================================================================
         */
         const App = {
             isTranslationVisible: true,
             surahCache: null,
+            currentView: 'home', // 'home', 'list', 'ayah'
 
-            // Konversi nomor ke format Arab
             toArNum(n) {
                 return String(n).split('').map(x => ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'][+x]).join('');
             },
 
-            // Buka Tutup Modal
+            // Buka Tutup Modal dengan History Control
             toggleQuran() {
                 const modal = document.getElementById('quranModal');
-                modal.classList.toggle('show');
-                if(modal.classList.contains('show')) this.renderSurahList();
+                if(modal.classList.contains('show')){
+                    modal.classList.remove('show');
+                    this.currentView = 'home';
+                    // Jika ditutup manual, bersihkan history jika perlu
+                } else {
+                    modal.classList.add('show');
+                    history.pushState({view: 'list'}, "");
+                    this.currentView = 'list';
+                    this.renderSurahList();
+                }
             },
 
-            // Sembunyi/Tampilkan Terjemahan
             toggleTranslation() {
                 this.isTranslationVisible = !this.isTranslationVisible;
                 document.querySelectorAll('.translation').forEach(el => el.classList.toggle('hidden', !this.isTranslationVisible));
             },
 
-            // Render Daftar Surah
             async renderSurahList() {
                 const container = document.getElementById('mainContent');
                 document.getElementById('viewTitle').innerText = "AL-QURAN";
                 document.getElementById('viewSubtitle').innerText = "114 Surah";
+                this.currentView = 'list';
 
                 if(this.surahCache) { container.innerHTML = this.surahCache; return; }
 
                 container.innerHTML = `<div class="loading-state">Mengunduh daftar surah...</div>`;
-                
                 try {
                     const chapters = await QuranAPI.fetchChapters();
                     let html = chapters.map(s => `
@@ -208,11 +205,10 @@
                     this.surahCache = html;
                     container.innerHTML = html;
                 } catch(e) {
-                    container.innerHTML = `<div class="loading-state">Koneksi gagal. Silakan coba lagi.</div>`;
+                    container.innerHTML = `<div class="loading-state">Koneksi gagal.</div>`;
                 }
             },
 
-            // Render Bacaan Ayat
             async renderAyahs(id) {
                 const container = document.getElementById('mainContent');
                 container.innerHTML = `<div class="loading-state">Memuat ayat...</div>`;
@@ -222,6 +218,9 @@
                     const data = await QuranAPI.fetchAyahs(id);
                     document.getElementById('viewTitle').innerText = data.details.name_simple;
                     document.getElementById('viewSubtitle').innerText = `${data.details.translated_name.name} • ${data.details.verses_count} Ayat`;
+                    
+                    this.currentView = 'ayah';
+                    history.pushState({view: 'ayah'}, "");
 
                     let html = (id != 1 && id != 9) ? `<div class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>` : '';
 
@@ -241,11 +240,33 @@
                         `;
                     });
 
-                    html += `<button onclick="App.renderSurahList()" class="back-btn">Kembali ke Daftar Surah</button>`;
+                    html += `<button onclick="App.handleBackBtn()" class="back-btn">Kembali ke Daftar Surah</button>`;
                     container.innerHTML = html;
                 } catch(e) {
                     container.innerHTML = `<div class="loading-state">Gagal memuat ayat.</div>`;
                 }
+            },
+
+            handleBackBtn() {
+                history.back();
+            }
+        };
+
+        /* 
+        ==========================================================================
+        [HISTORY API: ANTI-EXIT CONTROL]
+        ==========================================================================
+        */
+        window.onpopstate = function(event) {
+            const modal = document.getElementById('quranModal');
+            
+            if (App.currentView === 'ayah') {
+                // Jika sedang baca ayat, back akan kembali ke list
+                App.renderSurahList();
+            } else if (App.currentView === 'list') {
+                // Jika sedang di list, back akan tutup modal
+                modal.classList.remove('show');
+                App.currentView = 'home';
             }
         };
     </script>
