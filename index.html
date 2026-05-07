@@ -34,23 +34,21 @@
         }
         .menu-card:active { transform: scale(0.95); background-color: #f0fdfa; }
 
-        /* Navigasi Bawah Seragam Warna #0d9488 */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; max-width: 500px;
             background-color: white; display: flex; justify-content: space-around;
             padding: 14px 0; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
             z-index: 100; border-radius: 25px 25px 0 0;
         }
-        .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            text-decoration: none; 
-            color: #0d9488; /* Warna seragam untuk semua menu */
-            transition: all 0.2s; 
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #0d9488; transition: all 0.2s; cursor: pointer; }
         .nav-item i { font-size: 22px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Quran Modal Styles */
+        #quran-modal { transition: transform 0.3s ease-in-out; z-index: 200; }
+        .hidden-quran { transform: translateY(100%); }
+        .show-quran { transform: translateY(0); }
+        .ayat-font { font-family: 'LPMQ', serif; line-height: 2.5; }
     </style>
 </head>
 <body>
@@ -61,7 +59,7 @@
                 <div class="grid grid-cols-3 items-center border-b border-dashed border-gray-100 pb-4 mb-3">
                     <div class="flex flex-col items-start">
                         <span class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Lokasi Anda</span>
-                        <div class="flex items-center gap-1 text-teal-700 font-times">
+                        <div class="flex items-center gap-1 text-teal-700 font-times uppercase">
                             <i class="fa-solid fa-location-crosshairs text-[10px]"></i>
                             <span id="location-text" class="text-[11px] font-bold truncate w-20 italic">Mencari...</span>
                         </div>
@@ -76,8 +74,8 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase font-times"></p>
-                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 font-arab" dir="rtl"></p>
+                    <p id="full-date" class="text-[11px] font-bold text-gray-700 uppercase font-times tracking-tight"></p>
+                    <p id="java-hijri" class="text-[10px] text-emerald-600 font-medium mt-0.5 font-arab tracking-wide" dir="rtl"></p>
                 </div>
             </div>
         </div>
@@ -88,20 +86,22 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4 p-6 mt-2">
-            <div class="menu-card"><i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times">Profil Madrasah</span></div>
-            <div class="menu-card"><i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times">Kegiatan Santri</span></div>
-            <div class="menu-card"><i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times">Pendaftaran</span></div>
-            <div class="menu-card"><i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times">Program Donasi</span></div>
+            <div class="menu-card"><i class="fa-solid fa-mosque text-3xl text-emerald-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Profil Madrasah</span></div>
+            <div class="menu-card"><i class="fa-solid fa-book-open text-3xl text-blue-700 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Kegiatan Santri</span></div>
+            <div class="menu-card"><i class="fa-solid fa-file-signature text-3xl text-gray-500 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Pendaftaran</span></div>
+            <div class="menu-card"><i class="fa-solid fa-heart-pulse text-3xl text-red-600 mb-3"></i><span class="text-[12px] font-bold text-gray-700 font-times uppercase">Program Donasi</span></div>
         </div>
 
-
+        <footer class="mt-4 mb-8 text-center px-10">
+            <p class="text-[9px] text-gray-300 font-times uppercase italic">Versi 2.0 • 2026 All Rights Reserved</p>
+        </footer>
 
         <nav class="bottom-nav">
-            <a href="#" class="nav-item">
+            <a onclick="location.reload()" class="nav-item">
                 <i class="fa-solid fa-house"></i>
                 <span class="font-times">Beranda</span>
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="toggleQuran()" class="nav-item">
                 <i class="fa-solid fa-book-quran"></i>
                 <span class="font-times">Al-Quran</span>
             </a>
@@ -112,8 +112,27 @@
         </nav>
     </div>
 
+    <div id="quran-modal" class="fixed inset-0 bg-white hidden-quran flex flex-col max-w-[500px] mx-auto shadow-2xl">
+        <div class="bg-teal-700 p-4 text-white flex justify-between items-center shadow-md">
+            <button onclick="toggleQuran()" class="p-2"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="font-bold text-sm tracking-wide uppercase">Al-Quran Digital</h2>
+            <button onclick="toggleTranslation()" id="btn-trans" class="text-[9px] bg-teal-600 px-3 py-1.5 rounded-full border border-teal-500 font-bold uppercase">
+                Sembunyikan Terjemah
+            </button>
+        </div>
+        <div id="quran-content" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 pb-24">
+            <div class="text-center py-20 text-gray-400">
+                <i class="fa-solid fa-spinner animate-spin text-3xl mb-2 text-teal-600"></i>
+                <p class="text-xs uppercase font-bold tracking-widest">Memuat Surah...</p>
+            </div>
+        </div>
+    </div>
+
 <script>
     let nextPrayerTime = null;
+    let showTranslation = true;
+
+    // 1. Logika Tanggal
     function updateDates() {
         const now = new Date();
         const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -125,6 +144,7 @@
         document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ / 1447 H`;
     }
 
+    // 2. Geolocation & Sholat
     async function getCoreData() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -168,6 +188,79 @@
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
             document.getElementById('countdown').innerText = `-${h}:${m}:${s}`;
         }, 1000);
+    }
+
+    // 3. Logika Al-Quran
+    function toggleQuran() {
+        const modal = document.getElementById('quran-modal');
+        if (modal.classList.contains('hidden-quran')) {
+            modal.classList.remove('hidden-quran');
+            modal.classList.add('show-quran');
+            loadSurahList();
+        } else {
+            modal.classList.remove('show-quran');
+            modal.classList.add('hidden-quran');
+        }
+    }
+
+    function toggleTranslation() {
+        showTranslation = !showTranslation;
+        const transElements = document.querySelectorAll('.translation-text');
+        const btn = document.getElementById('btn-trans');
+        transElements.forEach(el => el.style.display = showTranslation ? 'block' : 'none');
+        btn.innerText = showTranslation ? 'Sembunyikan Terjemah' : 'Tampilkan Terjemah';
+    }
+
+    async function loadSurahList() {
+        const content = document.getElementById('quran-content');
+        try {
+            const res = await fetch('https://equran.id/api/v2/surat');
+            const data = await res.json();
+            let html = '<div class="grid grid-cols-1 gap-3">';
+            data.data.forEach(surah => {
+                html += `
+                    <div onclick="loadDetailSurah(${surah.nomor})" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-transform">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 bg-teal-50 text-teal-700 rounded-lg flex items-center justify-center text-xs font-bold">${surah.nomor}</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800 font-times">${surah.namaLatin}</h4>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">${surah.arti} • ${surah.jumlahAyat} Ayat</p>
+                            </div>
+                        </div>
+                        <span class="font-arab text-xl text-teal-600">${surah.nama}</span>
+                    </div>`;
+            });
+            content.innerHTML = html + '</div>';
+        } catch (e) { content.innerHTML = '<p class="text-center text-red-500 font-bold uppercase text-xs">Gagal memuat Al-Quran.</p>'; }
+    }
+
+    async function loadDetailSurah(nomor) {
+        const content = document.getElementById('quran-content');
+        content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-spinner animate-spin text-3xl text-teal-600"></i></div>`;
+        try {
+            const res = await fetch(`https://equran.id/api/v2/surat/${nomor}`);
+            const data = await res.json();
+            const surah = data.data;
+            let html = `
+                <div class="bg-teal-700 p-6 rounded-3xl text-white text-center mb-6 shadow-lg shadow-teal-100">
+                    <h3 class="font-arab text-4xl mb-2">${surah.nama}</h3>
+                    <p class="font-times font-bold text-teal-100 uppercase tracking-widest text-xs">${surah.namaLatin} • ${surah.arti}</p>
+                </div>
+                <div class="space-y-10">`;
+            surah.ayat.forEach(ayat => {
+                html += `
+                    <div class="border-b border-slate-100 pb-8">
+                        <div class="flex justify-between items-start gap-4 mb-6">
+                            <span class="bg-teal-50 text-teal-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-full font-bold">${ayat.nomorAyat}</span>
+                            <p class="font-arab text-3xl text-right leading-[2.8] text-slate-800 w-full" dir="rtl">${ayat.teksArab}</p>
+                        </div>
+                        <p class="translation-text text-sm text-slate-500 leading-relaxed font-times italic border-l-2 border-teal-100 pl-4" style="display: ${showTranslation ? 'block' : 'none'}">
+                            ${ayat.teksIndonesia}
+                        </p>
+                    </div>`;
+            });
+            content.innerHTML = html + `</div><button onclick="loadSurahList()" class="w-full mt-10 py-4 bg-teal-50 text-teal-700 rounded-2xl font-bold text-xs uppercase tracking-widest border border-teal-100 shadow-sm active:scale-95 transition-transform">Kembali ke Daftar Surah</button>`;
+        } catch (e) { content.innerHTML = '<p class="text-center text-red-500">Gagal memuat Ayat.</p>'; }
     }
 
     updateDates(); getCoreData(); startCountdown();
