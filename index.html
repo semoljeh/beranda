@@ -43,9 +43,7 @@
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
         .modal-show { transform: translateY(0) !important; }
 
-        /* ========================================================
-           NEW CALENDAR DESIGN (NU Online Reference)
-           ======================================================== */
+        /* Calendar Grid Style */
         .calendar-grid { 
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
@@ -65,23 +63,19 @@
         }
         .calendar-empty { background-color: #f9fafb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
         
-        /* Layout Angka */
+        /* Inner Date Layout */
         .date-top-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
-        .date-masehi { font-size: 16px; font-weight: 700; color: #1e293b; }
-        .date-hijri-arab { font-family: 'LPMQ'; font-size: 12px; color: #ef4444; }
+        .date-masehi { font-size: 15px; font-weight: 700; color: #1e293b; line-height: 1; }
+        .date-hijri-arab { font-family: 'LPMQ'; font-size: 11px; color: #ef4444; line-height: 1; }
         .date-bottom-info { margin-top: auto; text-align: center; width: 100%; }
-        .date-pasaran { font-size: 8px; color: #64748b; font-weight: 600; text-transform: capitalize; }
+        .date-pasaran { font-size: 7.5px; color: #64748b; font-weight: 600; text-transform: capitalize; line-height: 1; }
         
-        /* Hari Libur & Hari Minggu */
         .date-holiday .date-masehi, .date-holiday .date-hijri-arab { color: #ef4444 !important; }
-        
-        /* Hari Ini Indicator */
-        .date-today { border: 2px solid #0d9488 !important; z-index: 10; background-color: #f0fdfa; }
+        .date-today { border: 2.5px solid #0d9488 !important; z-index: 10; background-color: #f0fdfa; }
 
-        /* Quran & Audio */
+        /* Quran Audio Styles */
         .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
         .audio-btn { width: 32px; height: 32px; border-radius: 50%; background: #f0fdf4; color: #0d9488; display: flex; align-items: center; justify-content: center; border: 1px solid #dcfce7; }
-        .ayah-number-arab { font-family: 'LPMQ'; font-size: 1.5rem; color: #0d9488; margin-right: 8px; line-height: 1; }
         .translation-text.hidden { display: none; }
     </style>
 </head>
@@ -91,7 +85,7 @@
         <div class="header-bg">
             <div onclick="toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
-                <span id="location-text" class="text-[11px] font-semibold text-white tracking-tight truncate max-w-[150px]">Mencari Lokasi...</span>
+                <span id="location-text" class="text-[11px] font-semibold text-white truncate max-w-[150px]">Mencari Lokasi...</span>
                 <i class="fa-solid fa-chevron-down text-white/50 text-[9px]"></i>
             </div>
 
@@ -99,7 +93,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 text-center border-r border-slate-100">
                         <p id="prayer-name" class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-1">---</p>
-                        <h2 id="prayer-time" class="text-4xl font-bold text-slate-800 tracking-tight leading-none">--:--</h2>
+                        <h2 id="prayer-time" class="text-4xl font-bold text-slate-800 leading-none">--:--</h2>
                     </div>
                     <div class="flex-1 text-center">
                         <p class="text-[10px] text-red-400 font-bold uppercase tracking-[0.15em] mb-1">Mendatang</p>
@@ -108,7 +102,7 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-slate-50 text-center">
                     <p id="full-date" class="text-[11px] font-medium text-slate-500 mb-1"></p>
-                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight"></p>
+                    <p id="java-hijri" class="text-xs text-teal-600 font-semibold"></p>
                 </div>
             </div>
         </div>
@@ -134,26 +128,42 @@
     </div>
 
     <div id="calendar-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="calendar-month-name" class="font-bold text-xs uppercase tracking-widest">Kalender</h2>
-            <div class="flex gap-2">
-                <button onclick="changeMonth(-1)" class="p-2"><i class="fa-solid fa-chevron-left"></i></button>
-                <button onclick="changeMonth(1)" class="p-2"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="bg-teal-700 p-4 text-white shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="toggleCalendar()" class="p-2 bg-white/10 rounded-xl">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="text-right">
+                    <p id="header-masehi" class="text-[10px] font-medium opacity-90"></p>
+                    <p id="header-hijri" class="text-[10px] font-bold"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-circle-info"></i></button>
+                    <button class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </div>
+            <div class="flex justify-between items-center px-2">
+                <button onclick="changeMonth(-1)" class="text-xl opacity-70"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="text-center">
+                    <h2 id="calendar-month-name" class="font-bold text-lg uppercase leading-none">Mei 2026</h2>
+                    <p id="calendar-hijri-range" class="text-[10px] font-medium opacity-80 mt-1">---</p>
+                </div>
+                <button onclick="changeMonth(1)" class="text-xl opacity-70"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
+
         <div class="flex-1 overflow-y-auto p-4 bg-white pb-24">
             <div class="grid grid-cols-7 mb-2 bg-slate-50 border border-slate-100 rounded-lg">
-                <div class="text-center text-[10px] py-2 font-bold text-red-500">Ahad</div>
-                <div class="text-center text-[10px] py-2 font-bold text-slate-600">Senin</div>
-                <div class="text-center text-[10px] py-2 font-bold text-slate-600">Selasa</div>
-                <div class="text-center text-[10px] py-2 font-bold text-slate-600">Rabu</div>
-                <div class="text-center text-[10px] py-2 font-bold text-slate-600">Kamis</div>
-                <div class="text-center text-[10px] py-2 font-bold text-teal-600">Jumat</div>
-                <div class="text-center text-[10px] py-2 font-bold text-slate-600">Sabtu</div>
+                <div class="text-center text-[10px] py-3 font-bold text-red-500">Ahad</div>
+                <div class="text-center text-[10px] py-3 font-bold text-slate-600">Senin</div>
+                <div class="text-center text-[10px] py-3 font-bold text-slate-600">Selasa</div>
+                <div class="text-center text-[10px] py-3 font-bold text-slate-600">Rabu</div>
+                <div class="text-center text-[10px] py-3 font-bold text-slate-600">Kamis</div>
+                <div class="text-center text-[10px] py-3 font-bold text-teal-600">Jumat</div>
+                <div class="text-center text-[10px] py-3 font-bold text-slate-600">Sabtu</div>
             </div>
             <div id="calendar-days-grid" class="calendar-grid"></div>
-            <div id="holiday-list" class="mt-6 space-y-2 border-t pt-4"></div>
+            <div id="holiday-list" class="mt-8 space-y-3"></div>
         </div>
     </div>
 
@@ -164,30 +174,23 @@
         let nextPrayerTime = null;
         let currentCalDate = new Date();
         let nationalHolidays = [];
-        let ayahList = [];
 
-        /* UTILITY */
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
             return String(n).split('').map(c => forms[Number(c)]).join('');
         }
 
-        /* NAVIGATION */
-        window.addEventListener('popstate', function () {
+        /* MODAL CONTROL */
+        window.addEventListener('popstate', () => {
             document.querySelectorAll('.modal-full').forEach(m => m.classList.remove('modal-show'));
         });
         function pushState(n) { history.pushState({modal: n}, n, "#"+n); }
         function toggleCalendar() {
             const el = document.getElementById('calendar-modal');
-            if (!el.classList.contains('modal-show')) { 
-                el.classList.add('modal-show'); 
-                if (nationalHolidays.length === 0) fetchHolidays(); 
-                renderCalendar(); 
-                pushState('calendar'); 
-            } else { history.back(); }
+            if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); if(nationalHolidays.length===0) fetchHolidays(); renderCalendar(); pushState('calendar'); } else { history.back(); }
         }
 
-        /* CALENDAR LOGIC */
+        /* CALENDAR ENGINE */
         function getPasaran(date) {
             const p = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
             const diff = Math.floor((date - new Date(1900, 0, 1)) / 86400000);
@@ -214,16 +217,26 @@
             const grid = document.getElementById('calendar-days-grid');
             const holEl = document.getElementById('holiday-list');
             grid.innerHTML = ''; holEl.innerHTML = '';
+            
             const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth();
             const start = new Date(y, m, 1).getDay(); const total = new Date(y, m + 1, 0).getDate();
             const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            // Update Header
+            const now = new Date();
+            const hNow = getHijri(now);
+            document.getElementById('header-masehi').innerText = `${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('header-hijri').innerText = `${hNow.d} ${hNow.m} ${hNow.y}`;
             document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
+            
+            const firstH = getHijri(new Date(y, m, 1));
+            const lastH = getHijri(new Date(y, m + 1, 0));
+            document.getElementById('calendar-hijri-range').innerText = `${firstH.m} - ${lastH.m} ${lastH.y} H`;
 
             for (let i = 0; i < start; i++) grid.innerHTML += '<div class="calendar-empty"></div>';
             
             for (let d = 1; d <= total; d++) {
-                const date = new Date(y, m, d); 
-                const h = getHijri(date);
+                const date = new Date(y, m, d); const h = getHijri(date);
                 const isHol = nationalHolidays.find(x => x.date === date.toISOString().split('T')[0]);
                 const isToday = new Date().toDateString() === date.toDateString();
                 const isAhad = date.getDay() === 0;
@@ -245,8 +258,38 @@
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); renderCalendar(); }
         
-        // Init (seperti kode sebelumnya)
+        /* PRAYER ENGINE (Tetap berfungsi) */
+        async function getCoreData() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const { latitude: lat, longitude: lon } = pos.coords;
+                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                    const json = await res.json();
+                    setPrayerUI(json.data.timings);
+                });
+            }
+        }
+        function setPrayerUI(t) {
+            const now = new Date(); const cur = (now.getHours() * 60) + now.getMinutes();
+            const s = [{n:'Subuh', t:t.Fajr}, {n:'Dzuhur', t:t.Dhuhr}, {n:'Ashar', t:t.Asr}, {n:'Maghrib', t:t.Maghrib}, {n:'Isya', t:t.Isha}];
+            let next = s.find(x => (parseInt(x.t.split(':')[0])*60 + parseInt(x.t.split(':')[1])) > cur) || s[0];
+            document.getElementById('prayer-name').innerText = next.n; 
+            document.getElementById('prayer-time').innerText = next.t;
+            const [nH, nM] = next.t.split(':'); nextPrayerTime = new Date(); 
+            nextPrayerTime.setHours(nH, nM, 0); if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+        }
+
+        // Init
+        getCoreData();
         renderCalendar();
+        setInterval(() => {
+            const now = new Date();
+            const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const h = getHijri(now);
+            document.getElementById('full-date').innerText = `${ds[now.getDay()]} ${getPasaran(now)}, ${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()} M`;
+            document.getElementById('java-hijri').innerText = `${h.d} ${h.m} ${h.y} H`;
+        }, 1000);
     </script>
 </body>
 </html>
