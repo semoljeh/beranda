@@ -97,106 +97,115 @@
         </footer>
     </div>
 
-    <script>
-        let nextPrayerTime = null;
+   <script>
+    let nextPrayerTime = null;
 
-        // 1. Logika Tanggal Lengkap & Jawa
-        function updateDates() {
-            const now = new Date();
-            const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-            const pasaran = ["Legi", "Paing", "Pon", "Wage", "Kliwon"];
-            
-            // Hitung Pasaran Jawa (Ref: 1 Jan 1900 = Senin Pahing)
-            const refDate = new Date(1900, 0, 1);
-            const diffDays = Math.floor((now - refDate) / (86400000));
-            const pasaranIni = pasaran[(diffDays + 1) % 5];
-            
-            // Format Masehi
-            const options = { day: 'numeric', month: 'long' };
-            const masehiStr = now.toLocaleDateString('id-ID', options) + " 2026 M";
-            
-            // Format Hijriah (Estimasi Statis sesuai permintaan 1447 H)
-            const hijriStr = " / 19 Zulkaidah 1447 H";
-            
-            document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaranIni}, ${masehiStr}`;
-            document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ${hijriStr}`;
-        }
+    // 1. Logika Tanggal Lengkap & Jawa
+    function updateDates() {
+        const now = new Date();
+        const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const pasaran = ["Legi", "Paing", "Pon", "Wage", "Kliwon"];
+        
+        const refDate = new Date(1900, 0, 1);
+        const diffDays = Math.floor((now - refDate) / (86400000));
+        const pasaranIni = pasaran[(diffDays + 1) % 5];
+        
+        const options = { day: 'numeric', month: 'long' };
+        const masehiStr = now.toLocaleDateString('id-ID', options) + " 2026 M";
+        const hijriStr = " / 19 Zulkaidah 1447 H";
+        
+        document.getElementById('full-date').innerText = `${hari[now.getDay()]} ${pasaranIni}, ${masehiStr}`;
+        document.getElementById('java-hijri').innerText = `Tahun Jawa 1959 AJ${hijriStr}`;
+    }
 
-        // 2. Geolocation & Sholat
-        async function getCoreData() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
+    // 2. Geolocation & Sholat (Ditingkatkan Akurasinya)
+    async function getCoreData() {
+        if (navigator.geolocation) {
+            // Menggunakan enableHighAccuracy: true untuk GPS yang lebih presisi
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
 
-                    // Kota
-                    try {
-                        const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                        const locData = await locRes.json();
-                        document.getElementById('location-text').innerText = locData.address.city || locData.address.town || "Area Aktif";
-                    } catch(e) { document.getElementById('location-text').innerText = "Lokasi Aktif"; }
-
-                    // Jadwal Sholat
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json();
-                    setPrayerUI(json.data.timings);
-                });
-            }
-        }
-
-        function setPrayerUI(timings) {
-            const now = new Date();
-            const hour = now.getHours();
-            const min = now.getMinutes();
-            const currentTotal = (hour * 60) + min;
-
-            const schedule = [
-                { name: 'Subuh', time: timings.Fajr },
-                { name: 'Dzuhur', time: timings.Dhuhr },
-                { name: 'Ashar', time: timings.Asr },
-                { name: 'Maghrib', time: timings.Maghrib },
-                { name: 'Isya', time: timings.Isha }
-            ];
-
-            let next = schedule.find(s => {
-                const [h, m] = s.time.split(':');
-                return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
-            }) || schedule[0];
-
-            document.getElementById('prayer-name').innerText = next.name;
-            document.getElementById('prayer-time').innerText = next.time;
-            
-            // Set Target Hitung Mundur
-            const [tH, tM] = next.time.split(':');
-            nextPrayerTime = new Date();
-            nextPrayerTime.setHours(parseInt(tH), parseInt(tM), 0);
-            if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-        }
-
-        // 3. Countdown Timer
-        function startCountdown() {
-            setInterval(() => {
-                if (!nextPrayerTime) return;
-                const now = new Date();
-                const diff = nextPrayerTime - now;
-
-                if (diff <= 0) {
-                    getCoreData(); // Refresh jika waktu sholat tiba
-                    return;
+                // Mendapatkan Nama Tempat Sangat Akurat
+                try {
+                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                    const locData = await locRes.json();
+                    
+                    // Mencari nama tempat paling spesifik (Bangunan/Jalan/Kelurahan)
+                    const address = locData.address;
+                    const placeName = address.amenity || address.building || address.road || address.suburb || address.village || address.city || "Lokasi Terdeteksi";
+                    
+                    document.getElementById('location-text').innerText = placeName;
+                    // Tooltip atau title untuk melihat alamat lengkap saat di-hover (opsional)
+                    document.getElementById('location-text').title = locData.display_name;
+                } catch(e) { 
+                    document.getElementById('location-text').innerText = "Lokasi Aktif"; 
                 }
 
-                const h = Math.floor(diff / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-
-                document.getElementById('countdown').innerText = 
-                    `-${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            }, 1000);
+                // Jadwal Sholat
+                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                const json = await res.json();
+                setPrayerUI(json.data.timings);
+            }, (err) => {
+                document.getElementById('location-text').innerText = "Akses Lokasi Ditolak";
+            }, {
+                enableHighAccuracy: true, // Memaksa penggunaan GPS hardware jika tersedia
+                timeout: 5000,
+                maximumAge: 0
+            });
         }
+    }
 
-        updateDates();
-        getCoreData();
-        startCountdown();
-    </script>
+    function setPrayerUI(timings) {
+        const now = new Date();
+        const currentTotal = (now.getHours() * 60) + now.getMinutes();
+
+        const schedule = [
+            { name: 'Subuh', time: timings.Fajr },
+            { name: 'Dzuhur', time: timings.Dhuhr },
+            { name: 'Ashar', time: timings.Asr },
+            { name: 'Maghrib', time: timings.Maghrib },
+            { name: 'Isya', time: timings.Isha }
+        ];
+
+        let next = schedule.find(s => {
+            const [h, m] = s.time.split(':');
+            return (parseInt(h) * 60 + parseInt(m)) > currentTotal;
+        }) || schedule[0];
+
+        document.getElementById('prayer-name').innerText = next.name;
+        document.getElementById('prayer-time').innerText = next.time;
+        
+        const [tH, tM] = next.time.split(':');
+        nextPrayerTime = new Date();
+        nextPrayerTime.setHours(parseInt(tH), parseInt(tM), 0);
+        if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+    }
+
+    // 3. Countdown Timer
+    function startCountdown() {
+        setInterval(() => {
+            if (!nextPrayerTime) return;
+            const now = new Date();
+            const diff = nextPrayerTime - now;
+
+            if (diff <= 0) {
+                getCoreData(); 
+                return;
+            }
+
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById('countdown').innerText = 
+                `-${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }, 1000);
+    }
+
+    updateDates();
+    getCoreData();
+    startCountdown();
+</script>
 </body>
 </html>
