@@ -285,12 +285,12 @@
             return String(n).split('').map(c => forms[Number(c)]).join('');
         }
 
-        // MODIFIKASI NAVIGASI TANPA MERUBAH LOGIKA ASLI
+        // --- LOGIKA NAVIGASI BERLAPIS (PUSH STATE) ---
         function toggleQuran() {
             const el = document.getElementById('quran-modal');
             if (!el.classList.contains('modal-show')) {
-                // Lapis 1: Riwayat Daftar Surah
-                window.history.pushState({ quran_page: 'list' }, '');
+                // Tahap 1: Masuk Daftar Surah
+                window.history.pushState({ quran_view: 'list' }, '');
                 el.classList.add('modal-show'); 
                 switchQuranTab('surah');
             } else { 
@@ -298,18 +298,25 @@
             }
         }
 
-        // Listener Back HP (Kunci Utama)
+        // Kunci Utama: Listener Tombol Back HP
         window.addEventListener('popstate', function (event) {
             const el = document.getElementById('quran-modal');
             if (!el.classList.contains('modal-show')) return;
 
-            if (event.state && event.state.quran_page === 'list') {
-                // Kembali ke Daftar dari Isi
+            // Jika state kembali ke 'list', berarti user tadinya di 'detail'
+            if (event.state && event.state.quran_view === 'list') {
                 stopAudio();
+                // Tampilkan kembali elemen yang disembunyikan saat di detail
+                document.getElementById('quran-tabs').classList.remove('hidden');
+                document.getElementById('surah-meta-info').classList.add('hidden');
+                document.getElementById('surah-title-arab').innerText = "";
+                document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
+                
+                // Muat ulang daftar sesuai tab aktif
                 const currentTab = document.getElementById('tab-surah').classList.contains('active') ? 'surah' : 'juz';
-                switchQuranTab(currentTab);
+                currentTab === 'surah' ? loadSurahList() : loadJuzList();
             } else {
-                // Keluar ke Beranda
+                // Keluar sepenuhnya ke beranda
                 el.classList.remove('modal-show');
                 stopAudio();
             }
@@ -331,10 +338,6 @@
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Surah...</div>`;
-            document.getElementById('quran-tabs').classList.remove('hidden');
-            document.getElementById('surah-meta-info').classList.add('hidden');
-            document.getElementById('surah-title-arab').innerText = "";
-            document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
             try {
                 const data = await QuranAPI.getChapters();
                 let html = '';
@@ -385,8 +388,8 @@
         }
 
         async function loadDetailQuran(id, type, name = "", arti = "") {
-            // Lapis 2: Riwayat Isi Surah/Juz
-            window.history.pushState({ quran_page: 'detail' }, '');
+            // Tahap 2: Masuk Detail (PushState Baru)
+            window.history.pushState({ quran_view: 'detail' }, '');
 
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
@@ -462,7 +465,6 @@
         function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } }
     </script>
 </section>
-		
 		
 		 <!-- =============================================
              KLP 7: KALENDER DI BAWAH
