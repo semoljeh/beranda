@@ -10,17 +10,13 @@ const ASSETS_TO_CACHE = [
   'https://kemenag.go.id/assets/fonts/lpmq.ttf'
 ];
 
-// Install: Cache Static Assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
-// Activate: Cleanup Old Cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -31,12 +27,15 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Strategy
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Strategy for API (Network First, then Cache)
-  if (url.origin.includes('api.quran.com') || url.origin.includes('api.aladhan.com')) {
+  // PERBAIKAN: Menambahkan libur.deno.dev agar kalender bisa offline
+  const isApiRequest = url.origin.includes('api.quran.com') || 
+                       url.origin.includes('api.aladhan.com') || 
+                       url.origin.includes('libur.deno.dev');
+
+  if (isApiRequest) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -47,7 +46,6 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(event.request))
     );
   } 
-  // Strategy for Audio (Cache First - agar tidak boros kuota)
   else if (url.pathname.includes('.mp3')) {
     event.respondWith(
       caches.match(event.request).then((res) => {
@@ -59,7 +57,6 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
-  // Strategy for Static Assets (Stale-While-Revalidate)
   else {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
