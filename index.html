@@ -151,6 +151,7 @@
              ============================================= -->
 <section id="module-quran">
     <style>
+        /* [1] Fonts & Base Styles */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
 
         .font-arab { 
@@ -160,47 +161,28 @@
             direction: rtl;
         }
 
-        /* Tab Switcher Styles */
+        /* [2] UI Styles */
         .quran-tab-container {
-            display: flex;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 4px;
-            margin-top: 10px;
+            display: flex; background: rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 4px; margin-top: 10px;
         }
         .quran-tab {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: white;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
+            flex: 1; text-align: center; padding: 8px; font-size: 10px;
+            font-weight: 800; text-transform: uppercase; color: white;
+            cursor: pointer; border-radius: 8px; transition: 0.3s;
         }
-        .quran-tab.active {
-            background: white;
-            color: #0f766e;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
         .ayah-end-number {
-            font-family: 'Amiri', serif;
-            font-size: 1.5rem;
-            color: #0d9488;
-            margin-left: 8px;
-            display: inline-block;
-            vertical-align: middle;
-            line-height: 1;
+            font-family: 'Amiri', serif; font-size: 1.5rem; color: #0d9488;
+            margin-left: 8px; display: inline-block; vertical-align: middle;
         }
 
         .murottal-control-btn {
             display: flex; align-items: center; justify-content: center; gap: 8px;
             background: #0d9488; color: white; padding: 10px 24px; border-radius: 100px;
             font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 0 auto 20px auto;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25); border: none;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25); border: none; cursor: pointer;
         }
         .murottal-control-btn.playing { background: #ef4444; }
 
@@ -250,9 +232,18 @@
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
+        const juzNamesArab = [
+            "", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس",
+            "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر",
+            "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر",
+            "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون",
+            "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون",
+            "الجزء السادس والعشرون", "الجزء السابع والعشرون", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"
+        ];
+
         let currentAudio = null;
         let isTranslationVisible = true;
-        let currentView = 'surah'; 
+        let currentAudioUrl = "";
 
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
@@ -262,13 +253,12 @@
         function toggleQuran() {
             const el = document.getElementById('quran-modal');
             if (!el.classList.contains('modal-show')) {
-                el.classList.add('modal-show'); loadSurahList(); 
+                el.classList.add('modal-show'); switchQuranTab('surah');
                 if(typeof pushState === 'function') pushState('quran');
             } else { stopAudio(); history.back(); }
         }
 
         function switchQuranTab(tab) {
-            currentView = tab;
             document.getElementById('tab-surah').classList.toggle('active', tab === 'surah');
             document.getElementById('tab-juz').classList.toggle('active', tab === 'juz');
             tab === 'surah' ? loadSurahList() : loadJuzList();
@@ -314,90 +304,94 @@
                 const data = await QuranAPI.getJuzs();
                 let html = '<div class="grid grid-cols-1 gap-3">';
                 data.juzs.forEach(j => {
+                    const firstChapter = Object.keys(j.verse_mapping)[0];
+                    const nameArab = juzNamesArab[j.juz_number];
                     html += `
-                    <div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
+                    <div onclick="loadDetailQuran(${j.juz_number}, 'juz', '', '', ${firstChapter})" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
                         <div class="flex items-center gap-4">
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${j.juz_number}</span>
-                            <div><h4 class="font-bold text-sm uppercase">Juz ${j.juz_number}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">Mulai Surah: ${Object.keys(j.verse_mapping)[0]}</p></div>
+                            <div><h4 class="font-bold text-sm uppercase">Juz ${j.juz_number}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">Mulai Surah: ${firstChapter}</p></div>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-teal-200"></i>
+                        <span class="font-arab text-xl text-teal-600">${nameArab}</span>
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat Juz.</p>'; }
         }
 
-        async function loadDetailQuran(id, type, name = "", arti = "") {
+        async function loadDetailQuran(id, type, name = "", arti = "", firstChapterId = null) {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
             document.getElementById('quran-tabs').classList.add('hidden');
             
             try {
-                let arab, indo, audioUrl = "";
-                
+                let arab, indo, audioData;
                 if(type === 'surah') {
                     const [info, vArab, vIndo, vAudio] = await Promise.all([
                         fetch(`https://api.quran.com/api/v4/chapters/${id}?language=id`).then(r => r.json()),
-                        QuranAPI.getVersesByChapter(id),
-                        QuranAPI.getTranslationByChapter(id),
-                        QuranAPI.getAudio(id)
+                        QuranAPI.getVersesByChapter(id), QuranAPI.getTranslationByChapter(id), QuranAPI.getAudio(id)
                     ]);
-                    const s = info.chapter;
-                    document.getElementById('surah-title-arab').innerText = `\uFD3F ${s.name_arabic} \uFD3E`;
+                    document.getElementById('surah-title-arab').innerText = `\uFD3F ${info.chapter.name_arabic} \uFD3E`;
                     document.getElementById('surah-title-latin').innerText = name;
                     document.getElementById('surah-subtitle').innerText = `(${arti})`;
-                    document.getElementById('surah-info-count').innerText = `${s.verses_count} Ayat`;
-                    document.getElementById('surah-info-type').innerText = s.revelation_place;
+                    document.getElementById('surah-info-count').innerText = `${info.chapter.verses_count} Ayat`;
+                    document.getElementById('surah-info-type').innerText = info.chapter.revelation_place;
                     document.getElementById('surah-meta-info').classList.remove('hidden');
-                    arab = vArab.verses; indo = vIndo.translations; 
-                    audioUrl = vAudio.audio_file.audio_url.startsWith('http') ? vAudio.audio_file.audio_url : `https:${vAudio.audio_file.audio_url}`;
+                    arab = vArab.verses; indo = vIndo.translations; audioData = vAudio;
                 } else {
-                    const [vArab, vIndo] = await Promise.all([QuranAPI.getVersesByJuz(id), QuranAPI.getTranslationByJuz(id)]);
-                    document.getElementById('surah-title-arab').innerText = `الجزء ${toArabicNumber(id)}`;
+                    const [vArab, vIndo, vAudio] = await Promise.all([
+                        QuranAPI.getVersesByJuz(id), QuranAPI.getTranslationByJuz(id), QuranAPI.getAudio(firstChapterId)
+                    ]);
+                    document.getElementById('surah-title-arab').innerText = `\uFD3F ${juzNamesArab[id]} \uFD3E`;
                     document.getElementById('surah-title-latin').innerText = `Juz ${id}`;
-                    document.getElementById('surah-subtitle').innerText = "";
+                    document.getElementById('surah-subtitle').innerText = "(Audio Surah Pertama)";
                     document.getElementById('surah-meta-info').classList.add('hidden');
-                    arab = vArab.verses; indo = vIndo.translations;
+                    arab = vArab.verses; indo = vIndo.translations; audioData = vAudio;
                 }
 
-                let html = audioUrl ? `<div class="text-center py-4"><button id="murottal-btn" onclick="handleMurottal('${audioUrl}')" class="murottal-control-btn"><i class="fa-solid fa-play"></i> <span>Putar Murottal</span></button></div>` : "";
+                currentAudioUrl = audioData.audio_file.audio_url.startsWith('http') ? audioData.audio_file.audio_url : `https:${audioData.audio_file.audio_url}`;
+                let html = `<div class="text-center py-4"><button id="murottal-btn" onclick="handleMurottal()" class="murottal-control-btn"><i class="fa-solid fa-play"></i> <span>Putar Murottal</span></button></div>`;
 
                 arab.forEach((a, i) => {
-                    const ayahNum = a.verse_number || (i + 1);
                     const translation = (indo[i]) ? indo[i].text.replace(/<(?:.|\n)*?>/gm, '') : '...';
                     const hiddenClass = isTranslationVisible ? '' : 'hidden';
                     html += `
                     <div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
                         <div class="w-full text-right" dir="rtl">
                             <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
-                            <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
+                            <span class="ayah-end-number">\u06DD${toArabicNumber(a.verse_number)}</span>
                         </div>
                         <div class="flex items-start gap-4 mt-4">
-                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${ayahNum}</span>
+                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${a.verse_number}</span>
                             <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">${translation}</p>
                         </div>
                     </div>`;
                 });
                 c.innerHTML = html; c.scrollTo(0,0);
+                updateMurottalBtn(currentAudio && !currentAudio.paused);
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat konten.</p>'; }
         }
 
-        function handleMurottal(url) {
+        function handleMurottal() {
             if (currentAudio && !currentAudio.paused) {
                 currentAudio.pause(); updateMurottalBtn(false); return;
             }
-            if (!currentAudio || currentAudio.src !== url) {
-                currentAudio = new Audio(url);
+            if (!currentAudio || currentAudio.src !== currentAudioUrl) {
+                if(currentAudio) currentAudio.pause();
+                currentAudio = new Audio(currentAudioUrl);
                 currentAudio.onplay = () => updateMurottalBtn(true);
                 currentAudio.onpause = () => updateMurottalBtn(false);
                 currentAudio.onended = () => updateMurottalBtn(false);
             }
-            currentAudio.play();
+            currentAudio.play().catch(e => console.log("Blocked"));
         }
 
         function updateMurottalBtn(isPlaying) {
             const btn = document.getElementById('murottal-btn');
-            if(btn) btn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i> <span>Jeda Murottal</span>` : `<i class="fa-solid fa-play"></i> <span>Putar Murottal</span>`;
+            if(btn) {
+                btn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i> <span>Jeda Murottal</span>` : `<i class="fa-solid fa-play"></i> <span>Putar Murottal</span>`;
+                btn.classList.toggle('playing', isPlaying);
+            }
         }
 
         function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } }
