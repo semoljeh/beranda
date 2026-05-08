@@ -266,13 +266,17 @@
                 const chapters = await QuranAPI.getAllChapters();
                 let html = '<div class="grid grid-cols-1 gap-3">';
                 chapters.forEach(s => {
-                    html += `<div onclick="loadDetailSurah(${s.id}, '${s.name_simple}', '${s.translated_name.name}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
-                            <div><h4 class="font-bold text-sm uppercase">${s.name_simple}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name} • ${s.verses_count} Ayat</p></div>
-                        </div>
-                        <span class="font-arab text-3xl text-teal-600">${s.name_arabic}</span>
-                    </div>`;
+                  html += `<div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
+    <div class="w-full text-right quran-text-container" dir="rtl">
+        <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
+        <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
+    </div>
+    <div class="flex items-start gap-4 mt-4">
+        <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${isTranslationVisible ? '' : 'hidden'}">${ayahNum}</span>
+        
+        <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${isTranslationVisible ? '' : 'hidden'}">${indo[i].text.replace(/<(?:.|\n)*?>/gm, '')}</p>
+    </div>
+</div>`;
                 });
                 c.innerHTML = html + '</div>';
             } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat.</p>'; }
