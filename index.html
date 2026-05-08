@@ -329,26 +329,33 @@ body {
     </div>
 </section>
 
-        <!-- =============================================
-             KLP 6: AL-QURAN MODULE (MODAL & LOGIC)
+<!-- =============================================
+             KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
              ============================================= -->
 <section id="module-quran">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
         .font-arab { font-family: 'Amiri', serif; font-weight: 400; line-height: 2.2; direction: rtl; }
         
-        /* MODEL HEADER PREMIUM SINKRON */
         .quran-header-premium {
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
             padding: calc(20px + env(safe-area-inset-top)) 20px 30px 20px;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
             box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
-            z-index: 20;
-            position: relative;
+            z-index: 50;
+            position: sticky;
+            top: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* INFO GLASSBOX (EFEK KACA) */
+        /* Mode Slim saat Scroll */
+        .header-slim {
+            padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
         .quran-glassbox {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
@@ -358,6 +365,21 @@ body {
             padding: 15px;
             margin-top: 15px;
             text-align: center;
+            transition: all 0.3s ease;
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        /* Sembunyikan Glassbox saat Slim */
+        .header-slim .quran-glassbox {
+            max-height: 0;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+            border: none;
+            pointer-events: none;
         }
 
         .quran-tab-container { display: flex; background: rgba(0,0,0,0.1); border-radius: 12px; padding: 4px; margin-top: 10px; }
@@ -374,7 +396,8 @@ body {
     </style>
 
     <div id="quran-modal" class="modal-full">
-        <div class="quran-header-premium">
+        <!-- Header Tetap Sticky -->
+        <div id="quran-sticky-header" class="quran-header-premium">
             <div class="flex justify-between items-center">
                 <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 text-white">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -402,11 +425,11 @@ body {
             </div>
         </div>
 
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
+        <!-- Konten dengan deteksi scroll -->
+        <div id="quran-content" onscroll="handleQuranScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <script>
-        // ... (Semua Kode JavaScript Tetap Sama/Paten) ...
         const QuranAPI = {
             baseUrl: 'https://api.quran.com/api/v4',
             async getChapters() { return fetch(`${this.baseUrl}/chapters?language=id`).then(r => r.json()); },
@@ -418,9 +441,19 @@ body {
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
-        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشرon", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
+        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرon", "الجزء السادس والعشرون", "الجزء السابع والعشرon", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
         let currentAudio = null;
         let isTranslationVisible = true;
+
+        // Logika Deteksi Scroll untuk Header Slim
+        function handleQuranScroll(el) {
+            const header = document.getElementById('quran-sticky-header');
+            if (el.scrollTop > 50) {
+                header.classList.add('header-slim');
+            } else {
+                header.classList.remove('header-slim');
+            }
+        }
 
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
@@ -433,16 +466,19 @@ body {
                 window.history.pushState({ quran_view: 'list' }, '', '#quran');
                 el.classList.add('modal-show'); 
                 switchQuranTab('surah');
-            } else { 
-                window.history.back(); 
-            }
+            } else { window.history.back(); }
         }
 
         async function loadDetailQuran(id, type, name = "", arti = "") {
             window.history.pushState({ quran_view: 'detail' }, '', '#detail');
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
+            
+            // Reset scroll ke atas dan header ke normal
+            c.scrollTop = 0;
+            document.getElementById('quran-sticky-header').classList.remove('header-slim');
             document.getElementById('quran-tabs').classList.add('hidden');
+
             try {
                 let arab, indo, audioData = null;
                 if(type === 'surah') {
@@ -487,11 +523,12 @@ body {
                         </div>
                     </div>`;
                 });
-                c.innerHTML = html; c.scrollTo(0,0);
+                c.innerHTML = html;
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat konten.</p>'; }
         }
 
         function switchQuranTab(tab) {
+            document.getElementById('quran-tabs').classList.remove('hidden');
             document.getElementById('tab-surah').classList.toggle('active', tab === 'surah');
             document.getElementById('tab-juz').classList.toggle('active', tab === 'juz');
             tab === 'surah' ? loadSurahList() : loadJuzList();
@@ -506,6 +543,10 @@ body {
 
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
+            document.getElementById('surah-title-arab').innerText = "";
+            document.getElementById('surah-title-latin').innerText = "";
+            document.getElementById('surah-subtitle').innerText = "";
+            document.getElementById('surah-meta-info').classList.add('hidden');
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Surah...</div>`;
             try {
                 const data = await QuranAPI.getChapters();
@@ -532,6 +573,9 @@ body {
 
         async function loadJuzList() {
             const c = document.getElementById('quran-content');
+            document.getElementById('surah-title-arab').innerText = "";
+            document.getElementById('surah-title-latin').innerText = "";
+            document.getElementById('surah-meta-info').classList.add('hidden');
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Juz...</div>`;
             try {
                 const data = await QuranAPI.getJuzs();
