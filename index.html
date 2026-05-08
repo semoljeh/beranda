@@ -9,12 +9,13 @@
     <!-- =============================================
          KLP 1: META SETUP & PWA CONFIGURATION
          ============================================= -->
-    <link rel="manifest" href="manifest.json">
+   <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Darussalam">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- =============================================
          KLP 2: EXTERNAL LIBRARIES & FONTS
@@ -38,9 +39,7 @@
     <!-- =============================================
          KLP 3: GLOBAL NAVIGATION CONTROL (SINKRONISASI BACK BUTTON)
          ============================================= -->
-<!-- =============================================
-         KLP 3: GLOBAL NAVIGATION CONTROL (SINKRONISASI BACK BUTTON)
-         ============================================= -->
+
     <script>
         window.addEventListener('popstate', function (event) {
             // 1. Logika Khusus Quran (Navigasi Bertingkat)
@@ -52,7 +51,7 @@
                     document.getElementById('quran-tabs').classList.remove('hidden');
                     document.getElementById('surah-meta-info').classList.add('hidden');
                     document.getElementById('surah-title-arab').innerText = "";
-                    document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
+                   
                     document.getElementById('surah-subtitle').innerText = "";
                     const tabActive = document.getElementById('tab-surah').classList.contains('active') ? 'surah' : 'juz';
                     tabActive === 'surah' ? loadSurahList() : loadJuzList();
@@ -102,14 +101,49 @@
 
     <div class="app-container">
 
-        <!-- =============================================
-             KLP 4: HEADER & PRAYER ENGINE MODULE
-             ============================================= -->
-<section id="module-header">
+       <section id="module-header">
     <style>
-        .header-bg { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); height: 220px; border-radius: 0 0 40px 40px; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
-        .location-capsule { display: flex; align-items: center; gap: 6px; background-color: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; backdrop-filter: blur(4px); transition: transform 0.2s; }
-        .info-capsule { position: absolute; bottom: -70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; border-radius: 30px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; z-index: 20; }
+        .header-bg { 
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
+            /* Height disesuaikan agar tetap proporsional saat naik ke atas */
+            height: 240px; 
+            border-radius: 0 0 40px 40px; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            
+            /* MODIFIKASI: Padding top menggunakan safe-area agar tembus status bar */
+            padding-top: calc(15px + env(safe-area-inset-top)); 
+        }
+
+        .location-capsule { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            background-color: rgba(255,255,255,0.15); 
+            padding: 8px 14px; 
+            border-radius: 100px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            cursor: pointer; 
+            backdrop-filter: blur(4px); 
+            transition: transform 0.2s; 
+            z-index: 10;
+        }
+
+        .info-capsule { 
+            position: absolute; 
+            bottom: -70px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 90%; 
+            background: white; 
+            border-radius: 30px; 
+            padding: 24px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
+            border: 1px solid #f1f5f9; 
+            z-index: 20; 
+        }
     </style>
 
     <div class="header-bg">
@@ -232,7 +266,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
         .font-arab { font-family: 'Amiri', serif; font-weight: 400; line-height: 2.2; direction: rtl; }
-        .quran-tab-container { display: flex; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 4px; margin-top: 10px; }
+        
+        /* MODEL HEADER PREMIUM SINKRON */
+        .quran-header-premium {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            padding: calc(20px + env(safe-area-inset-top)) 20px 30px 20px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
+            z-index: 20;
+            position: relative;
+        }
+
+        /* INFO GLASSBOX (EFEK KACA) */
+        .quran-glassbox {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .quran-tab-container { display: flex; background: rgba(0,0,0,0.1); border-radius: 12px; padding: 4px; margin-top: 10px; }
         .quran-tab { flex: 1; text-align: center; padding: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; color: white; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .quran-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 0.85rem 1.1rem; border-radius: 1.25rem; border: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 12px; gap: 10px; transition: all 0.2s; }
@@ -242,35 +300,43 @@
         .ayah-end-number { font-family: 'Amiri', serif; font-size: 1.5rem; color: #0d9488; margin-left: 8px; display: inline-block; vertical-align: middle; }
         .murottal-control-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d9488; color: white; padding: 10px 24px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 0 auto 20px auto; box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25); border: none; }
         .murottal-control-btn.playing { background: #ef4444; }
-        .surah-badge { font-size: 8px; border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; border-radius: 50px; text-transform: uppercase; font-weight: 800; }
+        .surah-badge { font-size: 8px; border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; border-radius: 50px; text-transform: uppercase; font-weight: 800; color: #ccfbf1; }
     </style>
 
     <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white shadow-md">
+        <div class="quran-header-premium">
             <div class="flex justify-between items-center">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="text-center flex-1 mx-2">
-                    <h2 id="surah-title-arab" class="font-arab text-2xl leading-none mb-1 text-white"></h2>
-                    <p class="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 text-teal-50">
-                        <span id="surah-title-latin">AL-QURAN PRO</span>
-                        <span id="surah-subtitle" class="opacity-70 font-medium normal-case text-[9px]"></span>
-                    </p>
+                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 text-white">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2 class="text-white text-[11px] font-bold uppercase tracking-[0.2em]">Al-Quran Pro</h2>
+                <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 text-white">
+                    <i class="fa-solid fa-language"></i>
+                </button>
+            </div>
+
+            <div class="quran-glassbox">
+                <h2 id="surah-title-arab" class="font-arab text-2xl leading-none mb-1 text-white"></h2>
+                <p id="surah-title-latin" class="text-[12px] font-extrabold uppercase tracking-widest text-white mb-1"></p>
+                <p id="surah-subtitle" class="text-[#ccfbf1] font-medium text-[10px] italic"></p>
+                
+                <div id="quran-tabs" class="quran-tab-container">
+                    <div id="tab-surah" onclick="switchQuranTab('surah')" class="quran-tab active">Surah</div>
+                    <div id="tab-juz" onclick="switchQuranTab('juz')" class="quran-tab">Juz</div>
                 </div>
-                <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20"><i class="fa-solid fa-language"></i></button>
-            </div>
-            <div id="quran-tabs" class="quran-tab-container">
-                <div id="tab-surah" onclick="switchQuranTab('surah')" class="quran-tab active">Surah</div>
-                <div id="tab-juz" onclick="switchQuranTab('juz')" class="quran-tab">Juz</div>
-            </div>
-            <div id="surah-meta-info" class="flex justify-center gap-2 mt-3 hidden">
-                <span id="surah-info-count" class="surah-badge"></span>
-                <span id="surah-info-type" class="surah-badge"></span>
+
+                <div id="surah-meta-info" class="flex justify-center gap-2 mt-3 hidden">
+                    <span id="surah-info-count" class="surah-badge"></span>
+                    <span id="surah-info-type" class="surah-badge"></span>
+                </div>
             </div>
         </div>
+
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <script>
+        // ... (Semua Kode JavaScript Tetap Sama/Paten) ...
         const QuranAPI = {
             baseUrl: 'https://api.quran.com/api/v4',
             async getChapters() { return fetch(`${this.baseUrl}/chapters?language=id`).then(r => r.json()); },
@@ -282,7 +348,7 @@
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
-        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحadi والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشر", "الجزء السادس والعشرون", "الجزء السابع والعشرون", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
+        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشرon", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
         let currentAudio = null;
         let isTranslationVisible = true;
 
@@ -294,7 +360,6 @@
         function toggleQuran() {
             const el = document.getElementById('quran-modal');
             if (!el.classList.contains('modal-show')) {
-                // Tahap 1: Riwayat Daftar
                 window.history.pushState({ quran_view: 'list' }, '', '#quran');
                 el.classList.add('modal-show'); 
                 switchQuranTab('surah');
@@ -304,9 +369,7 @@
         }
 
         async function loadDetailQuran(id, type, name = "", arti = "") {
-            // Tahap 2: Riwayat Detail
             window.history.pushState({ quran_view: 'detail' }, '', '#detail');
-
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
             document.getElementById('quran-tabs').classList.add('hidden');
@@ -317,7 +380,7 @@
                         fetch(`https://api.quran.com/api/v4/chapters/${id}?language=id`).then(r => r.json()),
                         QuranAPI.getVersesByChapter(id), QuranAPI.getTranslationByChapter(id), QuranAPI.getAudio(id)
                     ]);
-                    document.getElementById('surah-title-arab').innerText = `\uFD3F ${info.chapter.name_arabic} \uFD3E`;
+                    document.getElementById('surah-title-arab').innerText = info.chapter.name_arabic;
                     document.getElementById('surah-title-latin').innerText = name;
                     document.getElementById('surah-subtitle').innerText = `(${arti})`;
                     document.getElementById('surah-info-count').innerText = `${info.chapter.verses_count} Ayat`;
@@ -328,7 +391,7 @@
                     const [vArab, vIndo] = await Promise.all([
                         QuranAPI.getVersesByJuz(id), QuranAPI.getTranslationByJuz(id)
                     ]);
-                    document.getElementById('surah-title-arab').innerText = `\uFD3F ${juzNamesArab[id]} \uFD3E`;
+                    document.getElementById('surah-title-arab').innerText = juzNamesArab[id];
                     document.getElementById('surah-title-latin').innerText = `Juz ${id}`;
                     document.getElementById('surah-subtitle').innerText = "";
                     document.getElementById('surah-meta-info').classList.add('hidden');
@@ -445,7 +508,7 @@
 
         function stopAudio() { if (currentAudio) { currentAudio.pause(); currentAudio = null; } }
     </script>
-</section> 
+</section>
 
          <!-- =============================================
              KLP 7: KALENDER DI BAWAH
@@ -589,51 +652,115 @@
              KLP 8: DAILY DOA (MODAL)
              ============================================= -->
 <section id="module-doa">
+    <style>
+        /* MODEL HEADER PREMIUM SINKRON KALENDER & QURAN */
+        .doa-header-premium {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            padding: calc(20px + env(safe-area-inset-top)) 20px 30px 20px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
+            z-index: 20;
+            position: relative;
+        }
+
+        /* INFO GLASSBOX (EFEK KACA) */
+        .doa-glassbox {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 18px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .doa-item-card {
+            padding: 1rem;
+            background: white;
+            border-radius: 1.25rem;
+            margin-bottom: 12px;
+            border: 1px solid #f1f5f9;
+            font-weight: 700;
+            font-size: 13px;
+            color: #334155;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .doa-item-card:active { transform: scale(0.97); background: #fafafa; }
+    </style>
+
     <div id="doa-modal" class="modal-full">
-        <div class="bg-teal-800 p-5 text-white flex justify-between items-center">
-            <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="doa-header-title" class="font-bold text-xs uppercase">Doa Harian</h2>
-            <div class="w-10"></div>
+        <div class="doa-header-premium">
+            <div class="flex justify-between items-center">
+                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 text-white">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2 class="text-white text-[11px] font-bold uppercase tracking-[0.2em]">Doa Harian</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="doa-glassbox">
+                <h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest">Kumpulan Doa</h2>
+                <p class="text-[#ccfbf1] text-[10px] font-medium mt-1">Membentuk Karakter dengan Adab & Doa</p>
+            </div>
         </div>
+
         <div id="doa-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <script>
         const dataDoaMadasa = [
-            { id: 1, judul: "Doa Sebelum Makan", arab: "اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ", arti: "Ya Allah, berkahilah kami atas rezeki yang telah Engkau berikan..." },
-            { id: 2, judul: "Doa Bangun Tidur", arab: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", arti: "Segala puji bagi Allah yang telah menghidupkan kami..." },
-            { id: 3, judul: "Doa Masuk Masjid", arab: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمETِكَ", arti: "Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu." },
-            { id: 4, judul: "Doa Untuk Orang Tua", arab: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", arti: "Tuhanku, ampunilah dosaku dan dosa kedua orang tuaku..." },
-            { id: 5, judul: "Doa Sapu Jagad", arab: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ", arti: "Ya Tuhan kami, berilah kami kebaikan di dunia dan akhirat..." }
+            { id: 1, judul: "Doa Sebelum Makan", arab: "اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ", arti: "Ya Allah, berkahilah kami atas rezeki yang telah Engkau berikan..." },
+            { id: 2, judul: "Doa Bangun Tidur", arab: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", arti: "Segala puji bagi Allah yang telah menghidupkan kami..." },
+            { id: 3, judul: "Doa Masuk Masjid", arab: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ", arti: "Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu." },
+            { id: 4, judul: "Doa Untuk Orang Tua", arab: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", arti: "Tuhanku, ampunilah dosaku dan dosa kedua orang tuaku..." },
+            { id: 5, judul: "Doa Sapu Jagad", arab: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ", arti: "Ya Tuhan kami, berilah kami kebaikan di dunia dan akhirat..." }
         ];
 
         function toggleDoa() {
             const el = document.getElementById('doa-modal');
             if (!el.classList.contains('modal-show')) {
-                pushState('doa', { doa_view: 'list' }); // Catat level daftar
+                pushState('doa', { doa_view: 'list' }); 
                 el.classList.add('modal-show');
                 loadDoaList();
             } else { window.history.back(); }
         }
 
         function loadDoaList() {
-            document.getElementById('doa-header-title').innerText = "Doa Harian";
+            
             let html = '';
             dataDoaMadasa.forEach(d => {
-                html += `<div onclick="loadDoaDetail(${d.id})" class="p-4 bg-white rounded-2xl mb-3 border border-slate-100 font-bold text-sm text-slate-700 uppercase">${d.judul}</div>`;
+                html += `
+                    <div onclick="loadDoaDetail(${d.id})" class="doa-item-card">
+                        <span>${d.judul}</span>
+                        <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+                    </div>`;
             });
             document.getElementById('doa-content').innerHTML = html;
         }
 
         function loadDoaDetail(id) {
-            pushState('doa', { doa_view: 'detail' }); // Catat level detail
+            pushState('doa', { doa_view: 'detail' });
             const d = dataDoaMadasa.find(i => i.id === id);
             document.getElementById('doa-header-title').innerText = "Detail Doa";
             document.getElementById('doa-content').innerHTML = `
-                <div class="bg-white p-8 rounded-3xl text-center shadow-sm">
-                    <h3 class="text-teal-600 font-bold text-[10px] mb-6 uppercase">${d.judul}</h3>
-                    <p class="font-arab text-3xl mb-6" dir="rtl">${d.arab}</p>
-                    <p class="text-sm text-slate-500 italic">"${d.arti}"</p>
+                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
+                    <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
+                    <p class="font-arab text-3xl mb-8 leading-[2]" dir="rtl">${d.arab}</p>
+                    <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+                    <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>
+                </div>
+                <div class="mt-8 text-center">
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                    </button>
                 </div>`;
         }
     </script>
