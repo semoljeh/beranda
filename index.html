@@ -151,6 +151,7 @@
              ============================================= -->
 <section id="module-quran">
     <style>
+        /* [1] Fonts & Base Styles */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
 
         .font-arab { 
@@ -160,7 +161,7 @@
             direction: rtl;
         }
 
-        /* Tab Switcher Style */
+        /* [2] UI Styles */
         .quran-tab-container {
             display: flex; background: rgba(255,255,255,0.1);
             border-radius: 12px; padding: 4px; margin-top: 10px;
@@ -172,28 +173,18 @@
         }
         .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
-        /* Responsive Card Style */
         .quran-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 1rem 1.25rem;
-            border-radius: 1.25rem;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 12px;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: white; padding: 1rem 1.25rem; border-radius: 1.25rem;
+            border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 12px; gap: 10px; transition: all 0.2s;
         }
+        .quran-item:active { transform: scale(0.98); }
 
-        /* Container Arab di Sisi Kanan */
+        /* Container Arab (Posisi Nomor di Kanan Nama) */
         .arab-side {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            direction: rtl; /* Memastikan urutan: Nama Arab dulu baru Nomor */
+            display: flex; align-items: center; gap: 8px;
+            white-space: nowrap; flex-shrink: 0; direction: rtl;
         }
 
         .ayah-end-number {
@@ -259,6 +250,7 @@
 
         let currentAudio = null;
         let isTranslationVisible = true;
+        let currentAudioUrl = "";
 
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
@@ -299,7 +291,7 @@
                 const data = await QuranAPI.getChapters();
                 let html = '';
                 data.chapters.forEach(s => {
-                    const numArab = toArabicNumber(s.id);
+                    const numAr = toArabicNumber(s.id);
                     html += `
                     <div onclick="loadDetailQuran(${s.id}, 'surah', '${s.name_simple.replace(/'/g, "")}', '${s.translated_name.name}')" class="quran-item">
                         <div class="flex items-center gap-3 overflow-hidden">
@@ -309,9 +301,9 @@
                                 <p class="text-[8px] text-slate-400 font-bold uppercase truncate">${s.translated_name.name}</p>
                             </div>
                         </div>
-                        <div class="arab-side">
-                             <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
-                             <span class="font-arab text-lg text-teal-600">. ${numArab}</span>
+                        <div class="arab-side text-teal-600 font-arab">
+                             <span class="text-2xl">${s.name_arabic}</span>
+                             <span class="text-lg opacity-70">. ${numAr}</span>
                         </div>
                     </div>`;
                 });
@@ -324,12 +316,11 @@
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat...</div>`;
             try {
                 const data = await QuranAPI.getJuzs();
-                let html = '';
                 const uniqueJuzs = data.juzs.filter((v,i,a)=>a.findIndex(t=>(t.juz_number === v.juz_number))===i);
-                
+                let html = '';
                 uniqueJuzs.forEach(j => {
                     const firstChapter = Object.keys(j.verse_mapping)[0];
-                    const numArab = toArabicNumber(j.juz_number);
+                    const numAr = toArabicNumber(j.juz_number);
                     html += `
                     <div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="quran-item">
                         <div class="flex items-center gap-3 overflow-hidden">
@@ -339,9 +330,9 @@
                                 <p class="text-[8px] text-slate-400 font-bold uppercase truncate">Mulai: ${firstChapter}</p>
                             </div>
                         </div>
-                        <div class="arab-side">
-                             <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
-                             <span class="font-arab text-lg text-teal-600">. ${numArab}</span>
+                        <div class="arab-side text-teal-600 font-arab">
+                             <span class="text-lg">${juzNamesArab[j.juz_number]}</span>
+                             <span class="text-lg opacity-70">. ${numAr}</span>
                         </div>
                     </div>`;
                 });
