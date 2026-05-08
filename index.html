@@ -433,7 +433,7 @@
 
        <section id="module-calendar">
     <style>
-        #calendar-modal { font-family: 'Inter', sans-serif; }
+        #calendar-modal { font-family: 'Inter', sans-serif; transition: transform 0.3s ease-out; }
         
         /* HEADER PREMIUM SINKRON */
         .calendar-header-premium {
@@ -458,7 +458,6 @@
             margin-top: 15px;
         }
 
-        /* Styling teks agar identik dengan Header Prayer */
         .hijri-header-text { color: #ccfbf1; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
         .masehi-header-text { color: white; font-size: 12px; font-weight: 500; opacity: 0.9; }
 
@@ -469,7 +468,7 @@
             aspect-ratio: 1/1.2; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             background: #ffffff; border-radius: 12px; border: 1px solid #f1f5f9; 
-            transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .date-masehi { font-size: 15px; font-weight: 700; color: #1e293b; }
@@ -487,7 +486,9 @@
     <div id="calendar-modal" class="modal-full bg-white">
         <div class="calendar-header-premium">
             <div class="flex justify-between items-center">
-                <button onclick="toggleCalendar()" class="p-2 bg-white/20 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+                <button onclick="toggleCalendar()" class="p-2 bg-white/20 rounded-xl">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
                 <h2 id="calendar-month-name">-- ----</h2>
                 <div class="flex gap-1">
                     <button onclick="changeMonth(-1)" class="p-2 bg-white/10 rounded-full"><i class="fa-solid fa-chevron-left"></i></button>
@@ -519,9 +520,9 @@
     <script>
         let currentCalDate = new Date();
         let holidayCache = [];
+        let currentHijriData = []; // Simpan data hijriah bulan aktif
         
-        // Kamus Bulan Sinkron (Menangani variasi ejaan API Aladhan)
-        const bulanIndo = {
+        const bulanIndoMap = {
             "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Qa'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah",
             "Muharram": "Muharram", "Safar": "Safar", "Rabi' al-awwal": "Rabiul Awal", 
             "Rabi' al-thani": "Rabiul Akhir", "Jumada al-ula": "Jumadil Ula", 
@@ -553,11 +554,15 @@
                 const resAladhan = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`);
                 const aladhanData = await resAladhan.json();
                 
-                renderCalendar(aladhanData.data);
+                currentHijriData = aladhanData.data;
+                renderCalendar();
             } catch (e) { console.error(e); }
         }
 
-        function renderCalendar(hijriData) {
+        function renderCalendar() {
+            const hijriData = currentHijriData;
+            if (!hijriData || hijriData.length === 0) return;
+
             const grid = document.getElementById('calendar-days-grid');
             const holEl = document.getElementById('holiday-list');
             const hijriHeader = document.getElementById('hijri-detail-header');
@@ -573,25 +578,21 @@
 
             document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
 
-            // --- SINKRONISASI LOGIKA HEADER ---
+            // Sync Header Detail
             let displayDate, hijriInfo;
             if (y === realToday.getFullYear() && m === realToday.getMonth()) {
-                // Jika sedang melihat bulan berjalan, paksa tampilkan INFO HARI INI
                 displayDate = realToday;
                 hijriInfo = hijriData[realToday.getDate() - 1];
             } else {
-                // Jika melihat bulan lain, tampilkan info TANGGAL 1
                 displayDate = new Date(y, m, 1);
                 hijriInfo = hijriData[0];
             }
 
-            const namaBulanH = bulanIndo[hijriInfo.hijri.month.en] || hijriInfo.hijri.month.en;
-            
-            // Output Header (Format Identik dengan Header Prayer)
+            const namaBulanH = bulanIndoMap[hijriInfo.hijri.month.en] || hijriInfo.hijri.month.en;
             hijriHeader.innerText = `${hijriInfo.hijri.day} ${namaBulanH} ${hijriInfo.hijri.year} H`;
             masehiHeader.innerHTML = `${daysIndo[displayDate.getDay()]} ${getPasaran(displayDate)}, ${displayDate.getDate()} ${ms[displayDate.getMonth()]} ${displayDate.getFullYear()} M`;
 
-            // --- RENDER GRID ---
+            // Render Grid
             const start = new Date(y, m, 1).getDay();
             for (let i = 0; i < start; i++) grid.innerHTML += '<div class="calendar-date empty-date"></div>';
 
@@ -599,7 +600,6 @@
                 const d = index + 1;
                 const date = new Date(y, m, d);
                 const dateKey = `${y}-${String(m+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                
                 const holiday = holidayCache.find(x => x.date === dateKey);
                 const isToday = realToday.toDateString() === date.toDateString();
                 const isRealHoliday = holiday && !holiday.name.toLowerCase().includes("cuti") && !holiday.name.toLowerCase().includes("bersama");
@@ -629,11 +629,27 @@
             fetchFullCalendarData();
         }
         
+        // --- LOGIKA HISTORY API UNTUK TOMBOL BACK HP ---
         function toggleCalendar() {
             const el = document.getElementById('calendar-modal');
-            el.classList.toggle('modal-show');
-            if (el.classList.contains('modal-show')) fetchFullCalendarData();
+            if (!el.classList.contains('modal-show')) {
+                // Dorong state baru agar tombol back tidak keluar aplikasi
+                window.history.pushState({ modal: 'calendar' }, '');
+                el.classList.add('modal-show');
+                fetchFullCalendarData();
+            } else {
+                // Jika tombol back di dalam UI ditekan, mundurkan riwayat browser
+                window.history.back();
+            }
         }
+
+        // Tangkap event "Back" dari tombol HP
+        window.addEventListener('popstate', function (event) {
+            const el = document.getElementById('calendar-modal');
+            if (el.classList.contains('modal-show')) {
+                el.classList.remove('modal-show');
+            }
+        });
     </script>
 </section>
         <!-- =============================================
