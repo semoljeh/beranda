@@ -293,7 +293,10 @@
             try {
                 const data = await QuranAPI.getJuzs();
                 let html = '<div class="grid grid-cols-1 gap-3">';
-                data.juzs.forEach(j => {
+                // Memastikan tidak ada duplikasi dengan Set atau filter unik
+                const uniqueJuzs = data.juzs.filter((v,i,a)=>a.findIndex(t=>(t.juz_number === v.juz_number))===i);
+                
+                uniqueJuzs.forEach(j => {
                     const firstChapter = Object.keys(j.verse_mapping)[0];
                     html += `<div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
                         <div class="flex items-center gap-4">
@@ -344,23 +347,26 @@
                 }
 
                 arab.forEach((a, i) => {
-                    // Gunakan data nomor ayat langsung dari API agar sinkron dengan Juz
-                    const actualAyahNumber = a.verse_key.split(':')[1]; 
-                    const translationText = (indo[i]) ? indo[i].text.replace(/<(?:.|\n)*?>/gm, '') : '...';
+                    // FIX: Ambil nomor ayat asli dari verse_key (misal 78:1 -> ambil 1)
+                    const ayahNum = a.verse_key ? a.verse_key.split(':')[1] : (i + 1);
+                    const translation = (indo[i]) ? indo[i].text.replace(/<(?:.|\n)*?>/gm, '') : '...';
                     const hiddenClass = isTranslationVisible ? '' : 'hidden';
-                    
-                    html += `<div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
+
+                    html += `
+                    <div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
                         <div class="w-full text-right" dir="rtl">
                             <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
-                            <span class="ayah-end-number">\u06DD${toArabicNumber(actualAyahNumber)}</span>
+                            <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
                         </div>
                         <div class="flex items-start gap-4 mt-4">
-                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${actualAyahNumber}</span>
-                            <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">${translationText}</p>
+                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${ayahNum}</span>
+                            <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">${translation}</p>
                         </div>
                     </div>`;
                 });
-                c.innerHTML = html; c.scrollTo(0,0);
+                
+                c.innerHTML = html; 
+                c.scrollTo(0,0);
                 if(type === 'surah') updateMurottalBtn(currentAudio && !currentAudio.paused);
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat konten.</p>'; }
         }
