@@ -38,6 +38,9 @@
     <!-- =============================================
          KLP 3: GLOBAL NAVIGATION CONTROL (SINKRONISASI BACK BUTTON)
          ============================================= -->
+<!-- =============================================
+         KLP 3: GLOBAL NAVIGATION CONTROL (SINKRONISASI BACK BUTTON)
+         ============================================= -->
     <script>
         window.addEventListener('popstate', function (event) {
             // 1. Logika Khusus Quran (Navigasi Bertingkat)
@@ -60,8 +63,20 @@
                 }
             }
 
-            // 2. Logika Modal Standar Lainnya
-            document.querySelectorAll('.modal-full:not(#quran-modal)').forEach(m => {
+            // 1.a Logika Khusus Doa (TAMBAHAN BARU AGAR SAMA SEPERTI QURAN)
+            const dModal = document.getElementById('doa-modal');
+            if (dModal && dModal.classList.contains('modal-show')) {
+                if (event.state && event.state.doa_view === 'list') {
+                    // Jika kembali ke level list, muat ulang daftar doa
+                    if (typeof loadDoaList === "function") loadDoaList();
+                } else if (!event.state || (event.state && event.state.doa_view !== 'detail')) {
+                    // Tutup modal Doa jika keluar ke beranda
+                    dModal.classList.remove('modal-show');
+                }
+            }
+
+            // 2. Logika Modal Standar Lainnya (DIKECUALIKAN #doa-modal AGAR TIDAK DITUTUP PAKSA)
+            document.querySelectorAll('.modal-full:not(#quran-modal):not(#doa-modal)').forEach(m => {
                 if (m.classList.contains('modal-show')) m.classList.remove('modal-show');
             });
 
@@ -573,23 +588,56 @@
         <!-- =============================================
              KLP 8: DAILY DOA (MODAL)
              ============================================= -->
-        <section id="module-doa">
-            <div id="doa-modal" class="modal-full">
-                <div class="bg-teal-800 p-5 text-white flex justify-between items-center shadow-md">
-                    <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
-                    <h2 class="font-bold text-xs uppercase tracking-widest">Doa Harian</h2>
-                    <div class="w-10"></div>
-                </div>
-                <div class="flex-1 p-10 text-center text-slate-400 italic">Fitur Doa Segera Hadir...</div>
-            </div>
-            <script>
-                function toggleDoa() {
-                    const el = document.getElementById('doa-modal');
-                    if (!el.classList.contains('modal-show')) { el.classList.add('modal-show'); pushState('doa'); } else { history.back(); }
-                }
-            </script>
-        </section>
+<section id="module-doa">
+    <div id="doa-modal" class="modal-full">
+        <div class="bg-teal-800 p-5 text-white flex justify-between items-center">
+            <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="doa-header-title" class="font-bold text-xs uppercase">Doa Harian</h2>
+            <div class="w-10"></div>
+        </div>
+        <div id="doa-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
+    </div>
 
+    <script>
+        const dataDoaMadasa = [
+            { id: 1, judul: "Doa Sebelum Makan", arab: "اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ", arti: "Ya Allah, berkahilah kami atas rezeki yang telah Engkau berikan..." },
+            { id: 2, judul: "Doa Bangun Tidur", arab: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", arti: "Segala puji bagi Allah yang telah menghidupkan kami..." },
+            { id: 3, judul: "Doa Masuk Masjid", arab: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمETِكَ", arti: "Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu." },
+            { id: 4, judul: "Doa Untuk Orang Tua", arab: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", arti: "Tuhanku, ampunilah dosaku dan dosa kedua orang tuaku..." },
+            { id: 5, judul: "Doa Sapu Jagad", arab: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ", arti: "Ya Tuhan kami, berilah kami kebaikan di dunia dan akhirat..." }
+        ];
+
+        function toggleDoa() {
+            const el = document.getElementById('doa-modal');
+            if (!el.classList.contains('modal-show')) {
+                pushState('doa', { doa_view: 'list' }); // Catat level daftar
+                el.classList.add('modal-show');
+                loadDoaList();
+            } else { window.history.back(); }
+        }
+
+        function loadDoaList() {
+            document.getElementById('doa-header-title').innerText = "Doa Harian";
+            let html = '';
+            dataDoaMadasa.forEach(d => {
+                html += `<div onclick="loadDoaDetail(${d.id})" class="p-4 bg-white rounded-2xl mb-3 border border-slate-100 font-bold text-sm text-slate-700 uppercase">${d.judul}</div>`;
+            });
+            document.getElementById('doa-content').innerHTML = html;
+        }
+
+        function loadDoaDetail(id) {
+            pushState('doa', { doa_view: 'detail' }); // Catat level detail
+            const d = dataDoaMadasa.find(i => i.id === id);
+            document.getElementById('doa-header-title').innerText = "Detail Doa";
+            document.getElementById('doa-content').innerHTML = `
+                <div class="bg-white p-8 rounded-3xl text-center shadow-sm">
+                    <h3 class="text-teal-600 font-bold text-[10px] mb-6 uppercase">${d.judul}</h3>
+                    <p class="font-arab text-3xl mb-6" dir="rtl">${d.arab}</p>
+                    <p class="text-sm text-slate-500 italic">"${d.arti}"</p>
+                </div>`;
+        }
+    </script>
+</section>
         <!-- =============================================
              KLP 9: NAVIGATION BAR & LOCATION PICKER
              ============================================= -->
@@ -683,5 +731,12 @@
         }
         window.onload = () => { updateDateTime(); getCoreData(); startCountdown(); };
     </script>
+	
+	
+	
+	
+	
+	
+	
 </body>
 </html>
