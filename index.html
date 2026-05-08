@@ -160,7 +160,7 @@
             direction: rtl;
         }
 
-        /* Tab Switcher */
+        /* Tab Switcher Style */
         .quran-tab-container {
             display: flex; background: rgba(255,255,255,0.1);
             border-radius: 12px; padding: 4px; margin-top: 10px;
@@ -172,7 +172,7 @@
         }
         .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
-        /* Responsive Fix untuk List Item */
+        /* Responsive Card Style */
         .quran-item {
             display: flex;
             justify-content: space-between;
@@ -182,17 +182,18 @@
             border-radius: 1.25rem;
             border: 1px solid #f1f5f9;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s;
-            gap: 12px;
+            margin-bottom: 12px;
+            gap: 10px;
         }
-        .quran-item:active { transform: scale(0.98); }
 
+        /* Container Arab di Sisi Kanan */
         .arab-side {
             display: flex;
-            flex-direction: row-reverse;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap; /* Mencegah nomor turun ke bawah */
+            gap: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            direction: rtl; /* Memastikan urutan: Nama Arab dulu baru Nomor */
         }
 
         .ayah-end-number {
@@ -258,7 +259,6 @@
 
         let currentAudio = null;
         let isTranslationVisible = true;
-        let currentAudioUrl = "";
 
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
@@ -297,7 +297,7 @@
 
             try {
                 const data = await QuranAPI.getChapters();
-                let html = '<div class="grid grid-cols-1 gap-3">';
+                let html = '';
                 data.chapters.forEach(s => {
                     const numArab = toArabicNumber(s.id);
                     html += `
@@ -310,12 +310,12 @@
                             </div>
                         </div>
                         <div class="arab-side">
-                             <span class="font-arab text-xl text-teal-600">${s.name_arabic}</span>
-                             <span class="font-arab text-sm text-teal-600">. ${numArab}</span>
+                             <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
+                             <span class="font-arab text-lg text-teal-600">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
-                c.innerHTML = html + '</div>';
+                c.innerHTML = html;
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat.</p>'; }
         }
 
@@ -324,7 +324,7 @@
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat...</div>`;
             try {
                 const data = await QuranAPI.getJuzs();
-                let html = '<div class="grid grid-cols-1 gap-3">';
+                let html = '';
                 const uniqueJuzs = data.juzs.filter((v,i,a)=>a.findIndex(t=>(t.juz_number === v.juz_number))===i);
                 
                 uniqueJuzs.forEach(j => {
@@ -340,12 +340,12 @@
                             </div>
                         </div>
                         <div class="arab-side">
-                             <span class="font-arab text-lg text-teal-600">${juzNamesArab[j.juz_number]}</span>
-                             <span class="font-arab text-sm text-teal-600">. ${numArab}</span>
+                             <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
+                             <span class="font-arab text-lg text-teal-600">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
-                c.innerHTML = html + '</div>';
+                c.innerHTML = html;
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat.</p>'; }
         }
 
