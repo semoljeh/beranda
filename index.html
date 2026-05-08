@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Darussalam</title>
@@ -73,20 +74,24 @@
             <span id="location-text" class="text-[11px] font-semibold text-white truncate max-w-[150px]">Mencari Lokasi...</span>
             <i class="fa-solid fa-chevron-down text-white/50 text-[9px]"></i>
         </div>
+        
         <div class="info-capsule">
-            <div class="flex items-center justify-between">
+            <!-- Bagian Atas: Nama Sholat & Mendatang (Rata Atas) -->
+            <div class="flex items-start justify-between">
                 <div class="flex-1 text-center border-r border-slate-100">
-                    <p id="prayer-name" class="text-base text-teal-600 font-extrabold uppercase mb-1 tracking-wider">---</p>
-                    <h2 id="prayer-time" class="text-4xl font-bold text-slate-800 tracking-tight leading-none">--:--</h2>
+                    <p id="prayer-name" class="text-base text-teal-600 font-extrabold uppercase leading-none tracking-wider">---</p>
+                    <h2 id="prayer-time" class="text-4xl font-bold text-slate-800 tracking-tight leading-none mt-2">--:--</h2>
                 </div>
                 <div class="flex-1 text-center">
-                    <p class="text-base text-teal-600 font-extrabold uppercase mb-1 tracking-wider">Mendatang</p>
-                    <span id="countdown" class="text-xl font-semibold text-slate-700 font-mono tracking-tighter">-00:00:00</span>
+                    <p class="text-base text-teal-600 font-extrabold uppercase leading-none tracking-wider">Mendatang</p>
+                    <span id="countdown" class="text-2xl font-extrabold text-black-600 font-mono tracking-tight block mt-2">-00:00:00</span>
                 </div>
             </div>
+            
+            <!-- Bagian Bawah: Tanggal (Hijriah di Atas Masehi) -->
             <div class="mt-4 pt-4 border-t border-slate-50 text-center">
-                <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight"></p>
-				<p id="full-date" class="text-[11px] font-medium text-slate-500 mb-1"></p>
+                <p id="java-hijri" class="text-xs text-teal-600 font-semibold tracking-tight mb-1"></p>
+                <p id="full-date" class="text-[11px] font-medium text-slate-500"></p>
             </div>
         </div>
     </div>
@@ -105,25 +110,18 @@
                     document.getElementById('location-text').innerText = addr;
                     localStorage.setItem('last_location', addr);
                     
-                    // Ambil jadwal sholat dan data Hijriah
                     const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                     const json = await res.json(); 
                     
                     // Update Hijriah dari API
                     const h = json.data.date.hijri;
                     const bulanIndo = {
-                        "Dhu al-Qi'dah": "Dzulqo'dah",
-                        "Dhu al-Hijjah": "Dzulhijjah",
-                        "Muharram": "Muharram",
-                        "Safar": "Safar",
-                        "Rabi' al-awwal": "Rabiul Awal",
-                        "Rabi' al-thani": "Rabiul Akhir",
-                        "Jumada al-ula": "Jumadil Ula",
-                        "Jumada al-akhirah": "Jumadil Akhira",
-                        "Rajab": "Rajab",
-                        "Sha'ban": "Syaban",
-                        "Ramadan": "Ramadhan",
-                        "Shawwal": "Syawal"
+                        "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah",
+                        "Muharram": "Muharram", "Safar": "Safar",
+                        "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir",
+                        "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira",
+                        "Rajab": "Rajab", "Sha'ban": "Syaban",
+                        "Ramadan": "Ramadhan", "Shawwal": "Syawal"
                     };
                     const namaBulan = bulanIndo[h.month.en] || h.month.en;
                     document.getElementById('java-hijri').innerText = `${h.day} ${namaBulan} ${h.year} H`;
@@ -158,22 +156,68 @@
         <!-- =============================================
              KLP 5: MAIN MENU GRID
              ============================================= -->
-        <section id="module-menu">
-            <style>
-                .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; }
-                .menu-card:active { transform: scale(0.96); background-color: #f8fafc; }
-            </style>
-            <div class="mt-24 text-center px-8">
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">Portal Darussalam</h1>
-                <p class="text-xs text-slate-400 font-medium">Digital Madrasah Ecosystem</p>
+<section id="module-menu">
+    <style>
+        /* Mengambil font Kufi dengan bobot 500 (Medium) agar tidak terlalu tebal */
+        @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500&display=swap');
+
+        .font-kufi { 
+            font-family: 'Reem Kufi', 'Arabic Typesetting', sans-serif !important;
+            font-weight: 500; /* Mengatur ketebalan medium */
+        }
+        
+        .menu-card { 
+            background: #ffffff; 
+            border-radius: 20px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            border: 1px solid #f1f5f9; 
+            transition: transform 0.2s ease; 
+        }
+
+        .menu-card:active {
+            transform: scale(0.95);
+            background-color: #f8fafc;
+        }
+    </style>
+
+    <div class="mt-24 text-center px-8">
+        <h1 class="text-3xl text-teal-600 font-kufi leading-snug">المختار</h1>
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Do'a | Dzikir | Rotib | Maulid</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 p-6">
+        <div class="menu-card">
+            <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-mosque"></i>
             </div>
-            <div class="grid grid-cols-2 gap-4 p-6">
-                <div class="menu-card"><div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-mosque"></i></div><span class="text-xs font-semibold uppercase">Profil</span></div>
-                <div class="menu-card"><div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-book-open"></i></div><span class="text-xs font-semibold uppercase">Kegiatan</span></div>
-                <div class="menu-card"><div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-signature"></i></div><span class="text-xs font-semibold uppercase">Daftar</span></div>
-                <div class="menu-card"><div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-heart-pulse"></i></div><span class="text-xs font-semibold uppercase">Donasi</span></div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Profil</span>
+        </div>
+        
+        <div class="menu-card">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-book-open"></i>
             </div>
-        </section>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Kegiatan</span>
+        </div>
+        
+        <div class="menu-card">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-file-signature"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Daftar</span>
+        </div>
+        
+        <div class="menu-card">
+            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Donasi</span>
+        </div>
+    </div>
+</section>
 
         <!-- =============================================
              KLP 6: AL-QURAN MODULE (MODAL & LOGIC)
