@@ -204,34 +204,37 @@ body {
 
     <script>
         let nextPrayerTime = null;
-        async function getCoreData() {
-            const cachedLoc = localStorage.getItem('last_location');
-            if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    const lRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
-                    const lData = await lRes.json();
-                    const addr = lData.address.village || lData.address.suburb || lData.address.city || "Lokasi Aktif";
-                    document.getElementById('location-text').innerText = addr;
-                    localStorage.setItem('last_location', addr);
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json(); 
-                    const h = json.data.date.hijri;
-                    const bulanIndo = {
-                        "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah",
-                        "Muharram": "Muharram", "Safar": "Safar",
-                        "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir",
-                        "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira",
-                        "Rajab": "Rajab", "Sha'ban": "Syaban",
-                        "Ramadan": "Ramadhan", "Shawwal": "Syawal"
-                    };
-                    const namaBulan = bulanIndo[h.month.en] || h.month.en;
-                    document.getElementById('java-hijri').innerText = `${h.day} ${namaBulan} ${h.year} H`;
-                    setPrayerUI(json.data.timings);
-                });
+async function getCoreData() {
+    const cachedLoc = localStorage.getItem('last_location');
+    const cachedTimings = localStorage.getItem('prayer_timings'); // Ambil jadwal yang tersimpan
+
+    if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
+
+    // Jika Offline dan ada cache, langsung pakai data lama
+    if (!navigator.onLine && cachedTimings) {
+        console.log("Mode Offline: Menggunakan jadwal tersimpan.");
+        setPrayerUI(JSON.parse(cachedTimings));
+        return; 
+    }
+
+    // Jika Online, ambil data baru dan simpan ke LocalStorage
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const { latitude: lat, longitude: lon } = pos.coords;
+                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                const json = await res.json();
+                
+                // SIMPAN KE CACHE LOKAL
+                localStorage.setItem('prayer_timings', JSON.stringify(json.data.timings));
+                
+                setPrayerUI(json.data.timings);
+            } catch (e) {
+                if (cachedTimings) setPrayerUI(JSON.parse(cachedTimings));
             }
-        }
+        });
+    }
+}
         function setPrayerUI(t) {
             const now = new Date(); const cur = (now.getHours() * 60) + now.getMinutes();
             const s = [{n:'Subuh', t:t.Fajr}, {n:'Dzuhur', t:t.Dhuhr}, {n:'Ashar', t:t.Asr}, {n:'Maghrib', t:t.Maghrib}, {n:'Isya', t:t.Isha}];
