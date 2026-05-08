@@ -282,9 +282,9 @@
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
                             <div><h4 class="font-bold text-sm uppercase">${s.name_simple}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name}</p></div>
                         </div>
-                        <div class="text-right flex items-center gap-2" dir="rtl">
+                        <div class="text-right flex flex-row-reverse items-center gap-2">
+                             <span class="font-arab text-lg text-teal-300">${numArab} .</span>
                              <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
-                             <span class="font-arab text-lg text-teal-300">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
@@ -309,9 +309,9 @@
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${j.juz_number}</span>
                             <div><h4 class="font-bold text-sm uppercase">Juz ${j.juz_number}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">Mulai Surah: ${firstChapter}</p></div>
                         </div>
-                        <div class="text-right flex items-center gap-2" dir="rtl">
+                        <div class="text-right flex flex-row-reverse items-center gap-2">
+                             <span class="font-arab text-lg text-teal-300">${numArab} .</span>
                              <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
-                             <span class="font-arab text-lg text-teal-300">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
