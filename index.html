@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
 <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEMOLJEH</title>
+    
     <!-- =============================================
          KLP 1: META SETUP & PWA CONFIGURATION
          ============================================= -->
@@ -378,7 +378,7 @@ body {
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
-        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشرon", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
+        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشر", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
         let currentAudio = null;
         let isTranslationVisible = true;
 
@@ -893,13 +893,59 @@ body {
 	
 	
 	<script>
+  // 1. Registrasi Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW terdaftar!', reg))
-        .catch(err => console.log('SW Gagal:', err));
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('SW Registered'))
+        .catch(err => console.log('SW Failed', err));
     });
   }
+
+  // 2. Sistem Background Preload (Auto-Download Quran & Doa saat Online)
+  async function preloadOfflineData() {
+    if (!navigator.onLine) return;
+
+    console.log("Memulai background sync data...");
+    
+    // Simpan list doa ke cache lokal (LocalStorage sebagai Backup)
+    if (typeof dataDoaMadasa !== 'undefined') {
+      localStorage.setItem('offline_doa', JSON.stringify(dataDoaMadasa));
+    }
+
+    // Preload API Al-Quran (Hanya daftar surah agar ringan)
+    try {
+      const quranCache = await caches.open('almukhtar-v1');
+      const response = await fetch('https://api.quran.com/api/v4/chapters?language=id');
+      if (response.ok) {
+        await quranCache.put('https://api.quran.com/api/v4/chapters?language=id', response);
+      }
+    } catch (e) { console.log("Preload silenly failed"); }
+  }
+
+  // 3. Update Status UI Secara Otomatis (Tanpa Merubah Desain)
+  window.addEventListener('online', () => {
+    preloadOfflineData();
+    // Re-fetch jadwal sholat otomatis saat internet kembali
+    if (typeof getCoreData === 'function') getCoreData();
+  });
+
+  // Jalankan preload 5 detik setelah aplikasi terbuka agar tidak mengganggu loading awal
+  setTimeout(preloadOfflineData, 5000);
+
+  // 4. Overiding Fetch untuk Auto-Fallback
+  // Ini memastikan jika API mati, fungsi tetap mengambil dari cache yang ada di SW
+  const originalFetch = window.fetch;
+  window.fetch = async (...args) => {
+    try {
+      const response = await originalFetch(...args);
+      return response;
+    } catch (error) {
+      const cache = await caches.match(args[0]);
+      if (cache) return cache;
+      throw error;
+    }
+  };
 </script>
 	
 	
