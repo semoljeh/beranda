@@ -160,6 +160,7 @@
             direction: rtl;
         }
 
+        /* Tab Switcher */
         .quran-tab-container {
             display: flex; background: rgba(255,255,255,0.1);
             border-radius: 12px; padding: 4px; margin-top: 10px;
@@ -170,6 +171,29 @@
             cursor: pointer; border-radius: 8px; transition: 0.3s;
         }
         .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        /* Responsive Fix untuk List Item */
+        .quran-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 1rem 1.25rem;
+            border-radius: 1.25rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            gap: 12px;
+        }
+        .quran-item:active { transform: scale(0.98); }
+
+        .arab-side {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap; /* Mencegah nomor turun ke bawah */
+        }
 
         .ayah-end-number {
             font-family: 'Amiri', serif; font-size: 1.5rem; color: #0d9488;
@@ -264,7 +288,7 @@
 
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
-            c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Surah...</div>`;
+            c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat...</div>`;
             document.getElementById('quran-tabs').classList.remove('hidden');
             document.getElementById('surah-meta-info').classList.add('hidden');
             document.getElementById('surah-title-arab').innerText = "";
@@ -277,14 +301,17 @@
                 data.chapters.forEach(s => {
                     const numArab = toArabicNumber(s.id);
                     html += `
-                    <div onclick="loadDetailQuran(${s.id}, 'surah', '${s.name_simple.replace(/'/g, "")}', '${s.translated_name.name}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
-                            <div><h4 class="font-bold text-sm uppercase">${s.name_simple}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name}</p></div>
+                    <div onclick="loadDetailQuran(${s.id}, 'surah', '${s.name_simple.replace(/'/g, "")}', '${s.translated_name.name}')" class="quran-item">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="w-9 h-9 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold shrink-0">${s.id}</span>
+                            <div class="truncate">
+                                <h4 class="font-bold text-[13px] uppercase truncate">${s.name_simple}</h4>
+                                <p class="text-[8px] text-slate-400 font-bold uppercase truncate">${s.translated_name.name}</p>
+                            </div>
                         </div>
-                        <div class="text-right flex flex-row-reverse items-center gap-2">
-                             <span class="font-arab text-lg text-teal-300">${numArab} .</span>
-                             <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
+                        <div class="arab-side">
+                             <span class="font-arab text-xl text-teal-600">${s.name_arabic}</span>
+                             <span class="font-arab text-sm text-teal-600">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
@@ -294,7 +321,7 @@
 
         async function loadJuzList() {
             const c = document.getElementById('quran-content');
-            c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Juz...</div>`;
+            c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat...</div>`;
             try {
                 const data = await QuranAPI.getJuzs();
                 let html = '<div class="grid grid-cols-1 gap-3">';
@@ -304,19 +331,22 @@
                     const firstChapter = Object.keys(j.verse_mapping)[0];
                     const numArab = toArabicNumber(j.juz_number);
                     html += `
-                    <div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${j.juz_number}</span>
-                            <div><h4 class="font-bold text-sm uppercase">Juz ${j.juz_number}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">Mulai Surah: ${firstChapter}</p></div>
+                    <div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="quran-item">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="w-9 h-9 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold shrink-0">${j.juz_number}</span>
+                            <div class="truncate">
+                                <h4 class="font-bold text-[13px] uppercase truncate">Juz ${j.juz_number}</h4>
+                                <p class="text-[8px] text-slate-400 font-bold uppercase truncate">Mulai: ${firstChapter}</p>
+                            </div>
                         </div>
-                        <div class="text-right flex flex-row-reverse items-center gap-2">
-                             <span class="font-arab text-lg text-teal-300">${numArab} .</span>
-                             <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
+                        <div class="arab-side">
+                             <span class="font-arab text-lg text-teal-600">${juzNamesArab[j.juz_number]}</span>
+                             <span class="font-arab text-sm text-teal-600">. ${numArab}</span>
                         </div>
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
-            } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat Juz.</p>'; }
+            } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat.</p>'; }
         }
 
         async function loadDetailQuran(id, type, name = "", arti = "") {
