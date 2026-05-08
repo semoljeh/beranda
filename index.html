@@ -275,12 +275,17 @@
                 const data = await QuranAPI.getChapters();
                 let html = '<div class="grid grid-cols-1 gap-3">';
                 data.chapters.forEach(s => {
-                    html += `<div onclick="loadDetailQuran(${s.id}, 'surah', '${s.name_simple.replace(/'/g, "")}', '${s.translated_name.name}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
+                    const numArab = toArabicNumber(s.id);
+                    html += `
+                    <div onclick="loadDetailQuran(${s.id}, 'surah', '${s.name_simple.replace(/'/g, "")}', '${s.translated_name.name}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
                         <div class="flex items-center gap-4">
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
                             <div><h4 class="font-bold text-sm uppercase">${s.name_simple}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name}</p></div>
                         </div>
-                        <span class="font-arab text-3xl text-teal-600">${s.name_arabic}</span>
+                        <div class="text-right flex items-center gap-2" dir="rtl">
+                             <span class="font-arab text-2xl text-teal-600">${s.name_arabic}</span>
+                             <span class="font-arab text-lg text-teal-300">. ${numArab}</span>
+                        </div>
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
@@ -293,17 +298,21 @@
             try {
                 const data = await QuranAPI.getJuzs();
                 let html = '<div class="grid grid-cols-1 gap-3">';
-                // Memastikan tidak ada duplikasi dengan Set atau filter unik
                 const uniqueJuzs = data.juzs.filter((v,i,a)=>a.findIndex(t=>(t.juz_number === v.juz_number))===i);
                 
                 uniqueJuzs.forEach(j => {
                     const firstChapter = Object.keys(j.verse_mapping)[0];
-                    html += `<div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
+                    const numArab = toArabicNumber(j.juz_number);
+                    html += `
+                    <div onclick="loadDetailQuran(${j.juz_number}, 'juz')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
                         <div class="flex items-center gap-4">
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${j.juz_number}</span>
                             <div><h4 class="font-bold text-sm uppercase">Juz ${j.juz_number}</h4><p class="text-[9px] text-slate-400 font-bold uppercase">Mulai Surah: ${firstChapter}</p></div>
                         </div>
-                        <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
+                        <div class="text-right flex items-center gap-2" dir="rtl">
+                             <span class="font-arab text-xl text-teal-600">${juzNamesArab[j.juz_number]}</span>
+                             <span class="font-arab text-lg text-teal-300">. ${numArab}</span>
+                        </div>
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
@@ -326,7 +335,7 @@
                     document.getElementById('surah-title-latin').innerText = name;
                     document.getElementById('surah-subtitle').innerText = `(${arti})`;
                     document.getElementById('surah-info-count').innerText = `${info.chapter.verses_count} Ayat`;
-                    document.getElementById('surah-info-type').innerText = info.chapter.revelation_place;
+                    document.getElementById('surah-info-type').innerText = info.chapter.revelation_place === 'makkah' ? 'Makkiyah' : 'Madaniyah';
                     document.getElementById('surah-meta-info').classList.remove('hidden');
                     arab = vArab.verses; indo = vIndo.translations; audioData = vAudio;
                 } else {
@@ -347,7 +356,6 @@
                 }
 
                 arab.forEach((a, i) => {
-                    // FIX: Ambil nomor ayat asli dari verse_key (misal 78:1 -> ambil 1)
                     const ayahNum = a.verse_key ? a.verse_key.split(':')[1] : (i + 1);
                     const translation = (indo[i]) ? indo[i].text.replace(/<(?:.|\n)*?>/gm, '') : '...';
                     const hiddenClass = isTranslationVisible ? '' : 'hidden';
