@@ -118,8 +118,8 @@ body {
 
 
 
-        <!-- =============================================
-             KLP 4: MAIN MENU GRID
+<!-- =============================================
+             KLP 4: MAIN MENU GRID (OFFLINE READY)
              ============================================= -->
 
     <div class="app-container">
@@ -204,34 +204,73 @@ body {
 
     <script>
         let nextPrayerTime = null;
+
         async function getCoreData() {
             const cachedLoc = localStorage.getItem('last_location');
             if (cachedLoc) document.getElementById('location-text').innerText = cachedLoc;
+
+            // AMBIL DATA CACHE JIKA OFFLINE
+            const cachedPrayer = localStorage.getItem('last_prayer_data');
+            if (!navigator.onLine && cachedPrayer) {
+                const localData = JSON.parse(cachedPrayer);
+                setPrayerUI(localData.timings);
+                updateHijriFromCache(localData.date.hijri);
+                return; 
+            }
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const { latitude: lat, longitude: lon } = pos.coords;
-                    const lRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
-                    const lData = await lRes.json();
-                    const addr = lData.address.village || lData.address.suburb || lData.address.city || "Lokasi Aktif";
-                    document.getElementById('location-text').innerText = addr;
-                    localStorage.setItem('last_location', addr);
-                    const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
-                    const json = await res.json(); 
-                    const h = json.data.date.hijri;
-                    const bulanIndo = {
-                        "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah",
-                        "Muharram": "Muharram", "Safar": "Safar",
-                        "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir",
-                        "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira",
-                        "Rajab": "Rajab", "Sha'ban": "Syaban",
-                        "Ramadan": "Ramadhan", "Shawwal": "Syawal"
-                    };
-                    const namaBulan = bulanIndo[h.month.en] || h.month.en;
-                    document.getElementById('java-hijri').innerText = `${h.day} ${namaBulan} ${h.year} H`;
-                    setPrayerUI(json.data.timings);
+                    try {
+                        const { latitude: lat, longitude: lon } = pos.coords;
+                        
+                        // Fetch Lokasi
+                        const lRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+                        const lData = await lRes.json();
+                        const addr = lData.address.village || lData.address.suburb || lData.address.city || "Lokasi Aktif";
+                        document.getElementById('location-text').innerText = addr;
+                        localStorage.setItem('last_location', addr);
+
+                        // Fetch Jadwal Sholat
+                        const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                        const json = await res.json(); 
+                        
+                        // SIMPAN DATA TERBARU KE CACHE UNTUK OFFLINE
+                        localStorage.setItem('last_prayer_data', JSON.stringify(json.data));
+                        
+                        updateHijriFromCache(json.data.date.hijri);
+                        setPrayerUI(json.data.timings);
+                    } catch (e) {
+                        // Fallback ke cache jika gagal koneksi
+                        if (cachedPrayer) {
+                            const localData = JSON.parse(cachedPrayer);
+                            setPrayerUI(localData.timings);
+                            updateHijriFromCache(localData.date.hijri);
+                        }
+                    }
+                }, (err) => {
+                    // Fallback jika GPS error
+                    if (cachedPrayer) {
+                        const localData = JSON.parse(cachedPrayer);
+                        setPrayerUI(localData.timings);
+                        updateHijriFromCache(localData.date.hijri);
+                    }
                 });
             }
         }
+
+        function updateHijriFromCache(h) {
+            const bulanIndo = {
+                "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah",
+                "Muharram": "Muharram", "Safar": "Safar",
+                "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir",
+                "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira",
+                "Rajab": "Rajab", "Sha'ban": "Syaban",
+                "Ramadan": "Ramadhan", "Shawwal": "Syawal"
+            };
+            const namaBulan = bulanIndo[h.month.en] || h.month.en;
+            document.getElementById('java-hijri').innerText = `${h.day} ${namaBulan} ${h.year} H`;
+        }
+
         function setPrayerUI(t) {
             const now = new Date(); const cur = (now.getHours() * 60) + now.getMinutes();
             const s = [{n:'Subuh', t:t.Fajr}, {n:'Dzuhur', t:t.Dhuhr}, {n:'Ashar', t:t.Asr}, {n:'Maghrib', t:t.Maghrib}, {n:'Isya', t:t.Isha}];
@@ -241,6 +280,7 @@ body {
             const [nH, nM] = next.t.split(':'); nextPrayerTime = new Date(); nextPrayerTime.setHours(nH, nM, 0);
             if (nextPrayerTime < now) nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
         }
+
         function startCountdown() {
             setInterval(() => {
                 if (!nextPrayerTime) return;
@@ -378,7 +418,7 @@ body {
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
-        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشر", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
+        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشرون", "الجزء السادس والعشرون", "الجزء السابع والعشرon", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
         let currentAudio = null;
         let isTranslationVisible = true;
 
@@ -892,62 +932,32 @@ body {
 	
 	
 	
-	<script>
-  // 1. Registrasi Service Worker
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('SW Registered'))
-        .catch(err => console.log('SW Failed', err));
-    });
-  }
-
-  // 2. Sistem Background Preload (Auto-Download Quran & Doa saat Online)
-  async function preloadOfflineData() {
-    if (!navigator.onLine) return;
-
-    console.log("Memulai background sync data...");
-    
-    // Simpan list doa ke cache lokal (LocalStorage sebagai Backup)
-    if (typeof dataDoaMadasa !== 'undefined') {
-      localStorage.setItem('offline_doa', JSON.stringify(dataDoaMadasa));
-    }
-
-    // Preload API Al-Quran (Hanya daftar surah agar ringan)
-    try {
-      const quranCache = await caches.open('almukhtar-v1');
-      const response = await fetch('https://api.quran.com/api/v4/chapters?language=id');
-      if (response.ok) {
-        await quranCache.put('https://api.quran.com/api/v4/chapters?language=id', response);
-      }
-    } catch (e) { console.log("Preload silenly failed"); }
-  }
-
-  // 3. Update Status UI Secara Otomatis (Tanpa Merubah Desain)
-  window.addEventListener('online', () => {
-    preloadOfflineData();
-    // Re-fetch jadwal sholat otomatis saat internet kembali
-    if (typeof getCoreData === 'function') getCoreData();
-  });
-
-  // Jalankan preload 5 detik setelah aplikasi terbuka agar tidak mengganggu loading awal
-  setTimeout(preloadOfflineData, 5000);
-
-  // 4. Overiding Fetch untuk Auto-Fallback
-  // Ini memastikan jika API mati, fungsi tetap mengambil dari cache yang ada di SW
-  const originalFetch = window.fetch;
-  window.fetch = async (...args) => {
-    try {
-      const response = await originalFetch(...args);
-      return response;
-    } catch (error) {
-      const cache = await caches.match(args[0]);
-      if (cache) return cache;
-      throw error;
-    }
-  };
-</script>
 	
-	
+    <script>
+        // KLP 10: Registrasi SW & Global Init
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js');
+        }
+
+        function updateDateTime() {
+            const now = new Date(); 
+            const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('full-date').innerText = `${ds[now.getDay()]} ${getPasaran(now)}, ${now.getDate()} ${ms[now.getMonth()]} ${now.getFullYear()} M`;
+        }
+
+        window.onload = () => { 
+            updateDateTime(); 
+            getCoreData(); 
+            startCountdown(); 
+            // Preload data doa & quran saat online
+            if(navigator.onLine) {
+                setTimeout(() => {
+                   if(typeof loadSurahList === 'function') loadSurahList();
+                   if(typeof loadDoaList === 'function') loadDoaList();
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>
