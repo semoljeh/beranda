@@ -305,7 +305,7 @@
                     QuranAPI.getAudioSurah(id)
                 ]);
 
-                const s = infoData.chapter;
+              document.getElementById('surah-title-arab').innerText = `\uFD3E ${s.name_arabic} \uFD3F`;
                 document.getElementById('surah-title-arab').innerText = s.name_arabic;
                 document.getElementById('surah-title-latin').innerText = name;
                 document.getElementById('surah-subtitle').innerText = `(${arti})`;
