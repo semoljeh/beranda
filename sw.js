@@ -1,30 +1,74 @@
-const CACHE_NAME = 'madasa-v1';
-const assets = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './LPMQ IsepMisbah.ttf', 
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+const CACHE_NAME = 'almukhtar-v3';
+
+const STATIC_ASSETS = [
+    './',
+    './index.html',
+    './manifest.json',
+
+    'https://cdn.tailwindcss.com',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+    'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
+    'https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap'
 ];
 
-// Tahap Install: Download semua file utama
-self.addEventListener('install', evt => {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('Mendownload data aplikasi ke cache...');
-      return cache.addAll(assets);
-    })
-  );
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+        .then(cache => cache.addAll(STATIC_ASSETS))
+    );
+
+    self.skipWaiting();
 });
 
-// Tahap Fetch: Ambil dari cache jika offline
-self.addEventListener('fetch', evt => {
-  evt.respondWith(
-    caches.match(evt.request).then(cacheRes => {
-      return cacheRes || fetch(evt.request);
-    })
-  );
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys => {
+            return Promise.all(
+                keys.map(key => {
+                    if (key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
+                })
+            );
+        })
+    );
+
+    self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+
+    const req = event.request;
+
+    if (req.method !== 'GET') return;
+
+    event.respondWith(
+
+        caches.match(req).then(cacheRes => {
+
+            return cacheRes || fetch(req)
+            .then(fetchRes => {
+
+                return caches.open(CACHE_NAME).then(cache => {
+
+                    cache.put(req, fetchRes.clone());
+
+                    return fetchRes;
+                });
+
+            })
+            .catch(() => {
+
+                if (req.destination === 'document') {
+                    return caches.match('./index.html');
+                }
+
+            });
+
+        })
+
+    );
+
 });
