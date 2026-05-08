@@ -1,26 +1,21 @@
 {
-  "name": "Darussalam Online",
-  "short_name": "Darussalam",
-  "description": "Portal Digital Ecosystem Darussalam",
-  "id": "./index.html",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "Darussalam SEMOLJEH",
+  "short_name": "Al-Mukhtar",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0d9488",
   "theme_color": "#0d9488",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
-      "src": "https://raw.githubusercontent.com/semoljeh/link/main/icon-512.png",
+      "src": "https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     }
   ]
 }
