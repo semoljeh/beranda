@@ -580,9 +580,9 @@ body {
     </script>
 </section>
 
-         <!-- =============================================
-             KLP 7: KALENDER DI BAWAH
-             ============================================= -->
+        <!-- =============================================
+     KLP 7: KALENDER DI BAWAH (OFFLINE READY)
+     ============================================= -->
 <section id="module-calendar">
     <style>
         #calendar-modal { font-family: 'Inter', sans-serif; transition: transform 0.3s ease-out; }
@@ -656,49 +656,83 @@ body {
         async function fetchFullCalendarData() {
             const y = currentCalDate.getFullYear();
             const m = currentCalDate.getMonth() + 1;
-            try {
-                const resLibur = await fetch(`https://libur.deno.dev/api?year=${y}`);
-                holidayCache = await resLibur.json();
-                const resAladhan = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`);
-                const aladhanData = await resAladhan.json();
-                currentHijriData = aladhanData.data;
-                renderCalendar();
-            } catch (e) { console.error(e); }
+            const cacheKey = `cal_cache_${y}_${m}`;
+            
+            // 1. Load dari LocalStorage jika ada (Offline Mode)
+            const savedData = localStorage.getItem(cacheKey);
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                holidayCache = parsed.holidays;
+                currentHijriData = parsed.hijri;
+                renderCalendar(); 
+            }
+
+            // 2. Refresh data dari internet jika Online
+            if (navigator.onLine) {
+                try {
+                    const [resLibur, resAladhan] = await Promise.all([
+                        fetch(`https://libur.deno.dev/api?year=${y}`).then(r => r.json()),
+                        fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`).then(r => r.json())
+                    ]);
+
+                    if (resAladhan.data) {
+                        holidayCache = resLibur;
+                        currentHijriData = resAladhan.data;
+                        
+                        // Simpan ke Cache untuk penggunaan offline berikutnya
+                        localStorage.setItem(cacheKey, JSON.stringify({
+                            holidays: resLibur,
+                            hijri: resAladhan.data
+                        }));
+                        
+                        renderCalendar();
+                    }
+                } catch (e) { console.error("Koneksi gagal, menggunakan cache lokal."); }
+            }
         }
 
         function renderCalendar() {
             const hijriData = currentHijriData;
-            if (!hijriData || hijriData.length === 0) return;
+            if (!hijriData || hijriData.length === 0) {
+                document.getElementById('calendar-days-grid').innerHTML = '<div class="col-span-7 text-center py-10 text-slate-400 text-[10px] font-bold uppercase">Mencari Data Offline...</div>';
+                return;
+            }
+
             const grid = document.getElementById('calendar-days-grid');
             const holEl = document.getElementById('holiday-list');
             const hijriHeader = document.getElementById('hijri-detail-header');
             const masehiHeader = document.getElementById('masehi-detail-header');
+            
             grid.innerHTML = ''; holEl.innerHTML = '';
             const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth();
             const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             const daysIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
             const realToday = new Date();
+            
             document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
-            let displayDate, hijriInfo;
-            if (y === realToday.getFullYear() && m === realToday.getMonth()) {
-                displayDate = realToday;
-                hijriInfo = hijriData[realToday.getDate() - 1];
-            } else {
-                displayDate = new Date(y, m, 1);
-                hijriInfo = hijriData[0];
+            
+            let displayDate = (y === realToday.getFullYear() && m === realToday.getMonth()) ? realToday : new Date(y, m, 1);
+            let hijriInfo = hijriData[displayDate.getDate() - 1] || hijriData[0];
+
+            if (hijriInfo) {
+                const namaBulanH = bulanIndoMap[hijriInfo.hijri.month.en] || hijriInfo.hijri.month.en;
+                hijriHeader.innerText = `${hijriInfo.hijri.day} ${namaBulanH} ${hijriInfo.hijri.year} H`;
             }
-            const namaBulanH = bulanIndoMap[hijriInfo.hijri.month.en] || hijriInfo.hijri.month.en;
-            hijriHeader.innerText = `${hijriInfo.hijri.day} ${namaBulanH} ${hijriInfo.hijri.year} H`;
+            
             masehiHeader.innerHTML = `${daysIndo[displayDate.getDay()]} ${getPasaran(displayDate)}, ${displayDate.getDate()} ${ms[displayDate.getMonth()]} ${displayDate.getFullYear()} M`;
+            
             const start = new Date(y, m, 1).getDay();
             for (let i = 0; i < start; i++) grid.innerHTML += '<div class="calendar-date empty-date"></div>';
+            
             hijriData.forEach((day, index) => {
                 const d = index + 1; const date = new Date(y, m, d);
                 const dateKey = `${y}-${String(m+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const holiday = holidayCache.find(x => x.date === dateKey);
                 const isToday = realToday.toDateString() === date.toDateString();
                 const isRealHoliday = holiday && !holiday.name.toLowerCase().includes("cuti") && !holiday.name.toLowerCase().includes("bersama");
+                
                 grid.innerHTML += `<div class="calendar-date ${isToday ? 'date-today' : ''} ${isRealHoliday ? 'is-real-holiday' : ''}"><span class="date-masehi">${d}</span><span class="date-hijri">${toArabicDigits(day.hijri.day)}</span><span class="date-pasaran">${getPasaran(date)}</span></div>`;
+                
                 if (holiday) {
                     holEl.innerHTML += `<div class="flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm"><div class="w-10 h-10 rounded-xl ${isRealHoliday ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-400'} flex items-center justify-center font-bold text-xs">${d}</div><div class="flex-1 leading-tight"><p class="text-[12px] font-bold text-slate-700">${holiday.name}</p><p class="text-[9px] text-slate-400 uppercase font-bold mt-1">${isRealHoliday ? 'Libur Nasional' : 'Cuti Bersama'}</p></div></div>`;
                 }
