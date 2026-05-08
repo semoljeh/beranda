@@ -151,6 +151,7 @@
              ============================================= -->
 <section id="module-quran">
     <style>
+        /* [1] Fonts & Base Styles */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
 
         .font-arab { 
@@ -160,6 +161,7 @@
             direction: rtl;
         }
 
+        /* [2] Decor & Elements */
         .ayah-end-number {
             font-family: 'Amiri', serif;
             font-size: 1.5rem;
@@ -167,6 +169,7 @@
             margin-left: 8px;
             display: inline-block;
             vertical-align: middle;
+            line-height: 1;
         }
 
         .murottal-control-btn {
@@ -190,7 +193,9 @@
 
     <div id="quran-modal" class="modal-full">
         <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
             
             <div class="text-center flex-1 mx-2">
                 <h2 id="surah-title-arab" class="font-arab text-2xl leading-none mb-1 text-white"></h2>
@@ -204,12 +209,16 @@
                 </div>
             </div>
 
-            <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
+            <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all">
+                <i class="fa-solid fa-language"></i>
+            </button>
         </div>
+        
         <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <script>
+        /* [3] API SERVICE CONFIG */
         const QuranAPI = {
             baseUrl: 'https://api.quran.com/api/v4',
             async getAllChapters() {
@@ -230,10 +239,12 @@
             }
         };
 
+        /* [4] GLOBAL STATE */
         let currentAudio = null;
         let isTranslationVisible = true;
         let currentAudioUrl = "";
 
+        /* [5] UTILITIES */
         function toArabicNumber(n) {
             const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
             return String(n).split('').map(c => forms[Number(c)]).join('');
@@ -258,10 +269,12 @@
             });
         }
 
+        /* [6] SURAH ENGINES */
         async function loadSurahList() {
             const c = document.getElementById('quran-content');
             c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat...</div>`;
             
+            // Reset Header ke Default
             document.getElementById('surah-title-arab').innerText = "";
             document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
             document.getElementById('surah-subtitle').innerText = "";
@@ -271,12 +284,11 @@
                 const chapters = await QuranAPI.getAllChapters();
                 let html = '<div class="grid grid-cols-1 gap-3">';
                 chapters.forEach(s => {
-                    // Membersihkan karakter ilegal agar fungsi onClick aman
                     const safeName = s.name_simple.replace(/'/g, "");
                     const safeArti = s.translated_name.name.replace(/'/g, "");
                     
                     html += `
-                    <div onclick="loadDetailSurah(${s.id}, '${safeName}', '${safeArti}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all">
+                    <div onclick="loadDetailSurah(${s.id}, '${safeName}', '${safeArti}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
                         <div class="flex items-center gap-4">
                             <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
                             <div>
@@ -288,9 +300,7 @@
                     </div>`;
                 });
                 c.innerHTML = html + '</div>';
-            } catch (e) { 
-                c.innerHTML = '<p class="text-center p-10">Gagal memuat. Periksa koneksi internet.</p>'; 
-            }
+            } catch (e) { c.innerHTML = '<p class="text-center p-10">Koneksi bermasalah.</p>'; }
         }
 
         async function loadDetailSurah(id, name, arti) {
@@ -305,8 +315,13 @@
                     QuranAPI.getAudioSurah(id)
                 ]);
 
-              document.getElementById('surah-title-arab').innerText = `\uFD3E ${s.name_arabic} \uFD3F`;
-                document.getElementById('surah-title-arab').innerText = s.name_arabic;
+                const s = infoData.chapter;
+                
+                // ISI HEADER DENGAN ORNAMEN ﴾ ﴿
+                const kdBuka = "\uFD3F"; // ﴾
+                const kdTutup = "\uFD3E"; // ﴿
+                document.getElementById('surah-title-arab').innerText = kdBuka + " " + s.name_arabic + " " + kdTutup;
+                
                 document.getElementById('surah-title-latin').innerText = name;
                 document.getElementById('surah-subtitle').innerText = `(${arti})`;
                 document.getElementById('surah-info-count').innerText = `${s.verses_count} Ayat`;
@@ -339,10 +354,11 @@
                 c.scrollTo(0,0);
                 updateMurottalBtn(currentAudio && !currentAudio.paused);
             } catch (e) { 
-                c.innerHTML = '<p class="text-center p-10 font-bold">Gagal memuat ayat.</p>'; 
+                c.innerHTML = '<p class="text-center p-10 font-bold">Gagal memuat surah. Silakan coba lagi.</p>'; 
             }
         }
 
+        /* [7] AUDIO LOGIC */
         function handleMurottal() {
             if (currentAudio && !currentAudio.paused) {
                 currentAudio.pause(); updateMurottalBtn(false);
