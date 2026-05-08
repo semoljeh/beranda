@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // PERBAIKAN: Menambahkan libur.deno.dev agar kalender bisa offline
+  // Menangkap API Quran, Jadwal Sholat, dan Hari Libur
   const isApiRequest = url.origin.includes('api.quran.com') || 
                        url.origin.includes('api.aladhan.com') || 
                        url.origin.includes('libur.deno.dev');
@@ -46,17 +46,6 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(event.request))
     );
   } 
-  else if (url.pathname.includes('.mp3')) {
-    event.respondWith(
-      caches.match(event.request).then((res) => {
-        return res || fetch(event.request).then((response) => {
-          const resClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-          return response;
-        });
-      })
-    );
-  }
   else {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
