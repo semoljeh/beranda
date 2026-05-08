@@ -151,6 +151,7 @@
              ============================================= -->
 <section id="module-quran">
     <style>
+        /* [1] Fonts & Base Styles */
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
 
         .font-arab { 
@@ -160,6 +161,7 @@
             direction: rtl;
         }
 
+        /* [2] UI Styles */
         .quran-tab-container {
             display: flex; background: rgba(255,255,255,0.1);
             border-radius: 12px; padding: 4px; margin-top: 10px;
@@ -171,35 +173,29 @@
         }
         .quran-tab.active { background: white; color: #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
-        /* Card Item */
+        /* Card Item Style */
         .quran-item {
             display: flex; justify-content: space-between; align-items: center;
-            background: white; padding: 0.75rem 1rem; border-radius: 1.25rem;
-            border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: white; padding: 0.85rem 1.1rem; border-radius: 1.25rem;
+            border: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             margin-bottom: 12px; gap: 10px; transition: all 0.2s;
         }
+        .quran-item:active { transform: scale(0.97); background: #fafafa; }
 
-        /* Container Arab Sisi Kanan */
+        /* Arabic Side Wrapper (Nomor Terkunci di Paling Kanan) */
         .arab-side-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            direction: rtl; /* Urutan: Teks Arab dulu, baru Kotak Nomor */
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            flex-direction: row-reverse; /* Mengunci Box ke paling kanan */
+            flex-shrink: 0;
         }
 
-        /* Kotak Nomor Arab */
+        /* Arabic Box Number */
         .arab-box-number {
-            width: 36px;
-            height: 36px;
-            background: #f0fdfa; /* Teal Sangat Muda */
-            color: #0d9488;    /* Teal 600 */
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
-            flex-shrink: 0;
+            width: 38px; height: 38px; background: #f0fdfa; color: #0d9488;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: bold; flex-shrink: 0; border: 1px solid #ccfbf1;
         }
 
         .ayah-end-number {
@@ -224,7 +220,7 @@
     <div id="quran-modal" class="modal-full">
         <div class="bg-teal-700 p-5 text-white shadow-md">
             <div class="flex justify-between items-center">
-                <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-arrow-left"></i></button>
+                <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20"><i class="fa-solid fa-arrow-left"></i></button>
                 <div class="text-center flex-1 mx-2">
                     <h2 id="surah-title-arab" class="font-arab text-2xl leading-none mb-1 text-white"></h2>
                     <p class="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 text-teal-50">
@@ -232,7 +228,7 @@
                         <span id="surah-subtitle" class="opacity-70 font-medium normal-case text-[9px]"></span>
                     </p>
                 </div>
-                <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl"><i class="fa-solid fa-language"></i></button>
+                <button onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20"><i class="fa-solid fa-language"></i></button>
             </div>
 
             <div id="quran-tabs" class="quran-tab-container">
@@ -315,8 +311,8 @@
                             </div>
                         </div>
                         <div class="arab-side-wrapper">
-                             <span class="font-arab text-2xl text-teal-800" dir="rtl">${s.name_arabic}</span>
                              <div class="arab-box-number font-arab">${numAr}</div>
+                             <span class="font-arab text-2xl text-teal-800" dir="rtl">${s.name_arabic}</span>
                         </div>
                     </div>`;
                 });
@@ -344,8 +340,8 @@
                             </div>
                         </div>
                         <div class="arab-side-wrapper">
-                             <span class="font-arab text-xl text-teal-800" dir="rtl">${juzNamesArab[j.juz_number]}</span>
                              <div class="arab-box-number font-arab">${numAr}</div>
+                             <span class="font-arab text-xl text-teal-800" dir="rtl">${juzNamesArab[j.juz_number]}</span>
                         </div>
                     </div>`;
                 });
