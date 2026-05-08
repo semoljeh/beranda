@@ -149,237 +149,178 @@
         <!-- =============================================
              KLP 4: MODUL AL-QURAN (API QURAN.COM)
              ============================================= -->
-<section id="module-quran">
-    <style>
-        /* [1] Fonts & Base Styles */
-        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
-
-        .font-arab { 
-            font-family: 'Amiri', serif; 
-            font-weight: 400;
-            line-height: 2.2;
-            direction: rtl;
+<script>
+    /* [1] API SERVICE CONFIG */
+    const QuranAPI = {
+        baseUrl: 'https://api.quran.com/api/v4',
+        async getAllChapters() {
+            const r = await fetch(`${this.baseUrl}/chapters?language=id`);
+            const d = await r.json(); return d.chapters;
+        },
+        async getArabicVerses(id) {
+            const r = await fetch(`${this.baseUrl}/quran/verses/uthmani?chapter_number=${id}`);
+            const d = await r.json(); return d.verses;
+        },
+        async getIndonesianTranslation(id) {
+            // Menggunakan ID 33 (Kemenag) yang paling stabil untuk Bahasa Indonesia
+            const r = await fetch(`${this.baseUrl}/quran/translations/33?chapter_number=${id}`);
+            const d = await r.json(); return d.translations;
+        },
+        async getAudioSurah(id) {
+            const r = await fetch(`${this.baseUrl}/chapter_recitations/7/${id}`);
+            const d = await r.json(); return d.audio_file;
         }
+    };
 
-        /* [2] Quran Elements */
-        .ayah-end-number {
-            font-family: 'Amiri', serif;
-            font-size: 1.5rem;
-            color: #0d9488;
-            margin-left: 8px;
-            display: inline-block;
-            vertical-align: middle;
+    /* [2] STATE & GLOBAL VARS */
+    let currentAudio = null;
+    let isTranslationVisible = true;
+    let currentAudioUrl = "";
+
+    /* [3] UI HELPERS */
+    function toArabicNumber(n) {
+        const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
+        return String(n).split('').map(c => forms[Number(c)]).join('');
+    }
+
+    function toggleQuran() {
+        const el = document.getElementById('quran-modal');
+        if (!el.classList.contains('modal-show')) {
+            el.classList.add('modal-show'); 
+            loadSurahList(); 
+            if(window.pushState) pushState('quran');
+        } else { 
+            stopAudio(); 
+            history.back(); 
         }
+    }
 
-        .audio-playing { background-color: #f0fdf4; border-radius: 16px; }
+    function toggleTranslation() {
+        isTranslationVisible = !isTranslationVisible;
+        document.querySelectorAll('.translation-text').forEach(el => {
+            isTranslationVisible ? el.classList.remove('hidden') : el.classList.add('hidden');
+        });
+    }
 
-        .murottal-control-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: #0d9488; color: white; padding: 10px 20px; border-radius: 100px;
-            font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 0 auto 20px auto;
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); transition: all 0.3s ease;
-        }
-        .murottal-control-btn.playing { background: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
-
-        /* Style untuk info capsule di header */
-        .surah-badge {
-            font-size: 8px;
-            border: 1px solid rgba(255,255,255,0.4);
-            padding: 2px 8px;
-            border-radius: 50px;
-            text-transform: uppercase;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-    </style>
-
-    <div id="quran-modal" class="modal-full">
-        <div class="bg-teal-700 p-5 text-white flex justify-between items-center shadow-md">
-            <button onclick="toggleQuran()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all"><i class="fa-solid fa-arrow-left"></i></button>
-            
-            <div class="text-center flex-1 mx-2">
-                <h2 id="surah-title-arab" class="font-arab text-2xl leading-none mb-1 text-white"></h2>
-                <p class="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 text-teal-50">
-                    <span id="surah-title-latin">AL-QURAN PRO</span>
-                    <span id="surah-subtitle" class="opacity-70 font-medium normal-case text-[9px]"></span>
-                </p>
-                <div id="surah-meta-info" class="flex justify-center gap-2 mt-1 hidden">
-                    <span id="surah-info-count" class="surah-badge"></span>
-                    <span id="surah-info-type" class="surah-badge"></span>
-                </div>
-            </div>
-
-            <button id="toggle-trans-btn" onclick="toggleTranslation()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all"><i class="fa-solid fa-language"></i></button>
-        </div>
-        <div id="quran-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
-    </div>
-
-    <script>
-        /* [3] API SERVICE CONFIG */
-        const QuranAPI = {
-            baseUrl: 'https://api.quran.com/api/v4',
-            async getAllChapters() {
-                const r = await fetch(`${this.baseUrl}/chapters?language=id`);
-                const d = await r.json(); return d.chapters;
-            },
-            async getArabicVerses(id) {
-                const r = await fetch(`${this.baseUrl}/quran/verses/uthmani?chapter_number=${id}`);
-                const d = await r.json(); return d.verses;
-            },
-            async getIndonesianTranslation(id) {
-                const r = await fetch(`${this.baseUrl}/quran/translations/33?chapter_number=${id}`);
-                const d = await r.json(); return d.translations;
-            },
-            async getAudioSurah(id) {
-                const r = await fetch(`${this.baseUrl}/chapter_recitations/7/${id}`);
-                const d = await r.json(); return d.audio_file;
-            }
-        };
-
-        /* [4] STATE & GLOBAL VARS */
-        let currentAudio = null;
-        let isTranslationVisible = true;
-        let currentAudioUrl = "";
-
-        /* [5] UI HELPERS */
-        function toArabicNumber(n) {
-            const forms = ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'];
-            return String(n).split('').map(c => forms[Number(c)]).join('');
-        }
-
-        function toggleQuran() {
-            const el = document.getElementById('quran-modal');
-            if (!el.classList.contains('modal-show')) {
-                el.classList.add('modal-show'); 
-                loadSurahList(); 
-                pushState('quran');
-            } else { 
-                stopAudio(); 
-                history.back(); 
-            }
-        }
-
-        function toggleTranslation() {
-            isTranslationVisible = !isTranslationVisible;
-            document.querySelectorAll('.translation-text').forEach(el => {
-                isTranslationVisible ? el.classList.remove('hidden') : el.classList.add('hidden');
+    /* [4] SURAH ENGINE - STABLE VERSION */
+    async function loadSurahList() {
+        const c = document.getElementById('quran-content');
+        c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Daftar Surah...</div>`;
+        
+        // Reset Header
+        document.getElementById('surah-title-arab').innerText = "";
+        document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
+        document.getElementById('surah-subtitle').innerText = "";
+        document.getElementById('surah-meta-info').classList.add('hidden');
+        
+        try {
+            const chapters = await QuranAPI.getAllChapters();
+            let html = '<div class="grid grid-cols-1 gap-3">';
+            chapters.forEach(s => {
+                html += `
+                <div onclick="loadDetailSurah(${s.id}, '${s.name_simple.replace(/'/g, "\\'")}', '${s.translated_name.name.replace(/'/g, "\\'")}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase">${s.name_simple}</h4>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name}</p>
+                        </div>
+                    </div>
+                    <span class="font-arab text-3xl text-teal-600">${s.name_arabic}</span>
+                </div>`;
             });
+            c.innerHTML = html + '</div>';
+        } catch (e) { 
+            c.innerHTML = '<div class="text-center p-10"><p class="mb-4">Koneksi API terputus.</p><button onclick="loadSurahList()" class="bg-teal-600 text-white px-4 py-2 rounded-lg text-xs">Coba Lagi</button></div>'; 
         }
+    }
 
-        /* [6] SURAH ENGINE */
-        async function loadSurahList() {
-            const c = document.getElementById('quran-content');
-            c.innerHTML = `<div class="text-center py-20 text-teal-600 animate-pulse font-bold">Memuat Daftar Surah...</div>`;
-            document.getElementById('surah-title-arab').innerText = "";
-            document.getElementById('surah-title-latin').innerText = "AL-QURAN PRO";
-            document.getElementById('surah-subtitle').innerText = "";
-            document.getElementById('surah-meta-info').classList.add('hidden');
+    async function loadDetailSurah(id, name, arti) {
+        const c = document.getElementById('quran-content');
+        c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
+        
+        try {
+            // Ambil info surah
+            const infoRes = await fetch(`https://api.quran.com/api/v4/chapters/${id}?language=id`);
+            const infoData = await infoRes.json();
+            const sInfo = infoData.chapter;
+
+            // Ambil data inti secara paralel
+            const [arabVerses, indoVerses, audioFile] = await Promise.all([
+                QuranAPI.getArabicVerses(id),
+                QuranAPI.getIndonesianTranslation(id),
+                QuranAPI.getAudioSurah(id)
+            ]);
+
+            // Update Header UI
+            document.getElementById('surah-title-arab').innerText = sInfo.name_arabic;
+            document.getElementById('surah-title-latin').innerText = name;
+            document.getElementById('surah-subtitle').innerText = `(${arti})`;
+            document.getElementById('surah-info-count').innerText = `${sInfo.verses_count} Ayat`;
+            document.getElementById('surah-info-type').innerText = sInfo.revelation_place === 'makkah' ? 'Makkiyah' : 'Madaniyah';
+            document.getElementById('surah-meta-info').classList.remove('hidden');
+
+            currentAudioUrl = audioFile.audio_url;
+
+            let html = `<div class="text-center py-4"><button id="murottal-btn" onclick="handleMurottal()" class="murottal-control-btn"><i class="fa-solid fa-play"></i> <span>Putar Murottal</span></button></div>`;
+
+            // Loop Ayat dengan proteksi data kosong
+            arabVerses.forEach((a, i) => {
+                const ayahNum = i + 1;
+                const translation = (indoVerses[i] && indoVerses[i].text) ? indoVerses[i].text.replace(/<(?:.|\n)*?>/gm, '') : 'Terjemahan tidak tersedia.';
+                const hiddenClass = isTranslationVisible ? '' : 'hidden';
+
+                html += `
+                <div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
+                    <div class="w-full text-right" dir="rtl">
+                        <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
+                        <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
+                    </div>
+                    <div class="flex items-start gap-4 mt-4">
+                        <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${ayahNum}</span>
+                        <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">
+                            ${translation}
+                        </p>
+                    </div>
+                </div>`;
+            });
             
-            try {
-                const chapters = await QuranAPI.getAllChapters();
-                let html = '<div class="grid grid-cols-1 gap-3">';
-                chapters.forEach(s => {
-                    html += `
-                    <div onclick="loadDetailSurah(${s.id}, '${s.name_simple}', '${s.translated_name.name}')" class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center active:scale-95 transition-all shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <span class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-xs font-bold">${s.id}</span>
-                            <div>
-                                <h4 class="font-bold text-sm uppercase">${s.name_simple}</h4>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase">${s.translated_name.name}</p>
-                            </div>
-                        </div>
-                        <span class="font-arab text-3xl text-teal-600">${s.name_arabic}</span>
-                    </div>`;
-                });
-                c.innerHTML = html + '</div>';
-            } catch (e) { c.innerHTML = '<p class="text-center">Gagal memuat surah. Coba lagi nanti.</p>'; }
+            c.innerHTML = html; 
+            c.scrollTo(0,0);
+            updateMurottalBtn(currentAudio && !currentAudio.paused);
+        } catch (e) { 
+            console.error("Error Detail Surah:", e);
+            c.innerHTML = '<div class="text-center p-10"><p class="mb-4 text-red-500 font-bold">Gagal memuat ayat.</p><button onclick="loadSurahList()" class="bg-teal-600 text-white px-4 py-2 rounded-lg text-xs">Kembali ke Daftar</button></div>'; 
         }
+    }
 
-        async function loadDetailSurah(id, name, arti) {
-            const c = document.getElementById('quran-content');
-            c.innerHTML = `<div class="text-center py-20 animate-spin text-3xl text-teal-600"><i class="fa-solid fa-circle-notch"></i></div>`;
-            
-            try {
-                // Ambil Data Paralel (Fetch API)
-                const [infoRes, arab, indo, audio] = await Promise.all([
-                    fetch(`https://api.quran.com/api/v4/chapters/${id}?language=id`).then(r => r.json()),
-                    QuranAPI.getArabicVerses(id),
-                    QuranAPI.getIndonesianTranslation(id),
-                    QuranAPI.getAudioSurah(id)
-                ]);
-
-                const sInfo = infoRes.chapter;
-                
-                // Update Header UI
-                document.getElementById('surah-title-arab').innerText = sInfo.name_arabic;
-                document.getElementById('surah-title-latin').innerText = name;
-                document.getElementById('surah-subtitle').innerText = `(${arti})`;
-                document.getElementById('surah-info-count').innerText = `${sInfo.verses_count} Ayat`;
-                document.getElementById('surah-info-type').innerText = sInfo.revelation_place === 'makkah' ? 'Makkiyah' : 'Madaniyah';
-                document.getElementById('surah-meta-info').classList.remove('hidden');
-
-                currentAudioUrl = audio.audio_url;
-
-                // Build Ayat Content
-                let html = `
-                    <div class="text-center py-4">
-                        <button id="murottal-btn" onclick="handleMurottal()" class="murottal-control-btn">
-                            <i class="fa-solid fa-play"></i> <span>Putar Murottal</span>
-                        </button>
-                    </div>`;
-
-                arab.forEach((a, i) => {
-                    const ayahNum = i + 1;
-                    const hiddenClass = isTranslationVisible ? '' : 'hidden';
-                    html += `
-                    <div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
-                        <div class="w-full text-right" dir="rtl">
-                            <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
-                            <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
-                        </div>
-                        <div class="flex items-start gap-4 mt-4">
-                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${ayahNum}</span>
-                            <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">
-                                ${indo[i].text.replace(/<(?:.|\n)*?>/gm, '')}
-                            </p>
-                        </div>
-                    </div>`;
-                });
-                
-                c.innerHTML = html; 
-                c.scrollTo(0,0);
-                updateMurottalBtn(currentAudio && !currentAudio.paused);
-            } catch (e) { c.innerHTML = '<p class="text-center font-bold">Gagal memuat ayat.</p>'; }
-        }
-
-        /* [7] AUDIO CONTROLS */
-        function handleMurottal() {
-            if (currentAudio && !currentAudio.paused) {
-                currentAudio.pause(); 
-                updateMurottalBtn(false);
-            } else {
-                if (!currentAudio || currentAudio.src !== currentAudioUrl) {
-                    currentAudio = new Audio(currentAudioUrl);
-                    currentAudio.onended = () => updateMurottalBtn(false);
-                }
-                currentAudio.play(); 
-                updateMurottalBtn(true);
-            }
-        }
-
-        function updateMurottalBtn(isPlaying) {
-            const btn = document.getElementById('murottal-btn');
-            if(!btn) return;
-            btn.classList.toggle('playing', isPlaying);
-            btn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i> <span>Jeda Murottal</span>` : `<i class="fa-solid fa-play"></i> <span>Putar Murottal</span>`;
-        }
-
-        function stopAudio() {
-            if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    /* [5] AUDIO CONTROLS */
+    function handleMurottal() {
+        if (currentAudio && !currentAudio.paused) {
+            currentAudio.pause(); 
             updateMurottalBtn(false);
+        } else {
+            if (!currentAudio || currentAudio.src !== currentAudioUrl) {
+                currentAudio = new Audio(currentAudioUrl);
+                currentAudio.onended = () => updateMurottalBtn(false);
+            }
+            currentAudio.play(); 
+            updateMurottalBtn(true);
         }
-    </script>
-</section>
+    }
+
+    function updateMurottalBtn(isPlaying) {
+        const btn = document.getElementById('murottal-btn');
+        if(!btn) return;
+        btn.classList.toggle('playing', isPlaying);
+        btn.innerHTML = isPlaying ? `<i class="fa-solid fa-pause"></i> <span>Jeda Murottal</span>` : `<i class="fa-solid fa-play"></i> <span>Putar Murottal</span>`;
+    }
+
+    function stopAudio() {
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        updateMurottalBtn(false);
+    }
+</script>
         <!-- =============================================
              KLP 5: MODUL KALENDER
              ============================================= -->
