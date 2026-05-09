@@ -13,8 +13,8 @@
     <meta name="theme-color" content="#0d9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Al-Mukhtar">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="Darussalam">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png">
     <meta name="mobile-web-app-capable" content="yes">
 
     <!-- =============================================
@@ -25,6 +25,64 @@
     
     <style>
 	
+	/* Splash Screen Styles */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+.splash-logo {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: pulse-logo 2s infinite ease-in-out;
+}
+
+@keyframes pulse-logo {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.splash-loader {
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.splash-loader::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%;
+    background: white;
+    border-radius: 10px;
+    animation: loading-bar 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-bar {
+    0% { left: -50%; }
+    100% { left: 100%; }
+}
 	
 	
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -44,12 +102,17 @@ body {
 .app-container { 
     width: 100%; 
     max-width: 500px; 
-    margin: 0 auto; /* Biar posisi aplikasi di tengah layar kalau dibuka di laptop */
-    background-color: #f8fafc; /* Samakan dengan warna body */
+    margin: 0 auto; /* Menjaga aplikasi tetap di tengah layar laptop */
+    background-color: #f8fafc; /* Konsisten dengan warna latar body */
     min-height: 100vh; 
     position: relative; 
-    padding-bottom: 120px; 
-    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tambahan: Biar ada bayangan halus di pinggir */
+    padding-bottom: 120px; /* Ruang agar konten tidak tertutup bottom-nav */
+    
+    /* Edit: Optimasi Visual */
+    box-shadow: 0 0 40px rgba(0,0,0,0.08); /* Shadow sedikit lebih tebal agar kontras di laptop */
+    overflow-x: hidden; /* Mencegah konten meluber ke samping */
+    display: flex;
+    flex-direction: column;
 }
         /* Modal System Styles */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
@@ -137,87 +200,16 @@ body {
 </head>
 <body>
 
-<!-- Letakkan ini tepat di bawah tag <body> -->
-<div id="custom-splash">
-    <div class="logo-container">
-        <!-- Logo Anda -->
-        <img src="sp.png" alt="Logo">
-        <div class="pulse-ring"></div>
+<!-- Splash Screen -->
+<div id="splash-screen">
+    <div class="splash-logo">
+        <!-- Gunakan gambar yang sama dengan manifest agar transisinya mulus -->
+        <img src="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png" alt="Logo" class="w-full h-full object-contain rounded-2xl">
     </div>
-    <div class="loading-text">MEMUAT KEBERKAHAN...</div>
+    <h1 class="text-white font-kufi text-3xl mb-4">المختار</h1>
+    <div class="splash-loader"></div>
+    <p class="text-teal-100 text-[10px] font-bold uppercase tracking-[0.3em] mt-6">Digital Library</p>
 </div>
-
-<style>
-#custom-splash {
-    position: fixed;
-    inset: 0;
-    background: #0d9488; /* Warna identitas aplikasi */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.logo-container {
-    position: relative;
-    width: 120px;
-    height: 120px;
-}
-
-.logo-container img {
-    width: 100%;
-    z-index: 2;
-    position: relative;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-}
-
-/* Animasi lingkaran di belakang logo */
-.pulse-ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    animation: pulse-animation 2s infinite;
-}
-
-@keyframes pulse-animation {
-    0% { width: 100px; height: 100px; opacity: 1; }
-    100% { width: 250px; height: 250px; opacity: 0; }
-}
-
-.loading-text {
-    margin-top: 40px;
-    color: white;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    font-weight: 800;
-    opacity: 0.7;
-}
-
-/* Kelas untuk menghilangkan splash */
-.fade-out {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(1.1); /* Efek zoom out sedikit saat hilang */
-}
-</style>
-
-<script>
-window.addEventListener('load', () => {
-    const splash = document.getElementById('custom-splash');
-    setTimeout(() => {
-        splash.classList.add('fade-out');
-        // Panggil fungsi utama aplikasi Anda di sini
-        if(typeof getCoreData === 'function') getCoreData();
-    }, 2000); 
-});
-</script>
 
 <!-- =============================================
              KLP 4: MAIN MENU GRID (OFFLINE READY)
@@ -1189,41 +1181,32 @@ body {
         }
 
         
-	window.onload = () => { 
+		
+		
+		
+		window.onload = () => { 
     updateDateTime(); 
+    // Jangan panggil getCoreData() di sini agar pop-up tidak muncul duluan
     startCountdown(); 
     
-    const splash = document.getElementById('custom-splash'); // Sesuaikan dengan ID splash baru kamu
+    const splash = document.getElementById('splash-screen');
     
     setTimeout(() => {
-        // 1. Tambahkan class untuk menghilangkan splash secara halus
-        splash.classList.add('fade-out'); 
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
         
-        // 2. Beri jeda 800ms lagi (saat transisi fade selesai) baru minta lokasi
-        setTimeout(() => {
-            getCoreData(); // Pop-up lokasi muncul saat user sudah melihat menu utama
-            
-            if(navigator.onLine) {
-                if(typeof loadSurahList === 'function') loadSurahList();
-                if(typeof loadDoaList === 'function') loadDoaList();
-            }
-        }, 800); 
-        
-    }, 2500); // Durasi splash screen tampil
+        // Panggil lokasi SETELAH splash screen hilang
+        // Ini membuat user sudah berada di beranda sebelum ditanya izin lokasi
+        getCoreData(); 
+
+        if(navigator.onLine) {
+            setTimeout(() => {
+               if(typeof loadSurahList === 'function') loadSurahList();
+               if(typeof loadDoaList === 'function') loadDoaList();
+            }, 1000);
+        }
+    }, 2500); // Beri jeda sedikit lebih lama agar transisinya elegan
 };
-		
-		
-		
     </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js')
-    .then(() => console.log('SW aktif'))
-    .catch(err => console.log('SW gagal', err));
-}
-</script>
-
-		
 </body>
 </html>
