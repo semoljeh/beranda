@@ -306,40 +306,56 @@ body {
     </script>
 </section>
 
-        <!-- =============================================
-             KLP 5: MAIN MENU GRID
-             ============================================= -->
+<!-- =============================================
+     KLP 5: MAIN MENU GRID (FIXED ICONS)
+     ============================================= -->
 <section id="module-menu" style="margin-top: 80px;">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500&display=swap');
         .font-kufi { font-family: 'Reem Kufi', 'Arabic Typesetting', sans-serif !important; font-weight: 500; }
-        .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; }
+        .menu-card { background: #ffffff; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #f1f5f9; transition: transform 0.2s ease; cursor: pointer; }
         .menu-card:active { transform: scale(0.95); background-color: #f8fafc; }
     </style>
+
     <div class="text-center px-8">
         <h1 class="text-3xl text-teal-600 font-kufi leading-snug">المختار</h1>
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Do'a | Dzikir | Rotib | Maulid</p>
     </div>
+
     <div class="grid grid-cols-2 gap-4 p-6">
+        <!-- DZIKIR: Menggunakan icon Praying Hands (Paling Aman & Muncul) -->
         <div onclick="toggleProfile()" class="menu-card">
-            <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-mosque"></i></div>
-            <span class="text-[10px] font-bold uppercase text-slate-600">Profil</span>
+            <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-hands-praying"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Dzikir</span>
         </div>
+
+        <!-- YASIN & TAHLIL: Menggunakan icon Book Quran (Pasti Muncul di v6) -->
         <div class="menu-card">
-            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-book-open"></i></div>
-            <span class="text-[10px] font-bold uppercase text-slate-600">Kegiatan</span>
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-book-quran"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Yasin & Tahlil</span>
         </div>
+
+        <!-- RATIB: Menggunakan icon Shield Halal (Perlindungan/Benteng) -->
         <div class="menu-card">
-            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-file-signature"></i></div>
-            <span class="text-[10px] font-bold uppercase text-slate-600">Daftar</span>
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-shield-halal"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Ratib</span>
         </div>
+
+        <!-- MAULID: Menggunakan icon Kaaba atau Mosque -->
         <div class="menu-card">
-            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-heart-pulse"></i></div>
-            <span class="text-[10px] font-bold uppercase text-slate-600">Donasi</span>
+            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-kaaba"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase text-slate-600">Maulid</span>
         </div>
     </div>
 </section>
-
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
              ============================================= -->
@@ -821,7 +837,7 @@ body {
     <!-- Kartu Profil Paten -->
     <div class="profile-card relative">
        <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden border-4 border-teal-50 shadow-lg">
-        <img src="foto-profil.jpg" alt="Batukessel" class="w-full h-full object-cover">
+        <img src="https://github.com/semoljeh/beranda/blob/main/foto-profil.jpg" alt="Batukessel" class="w-full h-full object-cover">
     </div>
         <h3 class="text-2xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
         <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
@@ -834,7 +850,7 @@ body {
         </div>
 
         <p class="mt-6 text-[11px] text-slate-400 font-medium leading-relaxed">
-            Membangun aplikasi web modern dengan <br>Semoga Bermanfaat Untuk Ummat.
+            Membangun aplikasi web modern <br>Semoga Bermanfaat Untuk Ummat.
         </p>
         
         <button onclick="toggleProfile()" class="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">
