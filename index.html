@@ -306,9 +306,8 @@ body {
     </script>
 </section>
 <!-- =============================================
-     KLP 5: FINAL MODERN ISLAMIC MENU WITH ZOOM
+     KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM
      ============================================= -->
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <section id="module-menu" style="font-family: 'Inter', sans-serif;">
@@ -492,67 +491,54 @@ body {
         </div>
     </div>
 
-    <!-- FULL MODAL SISTEM (SINGLE MODAL UNTUK SEMUA) -->
+    <!-- FULL MODAL SISTEM -->
     <div id="app-modal" class="modal-full">
         <div class="dzikir-header-premium">
             <div class="flex items-center gap-4">
-                <button onclick="closeAppModal()" class="p-2 bg-white/10 rounded-xl text-white shrink-0">
+                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <div class="dzikir-glassbox">
-                    <h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest leading-none">Judul Menu</h2>
+                    <h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest leading-none">Menu</h2>
                 </div>
                 <div class="w-10"></div>
             </div>
         </div>
 
-        <!-- Area Daftar Isi Dinamis -->
-        <div id="modal-content-list" class="flex-1 overflow-y-auto p-6 bg-slate-50">
-            <!-- Isi akan dimuat lewat JavaScript -->
-        </div>
+        <div id="modal-content-list" class="flex-1 overflow-y-auto p-6 bg-slate-50"></div>
     </div>
 </section>
 
 <script>
-    // Data konten untuk setiap menu
     const menuData = {
-        dzikir: {
-            title: "Kumpulan Dzikir",
-            items: ["Dzikir Pagi", "Dzikir Petang", "Dzikir Setelah Shalat"]
-        },
-        yasin: {
-            title: "Yasin & Tahlil",
-            items: ["Surah Yasin", "Tahlil Arwah", "Doa Tahlil"]
-        },
-        ratib: {
-            title: "Kumpulan Ratib",
-            items: ["Ratib Al-Haddad", "Ratib Al-Attas", "Ratib Al-Aydarus"]
-        },
-        maulid: {
-            title: "Kumpulan Maulid",
-            items: ["Simtudduror", "Al-Barzanji", "Diba'i", "Adh-Dhiyaul Lami'"]
-        }
+        dzikir: { title: "Kumpulan Dzikir", items: ["Dzikir Pagi", "Dzikir Petang", "Setelah Shalat"] },
+        yasin: { title: "Yasin & Tahlil", items: ["Surah Yasin", "Tahlil Arwah", "Doa Tahlil"] },
+        ratib: { title: "Kumpulan Ratib", items: ["Ratib Al-Haddad", "Ratib Al-Attas", "Ratib Al-Aydarus"] },
+        maulid: { title: "Kumpulan Maulid", items: ["Simtudduror", "Al-Barzanji", "Diba'i", "Adh-Dhiyaul Lami'"] }
     };
+
+    function pushModalState(type) {
+        const state = { modalOpen: true, type: type };
+        window.history.pushState(state, "", "#" + type);
+    }
 
     function openAppModal(category) {
         const modal = document.getElementById('app-modal');
         const titleEl = document.getElementById('modal-title');
         const listContainer = document.getElementById('modal-content-list');
         
-        // Ambil data berdasarkan kategori
         const data = menuData[category];
-        
-        // Update Judul & List
         titleEl.innerText = data.title;
         listContainer.innerHTML = data.items.map((item, index) => `
-            <div onclick="console.log('Membuka: ${item}')" class="dzikir-item-card">
+            <div onclick="console.log('Open: ${item}')" class="dzikir-item-card">
                 <div class="dzikir-number">${index + 1}</div>
                 <span class="dzikir-title-text">${item}</span>
                 <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
             </div>
         `).join('');
 
-        // Tampilkan Modal
+        pushModalState(category);
+
         modal.style.display = 'flex';
         setTimeout(() => {
             modal.classList.remove('modal-exit');
@@ -560,15 +546,19 @@ body {
         }, 20);
     }
 
-    function closeAppModal() {
+    function executeCloseModal() {
         const modal = document.getElementById('app-modal');
         modal.classList.add('modal-exit');
         modal.classList.remove('modal-show');
-        
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 400);
+        setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
+
+    window.addEventListener('popstate', function(event) {
+        const modal = document.getElementById('app-modal');
+        if (modal.style.display === 'flex') {
+            executeCloseModal();
+        }
+    });
 </script>
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
