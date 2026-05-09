@@ -806,7 +806,7 @@ body {
 </section>
 
 <!-- =============================================
-      KLP 8: DAILY DOA (DYNAMIC CLEAN HEADER)
+      KLP 8: DAILY DOA (AUTOMATIC BASMALAH)
       ============================================= -->
 <section id="module-doa">
     <style>
@@ -877,7 +877,6 @@ body {
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <div class="doa-glassbox flex-1">
-                    <!-- Judul ini akan berubah otomatis -->
                     <h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Kumpulan Doa</h2>
                 </div>
                 <div class="w-10"></div>
@@ -910,7 +909,6 @@ body {
         }
 
         function loadDoaList() {
-            // Kembali ke judul utama saat di daftar
             document.getElementById('doa-header-title').innerText = "Kumpulan Doa";
             const content = document.getElementById('doa-content');
             content.scrollTop = 0;
@@ -931,8 +929,6 @@ body {
             
             content.scrollTop = 0;
             document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
-            
-            // Tampilkan Judul Doa pada Header Kotak Kaca
             document.getElementById('doa-header-title').innerText = dInfo.judul;
             
             content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">Mengambil Berkah...</div>`;
@@ -948,8 +944,9 @@ body {
 
                 content.innerHTML = `
                     <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                        <!-- Judul di dalam kartu tetap ada sebagai identitas teks -->
-                        <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
+                        <!-- TEKS BASMALAH OTOMATIS -->
+                        <h3 class="font-arab text-xl text-teal-600 mb-6 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                        
                         <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
                         ${tampilanArti}
                     </div>
