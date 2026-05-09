@@ -964,39 +964,42 @@ body {
             content.innerHTML = html;
         }
 
-        async function loadDoaDetail(id) {
-            pushState('doa', { doa_view: 'detail' });
-            const content = document.getElementById('doa-content');
-            const dInfo = dataDoaMadasa.find(i => i.id === id);
-            
-            content.scrollTop = 0;
-            document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
-            document.getElementById('doa-header-title').innerText = "Detail Doa";
-            
-            // Loading state
-            content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">Mengambil Berkah...</div>`;
+      async function loadDoaDetail(id) {
+    pushState('doa', { doa_view: 'detail' });
+    const content = document.getElementById('doa-content');
+    const dInfo = dataDoaMadasa.find(i => i.id === id);
+    
+    content.scrollTop = 0;
+    document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
+    document.getElementById('doa-header-title').innerText = "Detail Doa";
+    
+    content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">Mengambil Berkah...</div>`;
 
-            try {
-                // AMBIL DATA DARI FILE JSON DI GITHUB
-                const response = await fetch(dInfo.path);
-                const d = await response.json();
+    try {
+        const response = await fetch(dInfo.path);
+        const d = await response.json();
 
-                content.innerHTML = `
-                    <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                        <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
-                        <p class="font-arab text-3xl mb-8 leading-[2.2]" dir="rtl">${d.arab}</p>
-                        <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                        <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>
-                    </div>
-                    <div class="mt-8 text-center">
-                        <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
-                        </button>
-                    </div>`;
-            } catch (e) {
-                content.innerHTML = `<div class="text-center p-10 text-xs text-red-400 font-bold uppercase">Gagal memuat doa. Pastikan file JSON ada di folder datadoa/</div>`;
-            }
-        }
+        // LOGIKA CERDAS: Hanya tampilkan arti jika isinya TIDAK KOSONG
+        const tampilanArti = d.arti && d.arti.trim() !== "" 
+            ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+               <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>`
+            : ""; // Jika kosong, variabel ini tidak berisi apa-apa
+
+        content.innerHTML = `
+            <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
+                <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
+                <p class="font-arab text-3xl mb-8 leading-[2.2]" dir="rtl">${d.arab}</p>
+                ${tampilanArti}
+            </div>
+            <div class="mt-8 text-center">
+                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                </button>
+            </div>`;
+    } catch (e) {
+        content.innerHTML = `<div class="text-center p-10 text-xs text-red-400 font-bold uppercase">Gagal memuat doa.</div>`;
+    }
+}
     </script>
 </section>
         <!-- =============================================
