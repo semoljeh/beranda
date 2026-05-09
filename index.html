@@ -307,7 +307,7 @@ body {
 </section>
 
 <!-- =============================================
-     KLP 5: MAIN MENU GRID (FIXED ICONS)
+     KLP 5: FINAL MODERN ISLAMIC MENU
      ============================================= -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -336,28 +336,23 @@ body {
         }
 
         .icon-box {
-            width: 56px;
-            height: 56px;
+            width: 58px;
+            height: 58px;
             border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             margin-bottom: 12px;
             position: relative;
-            overflow: hidden;
         }
 
-        /* Efek dekorasi halus di belakang icon */
-        .icon-box::after {
-            content: '';
+        .icon-bg-overlay {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: currentColor;
-            opacity: 0.1;
-            top: 0;
-            left: 0;
+            opacity: 0.12;
+            border-radius: 18px;
         }
 
         .menu-label {
@@ -371,38 +366,42 @@ body {
 
     <div class="text-center px-8 mb-4">
         <h1 class="text-4xl text-teal-600 font-kufi leading-snug">المختار</h1>
-        <div class="flex items-center justify-center gap-2 mt-2">
-            <span class="h-[1px] w-8 bg-slate-200"></span>
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Digital Library</p>
-            <span class="h-[1px] w-8 bg-slate-200"></span>
-        </div>
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
     </div>
 
     <div class="grid grid-cols-2 gap-5 p-6">
-        <div onclick="toggleProfile()" class="menu-card">
-            <div class="icon-box bg-emerald-50 text-emerald-600">
-                <i class="fa-solid fa-moon"></i>
+        <!-- DZIKIR: Representasi Tasbih Modern -->
+        <div class="menu-card">
+            <div class="icon-box text-emerald-600">
+                <div class="icon-bg-overlay"></div>
+              <i class="fa-solid fa-hand-holding-heart"></i>
             </div>
             <span class="menu-label">Dzikir</span>
         </div>
 
+        <!-- YASIN & TAHLIL -->
         <div class="menu-card">
-            <div class="icon-box bg-indigo-50 text-indigo-600">
-                <i class="fa-solid fa-book-open-reader"></i>
+            <div class="icon-box text-indigo-600">
+                <div class="icon-bg-overlay"></div>
+                <i class="fa-solid fa-book-open"></i>
             </div>
             <span class="menu-label">Yasin & Tahlil</span>
         </div>
 
+        <!-- RATIB: Cloud Moon sesuai permintaan -->
         <div class="menu-card">
-            <div class="icon-box bg-amber-50 text-amber-600">
-                <i class="fa-solid fa-Hand-holding-heart"></i>
+            <div class="icon-box text-amber-600">
+                <div class="icon-bg-overlay"></div>
+                <i class="fa-solid fa-star-and-crescent"></i>
             </div>
             <span class="menu-label">Ratib</span>
         </div>
 
+        <!-- MAULID -->
         <div class="menu-card">
-            <div class="icon-box bg-rose-50 text-rose-600">
-                <i class="fa-solid fa-mosque"></i>
+            <div class="icon-box text-rose-600">
+                <div class="icon-bg-overlay"></div>
+               <i class="fa-solid fa-heart"></i>
             </div>
             <span class="menu-label">Maulid</span>
         </div>
