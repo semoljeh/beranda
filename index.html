@@ -805,9 +805,9 @@ body {
     </script>
 </section>
 
-        <!-- =============================================
-             KLP 8: DAILY DOA (MODAL)
-             ============================================= -->
+<!-- =============================================
+              KLP 8: DAILY DOA (OFFLINE READY)
+              ============================================= -->
 <section id="module-doa">
     <style>
         /* MODEL HEADER PREMIUM SINKRON KALENDER & QURAN */
@@ -817,8 +817,17 @@ body {
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
             box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
-            z-index: 20;
-            position: relative;
+            z-index: 50;
+            position: sticky;
+            top: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mode Slim saat Scroll (Sama dengan Al-Quran) */
+        .doa-header-slim {
+            padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
         }
 
         /* INFO GLASSBOX (EFEK KACA) */
@@ -831,30 +840,67 @@ body {
             padding: 18px;
             margin-top: 15px;
             text-align: center;
+            transition: all 0.3s ease;
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        /* Sembunyikan Glassbox saat Slim */
+        .doa-header-slim .doa-glassbox {
+            max-height: 0;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+            border: none;
+            pointer-events: none;
         }
 
         .doa-item-card {
-            padding: 1rem;
+            padding: 0.85rem 1.1rem;
             background: white;
             border-radius: 1.25rem;
             margin-bottom: 12px;
             border: 1px solid #f1f5f9;
-            font-weight: 700;
-            font-size: 13px;
-            color: #334155;
-            text-transform: uppercase;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             transition: all 0.2s;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
         }
         .doa-item-card:active { transform: scale(0.97); background: #fafafa; }
+        
+        .doa-number {
+            width: 32px;
+            height: 32px;
+            background: #f0fdfa;
+            color: #0d9488;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            flex-shrink: 0;
+            border: 1px solid #ccfbf1;
+        }
+
+        .doa-title-text {
+            flex: 1;
+            font-weight: 700;
+            font-size: 13px;
+            color: #334155;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 
     <div id="doa-modal" class="modal-full">
-        <div class="doa-header-premium">
+        <div id="doa-sticky-header" class="doa-header-premium">
             <div class="flex justify-between items-center">
                 <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl hover:bg-white/20 text-white">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -869,17 +915,27 @@ body {
             </div>
         </div>
 
-        <div id="doa-content" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
+        <div id="doa-content" onscroll="handleDoaScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
     <script>
+        // DAFTAR DOA (Hanya berisi judul dan path file JSON)
         const dataDoaMadasa = [
-            { id: 1, judul: "Doa Sebelum Makan", arab: "اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ", arti: "Ya Allah, berkahilah kami atas rezeki yang telah Engkau berikan..." },
-            { id: 2, judul: "Doa Bangun Tidur", arab: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", arti: "Segala puji bagi Allah yang telah menghidupkan kami..." },
-            { id: 3, judul: "Doa Masuk Masjid", arab: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ", arti: "Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu." },
-            { id: 4, judul: "Doa Untuk Orang Tua", arab: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", arti: "Tuhanku, ampunilah dosaku dan dosa kedua orang tuaku..." },
-            { id: 5, judul: "Doa Sapu Jagad", arab: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ", arti: "Ya Tuhan kami, berilah kami kebaikan di dunia dan akhirat..." }
+            { id: 1, judul: "Doa Sebelum Makan", path: "datadoa/doamakan.json" },
+            { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" },
+            { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" },
+            { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" },
+            { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" }
         ];
+
+        function handleDoaScroll(el) {
+            const header = document.getElementById('doa-sticky-header');
+            if (el.scrollTop > 50) {
+                header.classList.add('doa-header-slim');
+            } else {
+                header.classList.remove('doa-header-slim');
+            }
+        }
 
         function toggleDoa() {
             const el = document.getElementById('doa-modal');
@@ -891,34 +947,55 @@ body {
         }
 
         function loadDoaList() {
-            
+            document.getElementById('doa-header-title').innerText = "Kumpulan Doa";
+            const content = document.getElementById('doa-content');
+            content.scrollTop = 0;
+            document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
+
             let html = '';
-            dataDoaMadasa.forEach(d => {
+            dataDoaMadasa.forEach((d, index) => {
                 html += `
                     <div onclick="loadDoaDetail(${d.id})" class="doa-item-card">
-                        <span>${d.judul}</span>
+                        <div class="doa-number">${index + 1}</div>
+                        <span class="doa-title-text">${d.judul}</span>
                         <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
                     </div>`;
             });
-            document.getElementById('doa-content').innerHTML = html;
+            content.innerHTML = html;
         }
 
-        function loadDoaDetail(id) {
+        async function loadDoaDetail(id) {
             pushState('doa', { doa_view: 'detail' });
-            const d = dataDoaMadasa.find(i => i.id === id);
+            const content = document.getElementById('doa-content');
+            const dInfo = dataDoaMadasa.find(i => i.id === id);
+            
+            content.scrollTop = 0;
+            document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
             document.getElementById('doa-header-title').innerText = "Detail Doa";
-            document.getElementById('doa-content').innerHTML = `
-                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                    <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
-                    <p class="font-arab text-3xl mb-8 leading-[2]" dir="rtl">${d.arab}</p>
-                    <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                    <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>
-                </div>
-                <div class="mt-8 text-center">
-                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
-                    </button>
-                </div>`;
+            
+            // Loading state
+            content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">Mengambil Berkah...</div>`;
+
+            try {
+                // AMBIL DATA DARI FILE JSON DI GITHUB
+                const response = await fetch(dInfo.path);
+                const d = await response.json();
+
+                content.innerHTML = `
+                    <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
+                        <h3 class="text-teal-600 font-bold text-[10px] mb-8 uppercase tracking-widest">${d.judul}</h3>
+                        <p class="font-arab text-3xl mb-8 leading-[2.2]" dir="rtl">${d.arab}</p>
+                        <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+                        <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                        </button>
+                    </div>`;
+            } catch (e) {
+                content.innerHTML = `<div class="text-center p-10 text-xs text-red-400 font-bold uppercase">Gagal memuat doa. Pastikan file JSON ada di folder datadoa/</div>`;
+            }
         }
     </script>
 </section>
