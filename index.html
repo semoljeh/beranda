@@ -844,11 +844,7 @@ body {
             align-items: center;
 
             /* PENGATURAN POSISI TAMBAHAN */
-            /* Ubah ke angka negatif (misal: -10px) untuk NAIK */
-            /* Ubah ke angka positif (misal: 10px) untuk TURUN */
             margin-top: 0px; 
-            
-            /* Tambahkan margin samping jika kotak terlalu mepet dengan tombol panah */
             margin-left: 10px;
             margin-right: 10px;
         }
@@ -911,7 +907,6 @@ body {
 
         function handleDoaScroll(el) {
             const header = document.getElementById('doa-sticky-header');
-            /* Otomatis mengecil saat scroll melebihi 50px */
             header.classList.toggle('doa-header-slim', el.scrollTop > 50);
         }
 
@@ -963,8 +958,8 @@ body {
                         <!-- TEKS BASMALAH OTOMATIS -->
                         <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
                         
-                        <!-- GARIS PEMISAH SAMAR -->
-                        <div class="w-24 h-[1px] bg-slate-100 mx-auto mb-8"></div>
+                        <!-- GARIS PEMISAH LEBAR (MENGIKUTI LEBAR TEKS) -->
+                        <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
 
                         <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
                         ${tampilanArti}
