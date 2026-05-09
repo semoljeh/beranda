@@ -831,27 +831,27 @@ body {
         }
 
         .doa-glassbox { 
-    background: rgba(255, 255, 255, 0.15); 
-    backdrop-filter: blur(10px); 
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 25px; 
-    padding: 20px; 
-    text-align: center; 
-    transition: all 0.4s ease; 
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 25px; 
+            padding: 20px; 
+            text-align: center; 
+            transition: all 0.4s ease; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    /* PENGATURAN POSISI TAMBAHAN */
-    /* Ubah ke angka negatif (misal: -10px) untuk NAIK */
-    /* Ubah ke angka positif (misal: 10px) untuk TURUN */
-    margin-top: 0px; 
-    
-    /* Tambahkan margin samping jika kotak terlalu mepet dengan tombol panah */
-    margin-left: 10px;
-    margin-right: 10px;
-}
+            /* PENGATURAN POSISI TAMBAHAN */
+            /* Ubah ke angka negatif (misal: -10px) untuk NAIK */
+            /* Ubah ke angka positif (misal: 10px) untuk TURUN */
+            margin-top: 0px; 
+            
+            /* Tambahkan margin samping jika kotak terlalu mepet dengan tombol panah */
+            margin-left: 10px;
+            margin-right: 10px;
+        }
 
         /* Penyesuaian Kotak Kaca saat Slim */
         .doa-header-slim .doa-glassbox { 
@@ -960,7 +960,12 @@ body {
 
                 content.innerHTML = `
                     <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                        <h3 class="font-arab text-xl text-teal-600 mb-6 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                        <!-- TEKS BASMALAH OTOMATIS -->
+                        <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                        
+                        <!-- GARIS PEMISAH SAMAR -->
+                        <div class="w-24 h-[1px] bg-slate-100 mx-auto mb-8"></div>
+
                         <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
                         ${tampilanArti}
                     </div>
