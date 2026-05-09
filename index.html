@@ -382,261 +382,209 @@ body {
         }
     </script>
 </section>
+
+
+
 <!-- =============================================
      KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM
+     ============================================= -->
+
+<!-- =============================================
+     KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM (FINAL SUCCESS)
      ============================================= -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <section id="module-menu" style="font-family: 'Inter', sans-serif;">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500&family=Inter:wght@400;600;700&display=swap');
-        
         .font-kufi { font-family: 'Reem Kufi', sans-serif; }
-        
-        /* STYLE GRID MENU UTAMA */
+        .font-arab { font-family: 'LPMQ', 'Amiri', serif; }
+
+        /* GRID MENU */
         .menu-card { 
-            background: #ffffff; 
-            border-radius: 24px; 
-            padding: 24px 15px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            background: #ffffff; border-radius: 24px; padding: 24px 15px; 
+            display: flex; flex-direction: column; align-items: center; 
             border: 1px solid rgba(226, 232, 240, 0.8);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
         }
+        .menu-card:active { transform: scale(0.92); background-color: #fcfcfc; }
+        .icon-box { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 12px; position: relative; }
+        .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 18px; }
+        .menu-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
 
-        .menu-card:active { 
-            transform: scale(0.92); 
-            background-color: #fcfcfc; 
-        }
+        /* MODAL */
+        .modal-full { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: none; flex-direction: column; opacity: 0; transform: scale(0.85); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 500px; margin: 0 auto; }
+        .modal-show { display: flex; opacity: 1; transform: scale(1); }
 
-        .icon-box {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        .icon-bg-overlay {
-            position: absolute;
-            inset: 0;
-            background: currentColor;
-            opacity: 0.12;
-            border-radius: 18px;
-        }
-
-        .menu-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #475569;
-        }
-
-        /* --- STYLE MODAL DENGAN ZOOM ANIMATION --- */
-        .modal-full { 
-            position: fixed; 
-            inset: 0; 
-            background: #f8fafc; 
-            z-index: 9999; 
-            display: none; 
-            flex-direction: column; 
-            opacity: 0; 
-            transform: scale(0.85); 
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
-        }
-
-        .modal-show { 
-            display: flex; 
-            opacity: 1; 
-            transform: scale(1); 
-        }
-
-        .modal-exit {
-            opacity: 0;
-            transform: scale(0.85);
-        }
-
-        /* HEADER MELENGKUNG MODAL */
+        /* HEADER */
         .dzikir-header-premium { 
-            background: #0d9488; 
-            padding: 40px 20px 45px 20px; 
-            border-bottom-left-radius: 40px; 
-            border-bottom-right-radius: 40px; 
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
+            padding: calc(40px + env(safe-area-inset-top)) 20px 45px 20px; 
+            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; 
             box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3); 
-            position: sticky; 
-            top: 0; 
-            z-index: 50; 
+            position: sticky; top: 0; z-index: 50; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; }
+        .doa-header-slim .dzikir-glassbox { padding: 10px 18px; border-radius: 15px; }
 
-        .dzikir-glassbox { 
-            background: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-            border-radius: 25px; 
-            padding: 12px 20px; 
-            text-align: center; 
-            flex: 1; 
-        }
-        
-        /* ITEM LIST MODAL */
-        .dzikir-item-card { 
-            padding: 1rem 1.2rem; 
-            background: white; 
-            border-radius: 1.25rem; 
-            margin-bottom: 12px; 
-            border: 1px solid #f1f5f9; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
-            transition: transform 0.2s;
-        }
+        /* ITEM CARD */
+        .dzikir-item-card { padding: 1rem 1.2rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; }
         .dzikir-item-card:active { transform: scale(0.97); background: #f0fdfa; }
-
-        .dzikir-number { 
-            width: 32px; 
-            height: 32px; 
-            background: #f0fdfa; 
-            color: #0d9488; 
-            border-radius: 10px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 12px; 
-            font-weight: 800; 
-            border: 1px solid #ccfbf1; 
-        }
-
-        .dzikir-title-text { 
-            flex: 1; 
-            font-weight: 700; 
-            font-size: 13px; 
-            color: #334155; 
-            text-transform: uppercase; 
-        }
+        .dzikir-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
+        .dzikir-title-text { flex: 1; font-weight: 700; font-size: 13px; color: #334155; text-transform: uppercase; }
     </style>
 
     <!-- GRID MENU UTAMA -->
-    <div class="text-center px-8 mb-4 mt-[100px]"> 
+    <div class="text-center px-8 mb-4 mt-[100px]">
         <h1 class="text-4xl text-teal-600 font-kufi leading-snug">المختار</h1>
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
     </div>
 
     <div class="grid grid-cols-2 gap-5 p-6">
-        <!-- DZIKIR -->
-        <div onclick="openAppModal('dzikir')" class="menu-card">
-            <div class="icon-box text-emerald-600">
-                <div class="icon-bg-overlay"></div>
-                <i class="fa-solid fa-hand-holding-heart"></i>
-            </div>
-            <span class="menu-label">Dzikir</span>
-        </div>
-
-        <!-- YASIN & TAHLIL -->
-        <div onclick="openAppModal('yasin')" class="menu-card">
-            <div class="icon-box text-indigo-600">
-                <div class="icon-bg-overlay"></div>
-                <i class="fa-solid fa-book-open"></i>
-            </div>
-            <span class="menu-label">Yasin & Tahlil</span>
-        </div>
-
-        <!-- RATIB -->
-        <div onclick="openAppModal('ratib')" class="menu-card">
-            <div class="icon-box text-amber-600">
-                <div class="icon-bg-overlay"></div>
-                <i class="fa-solid fa-scroll"></i>
-            </div>
-            <span class="menu-label">Ratib</span>
-        </div>
-
-        <!-- MAULID -->
-        <div onclick="openAppModal('maulid')" class="menu-card">
-            <div class="icon-box text-rose-600">
-                <div class="icon-bg-overlay"></div>
-                <i class="fa-solid fa-heart"></i>
-            </div>
-            <span class="menu-label">Maulid</span>
-        </div>
+        <div onclick="toggleAppModal('dzikir')" class="menu-card"><div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div><span class="menu-label">Dzikir</span></div>
+        <div onclick="toggleAppModal('yasin')" class="menu-card"><div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div><span class="menu-label">Yasin & Tahlil</span></div>
+        <div onclick="toggleAppModal('ratib')" class="menu-card"><div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div><span class="menu-label">Ratib</span></div>
+        <div onclick="toggleAppModal('maulid')" class="menu-card"><div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div><span class="menu-label">Maulid</span></div>
     </div>
 
-    <!-- FULL MODAL SISTEM -->
+    <!-- MODAL CONTAINER -->
     <div id="app-modal" class="modal-full">
-        <div class="dzikir-header-premium">
+        <div id="app-sticky-header" class="dzikir-header-premium">
             <div class="flex items-center gap-4">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <div class="dzikir-glassbox">
-                    <h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest leading-none">Menu</h2>
-                </div>
+                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Menu</h2></div>
                 <div class="w-10"></div>
             </div>
         </div>
-
-        <div id="modal-content-list" class="flex-1 overflow-y-auto p-6 bg-slate-50"></div>
+        <div id="modal-content-list" onscroll="handleMenuScroll(this)" class="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24"></div>
     </div>
 </section>
 
 <script>
-    const menuData = {
-        dzikir: { title: "Kumpulan Dzikir", items: ["Dzikir Pagi", "Dzikir Petang", "Setelah Shalat"] },
-        yasin: { title: "Yasin & Tahlil", items: ["Surah Yasin", "Tahlil Arwah", "Doa Tahlil"] },
-        ratib: { title: "Kumpulan Ratib", items: ["Ratib Al-Haddad", "Ratib Al-Attas", "Ratib Al-Aydarus"] },
-        maulid: { title: "Kumpulan Maulid", items: ["Simtudduror", "Al-Barzanji", "Diba'i", "Adh-Dhiyaul Lami'"] }
-    };
+const menuData = {
+    /* =========================================
+       MENU 1: DZIKIR
+       ========================================= */
+    dzikir: { 
+        title: "Kumpulan Dzikir", 
+        items: [
+            { id: 1, title: "Dzikir Pagi",   path: "datadoa/pagi.json" }, 
+            { id: 2, title: "Dzikir Petang", path: "datadoa/petang.json" }
+        ] 
+    },
 
-    function pushModalState(type) {
-        const state = { modalOpen: true, type: type };
-        window.history.pushState(state, "", "#" + type);
+    /* =========================================
+       MENU 2: YASIN & TAHLIL
+       ========================================= */
+    yasin: { 
+        title: "Yasin & Tahlil", 
+        items: [
+            { id: 1, title: "Surah Yasin", path: "datadoa/yasin.json" }
+        ] 
+    },
+
+    /* =========================================
+       MENU 3: RATIB
+       ========================================= */
+    ratib: { 
+        title: "Kumpulan Ratib", 
+        items: [
+            { id: 1, title: "Ratib Al-Haddad", path: "datadoa/haddad.json" }
+        ] 
+    },
+
+    /* =========================================
+       MENU 4: MAULID
+       ========================================= */
+    maulid: { 
+        title: "Kumpulan Maulid", 
+        items: [
+            { id: 1, title: "Simtudduror", path: "datadoa/simtudduror.json" }
+        ] 
     }
+};
 
-    function openAppModal(category) {
-        const modal = document.getElementById('app-modal');
-        const titleEl = document.getElementById('modal-title');
-        const listContainer = document.getElementById('modal-content-list');
+let currentCategory = null;
+
+function handleMenuScroll(el) {
+    const header = document.getElementById('app-sticky-header');
+    header.classList.toggle('doa-header-slim', el.scrollTop > 50);
+}
+
+function toggleAppModal(category = null) {
+    const modal = document.getElementById('app-modal');
+    if (!modal.classList.contains('modal-show')) {
+        currentCategory = category;
+        window.history.pushState({ app_view: 'list', category: category }, '', '#' + category);
+        modal.classList.add('modal-show');
+        loadMenuList(category);
+    } else {
+        window.history.back();
+    }
+}
+
+function loadMenuList(category) {
+    currentCategory = category;
+    const data = menuData[category];
+    document.getElementById('modal-title').innerText = data.title;
+    const content = document.getElementById('modal-content-list');
+    content.scrollTop = 0;
+    document.getElementById('app-sticky-header').classList.remove('doa-header-slim');
+
+    content.innerHTML = data.items.map((item, index) => `
+        <div onclick="loadMenuDetail('${category}', ${item.id})" class="dzikir-item-card">
+            <div class="dzikir-number">${index + 1}</div>
+            <span class="dzikir-title-text">${item.title}</span>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+        </div>
+    `).join('');
+}
+
+async function loadMenuDetail(category, id) {
+    window.history.pushState({ app_view: 'detail', category: category, id: id }, '', '#detail');
+    const data = menuData[category];
+    const info = data.items.find(x => x.id === id);
+    const content = document.getElementById('modal-content-list');
+    document.getElementById('modal-title').innerText = info.title;
+    content.scrollTop = 0;
+    document.getElementById('app-sticky-header').classList.remove('doa-header-slim');
+    content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold uppercase">Memuat Berkah...</div>`;
+
+    try {
+        const response = await fetch(info.path);
+        const d = await response.json();
+        const arti = d.arti ? `<div class="w-16 h-1 bg-teal-50 rounded-full mx-auto mb-6"></div><p class="text-slate-500 italic text-sm text-center">"${d.arti}"</p>` : "";
         
-        const data = menuData[category];
-        titleEl.innerText = data.title;
-        listContainer.innerHTML = data.items.map((item, index) => `
-            <div onclick="console.log('Open: ${item}')" class="dzikir-item-card">
-                <div class="dzikir-number">${index + 1}</div>
-                <span class="dzikir-title-text">${item}</span>
-                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+        content.innerHTML = `
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <h3 class="font-arab text-xl text-teal-600 mb-6 text-center">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
+                ${arti}
             </div>
-        `).join('');
-
-        pushModalState(category);
-
-        modal.style.display = 'flex';
-        setTimeout(() => {
-            modal.classList.remove('modal-exit');
-            modal.classList.add('modal-show');
-        }, 20);
+            <div class="mt-8 text-center">
+                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar</button>
+            </div>`;
+    } catch (e) {
+        content.innerHTML = `<div class="text-center p-10 text-red-400 font-bold uppercase">Gagal memuat konten.</div>`;
     }
+}
 
-    function executeCloseModal() {
-        const modal = document.getElementById('app-modal');
-        modal.classList.add('modal-exit');
+window.addEventListener('popstate', function(event) {
+    const modal = document.getElementById('app-modal');
+    if (!modal) return;
+
+    if (event.state && event.state.app_view === 'list') {
+        modal.classList.add('modal-show');
+        loadMenuList(event.state.category);
+    } else {
         modal.classList.remove('modal-show');
-        setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
-
-    window.addEventListener('popstate', function(event) {
-        const modal = document.getElementById('app-modal');
-        if (modal.style.display === 'flex') {
-            executeCloseModal();
-        }
-    });
+});
 </script>
+
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
              ============================================= -->
@@ -1020,24 +968,107 @@ body {
         <div id="doa-content" onscroll="handleDoaScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
     </div>
 
-    <script>
-        const dataDoaMadasa = [ { id: 1, judul: "Al Mulk", path: "datadoa/almulk.json" }, { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" }, { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" }, { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" }, { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" } ];
-        function handleDoaScroll(el) { const header = document.getElementById('doa-sticky-header'); header.classList.toggle('doa-header-slim', el.scrollTop > 50); }
-        function toggleDoa() { const el = document.getElementById('doa-modal'); if (!el.classList.contains('modal-show')) { pushState('doa', { doa_view: 'list' }); el.classList.add('modal-show'); loadDoaList(); } else { window.history.back(); } }
-        function loadDoaList() {
-            document.getElementById('doa-header-title').innerText = "Kumpulan Doa"; const content = document.getElementById('doa-content'); content.scrollTop = 0; document.getElementById('doa-sticky-header').classList.remove('doa-header-slim');
-            content.innerHTML = dataDoaMadasa.map((d, index) => `<div onclick="loadDoaDetail(${d.id})" class="doa-item-card"><div class="doa-number">${index + 1}</div><span class="doa-title-text">${d.judul}</span><i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i></div>`).join('');
+<script>
+    /* 1. DATA MASTER DOA */
+    const dataDoaMadasa = [
+        { id: 1, judul: "Al Mulk", path: "datadoa/almulk.json" },
+        { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" },
+        { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" },
+        { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" },
+        { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" }
+    ];
+
+    /* 2. LOGIKA SCROLL HEADER (EFEK SLIM) */
+    function handleDoaScroll(el) {
+        const header = document.getElementById('doa-sticky-header');
+        header.classList.toggle('doa-header-slim', el.scrollTop > 50);
+    }
+
+    /* 3. FUNGSI TOGGLE MODAL DOA */
+    function toggleDoa() {
+        const el = document.getElementById('doa-modal');
+        if (!el.classList.contains('modal-show')) {
+            // Push state awal untuk level LIST
+            pushState('doa', { doa_view: 'list' });
+            el.classList.add('modal-show');
+            loadDoaList();
+        } else {
+            // Pemicu tombol back browser
+            window.history.back();
         }
-        async function loadDoaDetail(id) {
-            pushState('doa', { doa_view: 'detail' }); const content = document.getElementById('doa-content'); const dInfo = dataDoaMadasa.find(i => i.id === id); content.scrollTop = 0; document.getElementById('doa-sticky-header').classList.remove('doa-header-slim'); document.getElementById('doa-header-title').innerText = dInfo.judul;
-            content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">Mengambil Berkah...</div>`;
-            try {
-                const response = await fetch(dInfo.path); const d = await response.json();
-                const tampilanArti = d.arti && d.arti.trim() !== "" ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div><p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` : "";
-                content.innerHTML = `<div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100"><h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3><div class="w-full h-[1px] bg-slate-100 mb-8"></div><p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>${tampilanArti}</div><div class="mt-8 text-center"><button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar</button></div>`;
-            } catch (e) { content.innerHTML = `<div class="text-center p-10 text-xs text-red-400 font-bold uppercase">Gagal memuat doa.</div>`; }
+    }
+
+    /* 4. FUNGSI RENDER DAFTAR DOA (LIST VIEW) */
+    function loadDoaList() {
+        const titleEl = document.getElementById('doa-header-title');
+        const content = document.getElementById('doa-content');
+        const header = document.getElementById('doa-sticky-header');
+
+        titleEl.innerText = "Kumpulan Doa";
+        content.scrollTop = 0;
+        header.classList.remove('doa-header-slim');
+
+        content.innerHTML = dataDoaMadasa.map((d, index) => `
+            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card">
+                <div class="doa-number">${index + 1}</div>
+                <span class="doa-title-text">${d.judul}</span>
+                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+            </div>
+        `).join('');
+    }
+
+    /* 5. FUNGSI RENDER ISI DOA (DETAIL VIEW) */
+    async function loadDoaDetail(id) {
+        // Tambahkan history baru untuk level DETAIL
+        pushState('doa', { doa_view: 'detail' });
+
+        const content = document.getElementById('doa-content');
+        const dInfo = dataDoaMadasa.find(i => i.id === id);
+        const header = document.getElementById('doa-sticky-header');
+        const titleEl = document.getElementById('doa-header-title');
+
+        content.scrollTop = 0;
+        header.classList.remove('doa-header-slim');
+        titleEl.innerText = dInfo.judul;
+
+        // Loading State
+        content.innerHTML = `
+            <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
+                Mengambil Berkah...
+            </div>`;
+
+        try {
+            const response = await fetch(dInfo.path);
+            const d = await response.json();
+
+            // Cek jika ada arti, jika tidak kosongkan
+            const tampilanArti = d.arti && d.arti.trim() !== "" 
+                ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+                   <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` 
+                : "";
+
+            content.innerHTML = `
+                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
+                    <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                    <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
+                    <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">
+                        ${d.arab}
+                    </p>
+                    ${tampilanArti}
+                </div>
+                <div class="mt-8 text-center">
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                    </button>
+                </div>`;
+        } catch (e) {
+            content.innerHTML = `
+                <div class="text-center p-10 text-xs text-red-400 font-bold uppercase">
+                    Gagal memuat doa.
+                </div>`;
         }
-    </script>
+    }
+</script>
 </section>
 
         <!-- =============================================
