@@ -102,12 +102,17 @@ body {
 .app-container { 
     width: 100%; 
     max-width: 500px; 
-    margin: 0 auto; /* Biar posisi aplikasi di tengah layar kalau dibuka di laptop */
-    background-color: #f8fafc; /* Samakan dengan warna body */
+    margin: 0 auto; /* Menjaga aplikasi tetap di tengah layar laptop */
+    background-color: #f8fafc; /* Konsisten dengan warna latar body */
     min-height: 100vh; 
     position: relative; 
-    padding-bottom: 120px; 
-    box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Tambahan: Biar ada bayangan halus di pinggir */
+    padding-bottom: 120px; /* Ruang agar konten tidak tertutup bottom-nav */
+    
+    /* Edit: Optimasi Visual */
+    box-shadow: 0 0 40px rgba(0,0,0,0.08); /* Shadow sedikit lebih tebal agar kontras di laptop */
+    overflow-x: hidden; /* Mencegah konten meluber ke samping */
+    display: flex;
+    flex-direction: column;
 }
         /* Modal System Styles */
         .modal-full { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
@@ -198,7 +203,8 @@ body {
 <!-- Splash Screen -->
 <div id="splash-screen">
     <div class="splash-logo">
-        <i class="fa-solid fa-mosque text-white text-4xl"></i>
+        <!-- Gunakan gambar yang sama dengan manifest agar transisinya mulus -->
+        <img src="https://raw.githubusercontent.com/semoljeh/link/main/icon-192.png" alt="Logo" class="w-full h-full object-contain rounded-2xl">
     </div>
     <h1 class="text-white font-kufi text-3xl mb-4">المختار</h1>
     <div class="splash-loader"></div>
@@ -1180,21 +1186,26 @@ body {
 		
 		window.onload = () => { 
     updateDateTime(); 
-    getCoreData(); 
+    // Jangan panggil getCoreData() di sini agar pop-up tidak muncul duluan
     startCountdown(); 
     
-    // Logika menutup Splash Screen
     const splash = document.getElementById('splash-screen');
+    
     setTimeout(() => {
         splash.style.opacity = '0';
         splash.style.visibility = 'hidden';
         
-        // Inisialisasi data berat setelah splash hilang agar RAM 2GB tetap stabil
+        // Panggil lokasi SETELAH splash screen hilang
+        // Ini membuat user sudah berada di beranda sebelum ditanya izin lokasi
+        getCoreData(); 
+
         if(navigator.onLine) {
-            if(typeof loadSurahList === 'function') loadSurahList();
-            if(typeof loadDoaList === 'function') loadDoaList();
+            setTimeout(() => {
+               if(typeof loadSurahList === 'function') loadSurahList();
+               if(typeof loadDoaList === 'function') loadDoaList();
+            }, 1000);
         }
-    }, 2000); // Tampilkan selama 2 detik
+    }, 2500); // Beri jeda sedikit lebih lama agar transisinya elegan
 };
     </script>
 </body>
