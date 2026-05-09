@@ -787,19 +787,87 @@ body {
     </script>
 </section>
 
-    <!-- MODAL PROFILE POPUP (TAMBAHAN) -->
-    <div id="profile-popup" class="fixed inset-0 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div onclick="toggleProfile()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div class="profile-card relative">
-            <div class="w-24 h-24 bg-teal-600 rounded-3xl mx-auto mb-5 flex items-center justify-center text-white text-4xl border-4 border-teal-50 shadow-lg">
-                <i class="fa-solid fa-user-tie"></i>
-            </div>
-            <h3 class="text-2xl font-black text-slate-800">Batukessel</h3>
-            <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
-            <p class="mt-6 text-[11px] text-slate-400 font-medium leading-relaxed">Membangun aplikasi web modern dengan <br>Blogger XML & Google Apps Script.</p>
-            <button onclick="toggleProfile()" class="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">Tutup Profil</button>
-        </div>
+<!-- =============================================
+     KLP 11: PROFILE SYSTEM (MODAL & STYLING)
+     ============================================= -->
+<style>
+    /* Z-Index tinggi agar modal muncul di depan semua elemen */
+    #profile-modal { z-index: 500; }
+    
+    /* Efek transisi kartu agar lebih smooth */
+    .profile-card {
+        background: white;
+        border-radius: 35px;
+        padding: 35px;
+        width: 88%;
+        max-width: 350px;
+        text-align: center;
+        box-shadow: 0 25px 60px -15px rgba(0,0,0,0.15);
+        transform: scale(0.9);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    /* Animasi aktifkan kartu saat opacity muncul */
+    #profile-modal.opacity-100 .profile-card {
+        transform: scale(1);
+    }
+</style>
+
+<!-- MODAL PROFILE POPUP -->
+<div id="profile-modal" class="fixed inset-0 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <!-- Overlay Gelap Blur -->
+    <div onclick="toggleProfile()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+    
+    <!-- Kartu Profil Paten -->
+    <div class="profile-card relative">
+       <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden border-4 border-teal-50 shadow-lg">
+        <img src="https://github.com/semoljeh/beranda/blob/main/foto-profil.jpg" alt="Batukessel" class="w-full h-full object-cover">
     </div>
+        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
+        <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
+        
+        <!-- Media Sosial (Opsional) -->
+        <div class="mt-6 flex justify-center gap-3">
+             <a href="https://www.tiktok.com/@aromkobama/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 border border-slate-100 active:scale-90"><i class="fa-brands fa-tiktok"></i></a>
+             <a href="https://www.facebook.com/arom.kobama.2025/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-blue-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-facebook"></i></a>
+             <a href="https://www.instagram.com/aromkobama/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-pink-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+
+        <p class="mt-6 text-[11px] text-slate-400 font-medium leading-relaxed">
+            Membangun aplikasi web modern dengan <br>Semoga Bermanfaat Untuk Ummat.
+        </p>
+        
+        <button onclick="toggleProfile()" class="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">
+            Tutup Profil
+        </button>
+    </div>
+</div>
+
+<script>
+    /**
+     * Fungsi Toggle Profile yang sinkron dengan sistem pushState (KLP 3)
+     */
+    function toggleProfile() {
+        const modal = document.getElementById('profile-modal');
+        if (!modal) return;
+
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            // Timeout 10ms agar transisi opacity terlihat oleh browser
+            setTimeout(() => modal.classList.add('opacity-100'), 10);
+            // Tambah history state agar bisa ditutup tombol Back (KLP 3)
+            if (typeof pushState === 'function') pushState('profile');
+        } else {
+            modal.classList.remove('opacity-100');
+            // Tunggu animasi transisi 300ms selesai sebelum hidden total
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+</script>
+	
+	
+	
+	
 
     <!-- =============================================
          KLP 10: GLOBAL INITIALIZATION SCRIPT
