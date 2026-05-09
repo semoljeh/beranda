@@ -2,12 +2,12 @@ const CACHE_NAME = 'almukhtar-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  'https://cdn.tailwindcss.com',
+  
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
   'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
-  'https://kemenag.go.id/assets/fonts/lpmq.ttf'
+  
 ];
 
 self.addEventListener('install', (event) => {
