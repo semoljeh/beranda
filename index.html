@@ -806,22 +806,24 @@ body {
 </section>
 
 <!-- =============================================
-      KLP 8: DAILY DOA (AUTOMATIC BASMALAH)
+      KLP 8: DAILY DOA (STEADFAST DYNAMIC HEADER)
       ============================================= -->
 <section id="module-doa">
     <style>
         .doa-header-premium {
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-            padding: calc(15px + env(safe-area-inset-top)) 20px 25px 20px;
+            /* Tinggi awal ditambah agar lebih tegas */
+            padding: calc(30px + env(safe-area-inset-top)) 20px 45px 20px;
             border-bottom-left-radius: 40px; 
             border-bottom-right-radius: 40px;
             box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
             z-index: 50; 
             position: sticky; 
             top: 0; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Mode Slim saat Scroll (Otomatis Mengecil) */
         .doa-header-slim { 
             padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; 
             border-bottom-left-radius: 20px; 
@@ -833,16 +835,20 @@ body {
             backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.2); 
             border-radius: 25px; 
-            padding: 18px; 
+            padding: 20px; /* Padding kotak kaca juga ditambah sedikit */
             text-align: center; 
-            transition: all 0.3s ease; 
+            transition: all 0.4s ease; 
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .doa-header-slim .doa-glassbox { padding: 10px 18px; }
+        /* Penyesuaian Kotak Kaca saat Slim */
+        .doa-header-slim .doa-glassbox { 
+            padding: 10px 18px; 
+            border-radius: 15px;
+        }
 
         .doa-item-card { 
             padding: 0.85rem 1.1rem; 
@@ -896,6 +902,7 @@ body {
 
         function handleDoaScroll(el) {
             const header = document.getElementById('doa-sticky-header');
+            /* Otomatis mengecil saat scroll melebihi 50px */
             header.classList.toggle('doa-header-slim', el.scrollTop > 50);
         }
 
@@ -944,9 +951,7 @@ body {
 
                 content.innerHTML = `
                     <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                        <!-- TEKS BASMALAH OTOMATIS -->
                         <h3 class="font-arab text-xl text-teal-600 mb-6 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                        
                         <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
                         ${tampilanArti}
                     </div>
