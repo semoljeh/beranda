@@ -305,18 +305,19 @@ body {
         }
     </script>
 </section>
-
 <!-- =============================================
-     KLP 5: FINAL MODERN ISLAMIC MENU
+     KLP 5: FINAL MODERN ISLAMIC MENU WITH ZOOM
      ============================================= -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<section id="module-menu" style="margin-top: 80px; font-family: 'Inter', sans-serif;">
+<section id="module-menu" style="font-family: 'Inter', sans-serif;">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500&family=Inter:wght@400;600;700&display=swap');
         
         .font-kufi { font-family: 'Reem Kufi', sans-serif; }
         
+        /* STYLE GRID MENU UTAMA */
         .menu-card { 
             background: #ffffff; 
             border-radius: 24px; 
@@ -362,17 +363,100 @@ body {
             letter-spacing: 0.05em;
             color: #475569;
         }
+
+        /* --- STYLE MODAL DENGAN ZOOM ANIMATION --- */
+        .modal-full { 
+            position: fixed; 
+            inset: 0; 
+            background: #f8fafc; 
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            opacity: 0; 
+            transform: scale(0.85); 
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+
+        .modal-show { 
+            display: flex; 
+            opacity: 1; 
+            transform: scale(1); 
+        }
+
+        .modal-exit {
+            opacity: 0;
+            transform: scale(0.85);
+        }
+
+        /* HEADER MELENGKUNG MODAL */
+        .dzikir-header-premium { 
+            background: #0d9488; 
+            padding: 40px 20px 45px 20px; 
+            border-bottom-left-radius: 40px; 
+            border-bottom-right-radius: 40px; 
+            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3); 
+            position: sticky; 
+            top: 0; 
+            z-index: 50; 
+        }
+
+        .dzikir-glassbox { 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 25px; 
+            padding: 12px 20px; 
+            text-align: center; 
+            flex: 1; 
+        }
+        
+        /* ITEM LIST MODAL */
+        .dzikir-item-card { 
+            padding: 1rem 1.2rem; 
+            background: white; 
+            border-radius: 1.25rem; 
+            margin-bottom: 12px; 
+            border: 1px solid #f1f5f9; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            transition: transform 0.2s;
+        }
+        .dzikir-item-card:active { transform: scale(0.97); background: #f0fdfa; }
+
+        .dzikir-number { 
+            width: 32px; 
+            height: 32px; 
+            background: #f0fdfa; 
+            color: #0d9488; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+            font-weight: 800; 
+            border: 1px solid #ccfbf1; 
+        }
+
+        .dzikir-title-text { 
+            flex: 1; 
+            font-weight: 700; 
+            font-size: 13px; 
+            color: #334155; 
+            text-transform: uppercase; 
+        }
     </style>
 
-    <!-- TEKS JUDUL: Sudah diturunkan dengan mt-10 -->
+    <!-- GRID MENU UTAMA -->
     <div class="text-center px-8 mb-4 mt-[100px]"> 
-    <h1 class="text-4xl text-teal-600 font-kufi leading-snug">المختار</h1>
-    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
-</div>
+        <h1 class="text-4xl text-teal-600 font-kufi leading-snug">المختار</h1>
+        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
+    </div>
 
     <div class="grid grid-cols-2 gap-5 p-6">
-        <!-- DZIKIR: Tasbih Modern -->
-        <div class="menu-card">
+        <!-- DZIKIR -->
+        <div onclick="openAppModal('dzikir')" class="menu-card">
             <div class="icon-box text-emerald-600">
                 <div class="icon-bg-overlay"></div>
                 <i class="fa-solid fa-hand-holding-heart"></i>
@@ -381,7 +465,7 @@ body {
         </div>
 
         <!-- YASIN & TAHLIL -->
-        <div class="menu-card">
+        <div onclick="openAppModal('yasin')" class="menu-card">
             <div class="icon-box text-indigo-600">
                 <div class="icon-bg-overlay"></div>
                 <i class="fa-solid fa-book-open"></i>
@@ -389,17 +473,17 @@ body {
             <span class="menu-label">Yasin & Tahlil</span>
         </div>
 
-        <!-- RATIB: Cloud Moon -->
-        <div class="menu-card">
+        <!-- RATIB -->
+        <div onclick="openAppModal('ratib')" class="menu-card">
             <div class="icon-box text-amber-600">
                 <div class="icon-bg-overlay"></div>
-              <i class="fa-solid fa-scroll"></i>
+                <i class="fa-solid fa-scroll"></i>
             </div>
             <span class="menu-label">Ratib</span>
         </div>
 
-        <!-- MAULID: Heart (Cinta Rasul) -->
-        <div class="menu-card">
+        <!-- MAULID -->
+        <div onclick="openAppModal('maulid')" class="menu-card">
             <div class="icon-box text-rose-600">
                 <div class="icon-bg-overlay"></div>
                 <i class="fa-solid fa-heart"></i>
@@ -407,7 +491,85 @@ body {
             <span class="menu-label">Maulid</span>
         </div>
     </div>
+
+    <!-- FULL MODAL SISTEM (SINGLE MODAL UNTUK SEMUA) -->
+    <div id="app-modal" class="modal-full">
+        <div class="dzikir-header-premium">
+            <div class="flex items-center gap-4">
+                <button onclick="closeAppModal()" class="p-2 bg-white/10 rounded-xl text-white shrink-0">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="dzikir-glassbox">
+                    <h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest leading-none">Judul Menu</h2>
+                </div>
+                <div class="w-10"></div>
+            </div>
+        </div>
+
+        <!-- Area Daftar Isi Dinamis -->
+        <div id="modal-content-list" class="flex-1 overflow-y-auto p-6 bg-slate-50">
+            <!-- Isi akan dimuat lewat JavaScript -->
+        </div>
+    </div>
 </section>
+
+<script>
+    // Data konten untuk setiap menu
+    const menuData = {
+        dzikir: {
+            title: "Kumpulan Dzikir",
+            items: ["Dzikir Pagi", "Dzikir Petang", "Dzikir Setelah Shalat"]
+        },
+        yasin: {
+            title: "Yasin & Tahlil",
+            items: ["Surah Yasin", "Tahlil Arwah", "Doa Tahlil"]
+        },
+        ratib: {
+            title: "Kumpulan Ratib",
+            items: ["Ratib Al-Haddad", "Ratib Al-Attas", "Ratib Al-Aydarus"]
+        },
+        maulid: {
+            title: "Kumpulan Maulid",
+            items: ["Simtudduror", "Al-Barzanji", "Diba'i", "Adh-Dhiyaul Lami'"]
+        }
+    };
+
+    function openAppModal(category) {
+        const modal = document.getElementById('app-modal');
+        const titleEl = document.getElementById('modal-title');
+        const listContainer = document.getElementById('modal-content-list');
+        
+        // Ambil data berdasarkan kategori
+        const data = menuData[category];
+        
+        // Update Judul & List
+        titleEl.innerText = data.title;
+        listContainer.innerHTML = data.items.map((item, index) => `
+            <div onclick="console.log('Membuka: ${item}')" class="dzikir-item-card">
+                <div class="dzikir-number">${index + 1}</div>
+                <span class="dzikir-title-text">${item}</span>
+                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+            </div>
+        `).join('');
+
+        // Tampilkan Modal
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.remove('modal-exit');
+            modal.classList.add('modal-show');
+        }, 20);
+    }
+
+    function closeAppModal() {
+        const modal = document.getElementById('app-modal');
+        modal.classList.add('modal-exit');
+        modal.classList.remove('modal-show');
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 400);
+    }
+</script>
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
              ============================================= -->
