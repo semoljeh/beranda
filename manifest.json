@@ -1,21 +1,22 @@
 {
   "name": "SEMOLJEH",
   "short_name": "Al-Mukhtar",
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0d9488",
   "theme_color": "#0d9488",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "img/png",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "img/png"
+      "type": "image/png"
     }
   ]
 }
