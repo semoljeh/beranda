@@ -388,7 +388,8 @@ body {
 <!-- =============================================
      KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM (FINAL SUCCESS)
      ============================================= -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <section id="module-menu" style="font-family: 'Inter', sans-serif;">
     <style>
@@ -396,7 +397,7 @@ body {
         .font-kufi { font-family: 'Reem Kufi', sans-serif; }
         .font-arab { font-family: 'LPMQ', 'Amiri', serif; }
 
-        /* GRID MENU */
+        /* GRID MENU BERANDA */
         .menu-card { 
             background: #ffffff; border-radius: 24px; padding: 24px 15px; 
             display: flex; flex-direction: column; align-items: center; 
@@ -409,11 +410,11 @@ body {
         .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 18px; }
         .menu-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
 
-        /* MODAL */
+        /* MODAL SYSTEM */
         .modal-full { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: none; flex-direction: column; opacity: 0; transform: scale(0.85); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 500px; margin: 0 auto; }
         .modal-show { display: flex; opacity: 1; transform: scale(1); }
 
-        /* HEADER */
+        /* HEADER PREMIUM DENGAN EFEK SHRINK */
         .dzikir-header-premium { 
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
             padding: calc(40px + env(safe-area-inset-top)) 20px 45px 20px; 
@@ -423,35 +424,50 @@ body {
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; }
+        
+        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; transition: all 0.4s ease; }
         .doa-header-slim .dzikir-glassbox { padding: 10px 18px; border-radius: 15px; }
 
-        /* ITEM CARD */
+        /* ITEM DAFTAR */
         .dzikir-item-card { padding: 1rem 1.2rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; }
         .dzikir-item-card:active { transform: scale(0.97); background: #f0fdfa; }
         .dzikir-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
         .dzikir-title-text { flex: 1; font-weight: 700; font-size: 13px; color: #334155; text-transform: uppercase; }
     </style>
 
-    <!-- GRID MENU UTAMA -->
     <div class="text-center px-8 mb-4 mt-[100px]">
         <h1 class="text-4xl text-teal-600 font-kufi leading-snug">المختار</h1>
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
     </div>
 
     <div class="grid grid-cols-2 gap-5 p-6">
-        <div onclick="toggleAppModal('dzikir')" class="menu-card"><div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div><span class="menu-label">Dzikir</span></div>
-        <div onclick="toggleAppModal('yasin')" class="menu-card"><div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div><span class="menu-label">Yasin & Tahlil</span></div>
-        <div onclick="toggleAppModal('ratib')" class="menu-card"><div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div><span class="menu-label">Ratib</span></div>
-        <div onclick="toggleAppModal('maulid')" class="menu-card"><div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div><span class="menu-label">Maulid</span></div>
+        <div onclick="toggleAppModal('dzikir')" class="menu-card">
+            <div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <span class="menu-label">Dzikir</span>
+        </div>
+        <div onclick="toggleAppModal('yasin')" class="menu-card">
+            <div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div>
+            <span class="menu-label">Yasin & Tahlil</span>
+        </div>
+        <div onclick="toggleAppModal('ratib')" class="menu-card">
+            <div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div>
+            <span class="menu-label">Ratib</span>
+        </div>
+        <div onclick="toggleAppModal('maulid')" class="menu-card">
+            <div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div>
+            <span class="menu-label">Maulid</span>
+        </div>
     </div>
 
-    <!-- MODAL CONTAINER -->
     <div id="app-modal" class="modal-full">
         <div id="app-sticky-header" class="dzikir-header-premium">
             <div class="flex items-center gap-4">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Menu</h2></div>
+                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="dzikir-glassbox">
+                    <h2 id="modal-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Menu</h2>
+                </div>
                 <div class="w-10"></div>
             </div>
         </div>
@@ -460,10 +476,8 @@ body {
 </section>
 
 <script>
+/* 1. DATABASE MENU (Ganti Path sesuai folder Akang) */
 const menuData = {
-    /* =========================================
-       MENU 1: DZIKIR
-       ========================================= */
     dzikir: { 
         title: "Kumpulan Dzikir", 
         items: [
@@ -471,30 +485,20 @@ const menuData = {
             { id: 2, title: "Dzikir Petang", path: "datadoa/petang.json" }
         ] 
     },
-
-    /* =========================================
-       MENU 2: YASIN & TAHLIL
-       ========================================= */
     yasin: { 
         title: "Yasin & Tahlil", 
         items: [
-            { id: 1, title: "Surah Yasin", path: "datadoa/yasin.json" }
+            { id: 1, title: "Surah Yasin", path: "datadoa/yasin.json" },
+            { id: 2, title: "Tahlil Arwah", path: "datadoa/tahlil.json" }
         ] 
     },
-
-    /* =========================================
-       MENU 3: RATIB
-       ========================================= */
     ratib: { 
         title: "Kumpulan Ratib", 
         items: [
-           { id: 1, title: "Ratib Al-Athas", path: "ratib/alathas.json" }
+           { id: 1, title: "Ratib Al-Athas", path: "ratib/alathas.json" },
+           { id: 2, title: "Ratib Al-Haddad", path: "datadoa/haddad.json" }
         ] 
     },
-
-    /* =========================================
-       MENU 4: MAULID
-       ========================================= */
     maulid: { 
         title: "Kumpulan Maulid", 
         items: [
@@ -503,17 +507,16 @@ const menuData = {
     }
 };
 
-let currentCategory = null;
-
+/* 2. LOGIKA HEADER MENYUSUT (SHRINK) */
 function handleMenuScroll(el) {
     const header = document.getElementById('app-sticky-header');
     header.classList.toggle('doa-header-slim', el.scrollTop > 50);
 }
 
+/* 3. LOGIKA LEVEL 1: BUKA DAFTAR ITEM */
 function toggleAppModal(category = null) {
     const modal = document.getElementById('app-modal');
     if (!modal.classList.contains('modal-show')) {
-        currentCategory = category;
         window.history.pushState({ app_view: 'list', category: category }, '', '#' + category);
         modal.classList.add('modal-show');
         loadMenuList(category);
@@ -523,10 +526,11 @@ function toggleAppModal(category = null) {
 }
 
 function loadMenuList(category) {
-    currentCategory = category;
     const data = menuData[category];
-    document.getElementById('modal-title').innerText = data.title;
+    const titleEl = document.getElementById('modal-title');
     const content = document.getElementById('modal-content-list');
+    
+    titleEl.innerText = data.title;
     content.scrollTop = 0;
     document.getElementById('app-sticky-header').classList.remove('doa-header-slim');
 
@@ -539,35 +543,64 @@ function loadMenuList(category) {
     `).join('');
 }
 
+/* 4. LOGIKA LEVEL 2: BUKA ISI DOA (JUSTIFY + BASMALAH + DIVIDER) */
 async function loadMenuDetail(category, id) {
     window.history.pushState({ app_view: 'detail', category: category, id: id }, '', '#detail');
-    const data = menuData[category];
-    const info = data.items.find(x => x.id === id);
+    
+    const info = menuData[category].items.find(x => x.id === id);
+    const titleEl = document.getElementById('modal-title');
     const content = document.getElementById('modal-content-list');
-    document.getElementById('modal-title').innerText = info.title;
+    const header = document.getElementById('app-sticky-header');
+
+    titleEl.innerText = info.title;
     content.scrollTop = 0;
-    document.getElementById('app-sticky-header').classList.remove('doa-header-slim');
-    content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold uppercase">Memuat Berkah...</div>`;
+    header.classList.remove('doa-header-slim');
+    content.innerHTML = `<div class="text-center py-20 animate-pulse text-teal-600 font-bold uppercase text-[10px]">Memuat Keberkahan...</div>`;
 
     try {
         const response = await fetch(info.path);
+        if (!response.ok) throw new Error('File Not Found');
         const d = await response.json();
-        const arti = d.arti ? `<div class="w-16 h-1 bg-teal-50 rounded-full mx-auto mb-6"></div><p class="text-slate-500 italic text-sm text-center">"${d.arti}"</p>` : "";
+        
+        // Gabungkan teks jika berupa array
+        const teksArab = Array.isArray(d.arab) ? d.arab.join(' ') : d.arab;
+        const teksArti = Array.isArray(d.arti) ? d.arti.join(' ') : d.arti;
+
+        const artiHtml = teksArti ? `
+            <div class="w-16 h-1 bg-teal-50 rounded-full mx-auto mb-6 mt-10"></div>
+            <p class="text-slate-500 italic text-sm text-justify leading-relaxed px-2">
+                "${teksArti}"
+            </p>` : "";
         
         content.innerHTML = `
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <h3 class="font-arab text-xl text-teal-600 mb-6 text-center">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">${d.arab}</p>
-                ${arti}
+                <h3 class="font-arab text-2xl text-teal-600 mb-6 text-center leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                
+                <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
+
+                <p class="font-arab text-3xl mb-10 leading-[2.8] text-justify" style="text-align-last: center;" dir="rtl">
+                    ${teksArab}
+                </p>
+                
+                ${artiHtml}
             </div>
-            <div class="mt-8 text-center">
-                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar</button>
+            
+            <div class="mt-8 text-center pb-20">
+                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest active:scale-95 transition-all">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
+                </button>
             </div>`;
     } catch (e) {
-        content.innerHTML = `<div class="text-center p-10 text-red-400 font-bold uppercase">Periksa Koneksi Internet.</div>`;
+        content.innerHTML = `
+            <div class="text-center p-10">
+                <i class="fa-solid fa-circle-exclamation text-red-400 text-3xl mb-4"></i>
+                <p class="text-red-400 font-bold uppercase text-[10px]">Gagal Memuat Konten.</p>
+                <p class="text-slate-400 text-[9px] mt-2">Pastikan folder dan file sudah benar: <br> ${info.path}</p>
+            </div>`;
     }
 }
 
+/* 5. SISTEM NAVIGASI TOMBOL BACK BROWSER */
 window.addEventListener('popstate', function(event) {
     const modal = document.getElementById('app-modal');
     if (!modal) return;
@@ -575,6 +608,8 @@ window.addEventListener('popstate', function(event) {
     if (event.state && event.state.app_view === 'list') {
         modal.classList.add('modal-show');
         loadMenuList(event.state.category);
+    } else if (event.state && event.state.app_view === 'detail') {
+        loadMenuDetail(event.state.category, event.state.id);
     } else {
         modal.classList.remove('modal-show');
     }
