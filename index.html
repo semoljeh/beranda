@@ -402,7 +402,7 @@ body {
      KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM (FINAL SUCCESS)
      ============================================= -->
 
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <section id="module-menu" style="font-family: 'Inter', sans-serif;">
     <style>
@@ -410,24 +410,24 @@ body {
         .font-kufi { font-family: 'Reem Kufi', sans-serif; }
         .font-arab { font-family: 'LPMQ', 'Amiri', serif; }
 
-        /* GRID MENU BERANDA */
+        /* GRID MENU BERANDA (Diubah ke 3 Kolom & Lebih Kecil) */
         .menu-card { 
-            background: #ffffff; border-radius: 24px; padding: 24px 15px; 
+            background: #ffffff; border-radius: 24px; padding: 18px 10px; 
             display: flex; flex-direction: column; align-items: center; 
             border: 1px solid rgba(226, 232, 240, 0.8);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
         }
         .menu-card:active { transform: scale(0.92); background-color: #fcfcfc; }
-        .icon-box { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 12px; position: relative; }
-        .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 18px; }
-        .menu-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
+        .icon-box { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 10px; position: relative; }
+        .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 16px; }
+        .menu-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; }
 
-        /* MODAL SYSTEM */
+        /* MODAL SYSTEM (PATEN) */
         .modal-full { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: none; flex-direction: column; opacity: 0; transform: scale(0.85); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 500px; margin: 0 auto; }
         .modal-show { display: flex; opacity: 1; transform: scale(1); }
 
-        /* HEADER PREMIUM DENGAN EFEK SHRINK */
+        /* HEADER PREMIUM DENGAN EFEK SHRINK (PATEN) */
         .dzikir-header-premium { 
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
             padding: calc(40px + env(safe-area-inset-top)) 20px 45px 20px; 
@@ -441,7 +441,7 @@ body {
         .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; transition: all 0.4s ease; }
         .doa-header-slim .dzikir-glassbox { padding: 10px 18px; border-radius: 15px; }
 
-        /* ITEM DAFTAR */
+        /* ITEM DAFTAR (PATEN) */
         .dzikir-item-card { padding: 1rem 1.2rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; }
         .dzikir-item-card:active { transform: scale(0.97); background: #f0fdfa; }
         .dzikir-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
@@ -453,14 +453,14 @@ body {
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
     </div>
 
-    <div class="grid grid-cols-2 gap-5 p-6">
+    <div class="grid grid-cols-3 gap-3 p-6">
         <div onclick="toggleAppModal('dzikir')" class="menu-card">
             <div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div>
             <span class="menu-label">Dzikir</span>
         </div>
         <div onclick="toggleAppModal('yasin')" class="menu-card">
             <div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div>
-            <span class="menu-label">Yasin & Tahlil</span>
+            <span class="menu-label">Yasin</span>
         </div>
         <div onclick="toggleAppModal('ratib')" class="menu-card">
             <div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div>
@@ -469,6 +469,14 @@ body {
         <div onclick="toggleAppModal('maulid')" class="menu-card">
             <div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div>
             <span class="menu-label">Maulid</span>
+        </div>
+        <div onclick="toggleAppModal('sholawat')" class="menu-card">
+            <div class="icon-box text-blue-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-music"></i></div>
+            <span class="menu-label">Sholawat</span>
+        </div>
+        <div onclick="openJadwalModal()" class="menu-card">
+            <div class="icon-box text-teal-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-clock"></i></div>
+            <span class="menu-label">Jadwal</span>
         </div>
     </div>
 
@@ -489,7 +497,7 @@ body {
 </section>
 
 <script>
-/* 1. DATABASE MENU (Ganti Path sesuai folder Akang) */
+/* 1. DATABASE MENU (Ditambahkan Menu Sholawat) */
 const menuData = {
     dzikir: { 
         title: "Kumpulan Dzikir", 
@@ -517,16 +525,23 @@ const menuData = {
         items: [
             { id: 1, title: "Simtudduror", path: "datadoa/simtudduror.json" }
         ] 
+    },
+    sholawat: { 
+        title: "Kumpulan Sholawat", 
+        items: [
+            { id: 1, title: "Sholawat Nariyah", path: "datadoa/nariyah.json" },
+            { id: 2, title: "Sholawat Tibbil Qulub", path: "datadoa/tibbil.json" }
+        ] 
     }
 };
 
-/* 2. LOGIKA HEADER MENYUSUT (SHRINK) */
+/* 2. LOGIKA HEADER MENYUSUT (PATEN) */
 function handleMenuScroll(el) {
     const header = document.getElementById('app-sticky-header');
     header.classList.toggle('doa-header-slim', el.scrollTop > 50);
 }
 
-/* 3. LOGIKA LEVEL 1: BUKA DAFTAR ITEM */
+/* 3. LOGIKA LEVEL 1: BUKA DAFTAR ITEM (PATEN) */
 function toggleAppModal(category = null) {
     const modal = document.getElementById('app-modal');
     if (!modal.classList.contains('modal-show')) {
@@ -556,10 +571,45 @@ function loadMenuList(category) {
     `).join('');
 }
 
-/* 4. LOGIKA LEVEL 2: BUKA ISI DOA (JUSTIFY + BASMALAH + DIVIDER) */
+/* 4. LOGIKA MODAL JADWAL (Khusus Jadwal Shalat) */
+async function openJadwalModal() {
+    const modal = document.getElementById('app-modal');
+    const content = document.getElementById('modal-content-list');
+    const titleEl = document.getElementById('modal-title');
+    
+    window.history.pushState({ app_view: 'jadwal' }, '', '#jadwal');
+    modal.classList.add('modal-show');
+    titleEl.innerText = "Jadwal Shalat";
+    
+    const cachedPrayer = localStorage.getItem('last_prayer_data');
+    if (!cachedPrayer) {
+        content.innerHTML = `<p class="text-center py-20 text-[10px] font-bold text-slate-400 uppercase">Mencari Data Lokasi...</p>`;
+        return;
+    }
+    
+    const data = JSON.parse(cachedPrayer);
+    const t = data.timings;
+    const list = [
+        { n: 'Subuh', t: t.Fajr, i: 'fa-cloud-sun' },
+        { n: 'Dzuhur', t: t.Dhuhr, i: 'fa-sun' },
+        { n: 'Ashar', t: t.Asr, i: 'fa-cloud-sun-rain' },
+        { n: 'Maghrib', t: t.Maghrib, i: 'fa-sunset' },
+        { n: 'Isya', t: t.Isha, i: 'fa-moon' }
+    ];
+
+    content.innerHTML = `<div class="space-y-4">${list.map(s => `
+        <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600"><i class="fa-solid ${s.i} text-xs"></i></div>
+                <span class="text-xs font-bold text-slate-700 uppercase">${s.n}</span>
+            </div>
+            <span class="text-sm font-black text-slate-900 font-mono">${s.t}</span>
+        </div>`).join('')}</div>`;
+}
+
+/* 5. LOGIKA LEVEL 2: BUKA ISI DOA (PATEN) */
 async function loadMenuDetail(category, id) {
     window.history.pushState({ app_view: 'detail', category: category, id: id }, '', '#detail');
-    
     const info = menuData[category].items.find(x => x.id === id);
     const titleEl = document.getElementById('modal-title');
     const content = document.getElementById('modal-content-list');
@@ -574,55 +624,26 @@ async function loadMenuDetail(category, id) {
         const response = await fetch(info.path);
         if (!response.ok) throw new Error('File Not Found');
         const d = await response.json();
-        
-        // Gabungkan teks jika berupa array
         const teksArab = Array.isArray(d.arab) ? d.arab.join(' ') : d.arab;
         const teksArti = Array.isArray(d.arti) ? d.arti.join(' ') : d.arti;
-
-        const artiHtml = teksArti ? `
-            <div class="w-16 h-1 bg-teal-50 rounded-full mx-auto mb-6 mt-10"></div>
-            <p class="text-slate-500 italic text-sm text-justify leading-relaxed px-2">
-                "${teksArti}"
-            </p>` : "";
-        
-        content.innerHTML = `
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <h3 class="font-arab text-2xl text-teal-600 mb-6 text-center leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                
-                <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-
-                <p class="font-arab text-3xl mb-10 leading-[2.8] text-justify" style="text-align-last: center;" dir="rtl">
-                    ${teksArab}
-                </p>
-                
-                ${artiHtml}
-            </div>
-            
-            <div class="mt-8 text-center pb-20">
-                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest active:scale-95 transition-all">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
-                </button>
-            </div>`;
+        const artiHtml = teksArti ? `<div class="w-16 h-1 bg-teal-50 rounded-full mx-auto mb-6 mt-10"></div><p class="text-slate-500 italic text-sm text-justify px-2">"${teksArti}"</p>` : "";
+        content.innerHTML = `<div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100"><h3 class="font-arab text-2xl text-teal-600 mb-6 text-center">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3><div class="w-full h-[1px] bg-slate-100 mb-8"></div><p class="font-arab text-3xl mb-10 leading-[2.8] text-justify" style="text-align-last: center;" dir="rtl">${teksArab}</p>${artiHtml}</div><div class="mt-8 text-center pb-20"><button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase active:scale-95 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button></div>`;
     } catch (e) {
-        content.innerHTML = `
-            <div class="text-center p-10">
-                <i class="fa-solid fa-circle-exclamation text-red-400 text-3xl mb-4"></i>
-                <p class="text-red-400 font-bold uppercase text-[10px]">Gagal Memuat Konten</p>
-                <p class="text-slate-400 text-[9px] mt-2">Pastikan Koneksi Internet Lancar</p>
-            </div>`;
+        content.innerHTML = `<div class="text-center p-10"><i class="fa-solid fa-circle-exclamation text-red-400 text-3xl mb-4"></i><p class="text-red-400 font-bold uppercase text-[10px]">Gagal Memuat Konten</p></div>`;
     }
 }
 
-/* 5. SISTEM NAVIGASI TOMBOL BACK BROWSER */
+/* 6. SISTEM NAVIGASI (PATEN) */
 window.addEventListener('popstate', function(event) {
     const modal = document.getElementById('app-modal');
     if (!modal) return;
-
     if (event.state && event.state.app_view === 'list') {
         modal.classList.add('modal-show');
         loadMenuList(event.state.category);
     } else if (event.state && event.state.app_view === 'detail') {
         loadMenuDetail(event.state.category, event.state.id);
+    } else if (event.state && event.state.app_view === 'jadwal') {
+        openJadwalModal();
     } else {
         modal.classList.remove('modal-show');
     }
