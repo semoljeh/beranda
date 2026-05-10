@@ -896,6 +896,10 @@ window.addEventListener('popstate', function(event) {
      KLP 7: KALENDER DI BAWAH (OFFLINE READY)
      ============================================= -->
 
+<!-- =============================================
+     KLP 7: KALENDER DI BAWAH (OFFLINE READY)
+     ============================================= -->
+
 <section id="module-calendar">
     <style>
         #calendar-modal { font-family: 'Inter', sans-serif; transition: all 0.4s ease; }
@@ -960,6 +964,14 @@ window.addEventListener('popstate', function(event) {
         /* Status Khusus */
         .date-today { background: #f0fdfa !important; }
         .date-today::after {
+		.is-real-holiday{
+    background:#fff1f2 !important;
+}
+
+.is-real-holiday .date-masehi{
+    color:#e11d48 !important;
+    font-weight:800;
+}
             content: ''; position: absolute; top: 5px; right: 5px;
             width: 6px; height: 6px; background: #0d9488; border-radius: 50%;
         }
@@ -1020,14 +1032,38 @@ window.addEventListener('popstate', function(event) {
         let currentHijriData = [];
         const bulanIndoMap = { "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Qa'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah", "Muharram": "Muharram", "Safar": "Safar", "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir", "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira", "Rajab": "Rajab", "Sha'ban": "Syaban", "Ramadan": "Ramadhan", "Shawwal": "Syawal" };
 
-        const daftarLibur2026 = {
-            "2026-01-01": "Tahun Baru Masehi", "2026-01-20": "Isra Mikraj",
-            "2026-02-17": "Tahun Baru Imlek", "2026-03-20": "Idul Fitri 1447 H",
-            "2026-03-21": "Idul Fitri 1447 H", "2026-04-03": "Wafat Yesus Kristus",
-            "2026-05-01": "Hari Buruh", "2026-05-14": "Kenaikan Yesus Kristus",
-            "2026-05-27": "Idul Adha 1447 H", "2026-06-01": "Hari Lahir Pancasila",
-            "2026-08-17": "Hari Kemerdekaan RI", "2026-12-25": "Hari Natal"
-        };
+        const holidayCache = {};
+
+async function getHoliday(dateString){
+
+    const year = dateString.split('-')[0];
+
+    if(!holidayCache[year]){
+
+        try{
+
+            const res = await fetch(
+                `https://date.nager.at/api/v3/PublicHolidays/${year}/ID`
+            );
+
+            const data = await res.json();
+
+            holidayCache[year] = Array.isArray(data)
+                ? data
+                : [];
+
+        }catch(e){
+
+            console.log('Holiday API gagal:', e);
+
+            holidayCache[year] = [];
+        }
+    }
+
+    return holidayCache[year].find(
+        item => item.date === dateString
+    ) || null;
+}
 
         function toArDigits(n) { const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩']; return n.toString().split('').map(d => id[d]).join(''); }
 
@@ -1043,11 +1079,11 @@ window.addEventListener('popstate', function(event) {
             grid.innerHTML = '<div class="col-span-7 text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Memuat Kalender...</div>';
             try {
                 const res = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`).then(r => r.json());
-                if (res && res.data) { currentHijriData = res.data; renderCalendar(); }
+                if (res && res.data) { currentHijriData = res.data; await renderCalendar(); }
             } catch (e) { grid.innerHTML = '<div class="col-span-7 text-center py-10 text-red-400">Gagal Memuat Data</div>'; }
         }
 
-        function renderCalendar() {
+       async function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid'); const holEl = document.getElementById('holiday-list');
             const hHeader = document.getElementById('hijri-detail-header'); const mHeader = document.getElementById('masehi-detail-header');
             grid.innerHTML = ''; holEl.innerHTML = '';
@@ -1070,14 +1106,52 @@ window.addEventListener('popstate', function(event) {
             const startDay = new Date(y, m, 1).getDay();
             for (let i = 0; i < startDay; i++) grid.innerHTML += '<div class="calendar-date empty-date"></div>';
 
-            currentHijriData.forEach((day, index) => {
+           for (const [index, day] of currentHijriData.entries()) {
                 const d = index + 1; const dtObj = new Date(y, m, d);
                 const dtKey = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const namaLibur = daftarLibur2026[dtKey];
+                const holidayData = await getHoliday(dtKey);
+
+let namaLibur = holidayData
+    ? holidayData.localName
+    : null;
+
+/* LIBUR ISLAM OTOMATIS */
+
+const hDay = parseInt(day.hijri.day);
+const hMonth = day.hijri.month.number;
+
+/* 1 Muharram */
+if(hDay === 1 && hMonth === 1){
+    namaLibur = 'Tahun Baru Islam';
+}
+
+/* Maulid Nabi */
+if(hDay === 12 && hMonth === 3){
+    namaLibur = 'Maulid Nabi Muhammad SAW';
+}
+
+/* Isra Mi’raj */
+if(hDay === 27 && hMonth === 7){
+    namaLibur = 'Isra Mi’raj Nabi Muhammad SAW';
+}
+
+/* Idul Fitri */
+if((hDay === 1 || hDay === 2) && hMonth === 10){
+    namaLibur = 'Hari Raya Idul Fitri';
+}
+
+/* Idul Adha */
+if(hDay === 10 && hMonth === 12){
+    namaLibur = 'Hari Raya Idul Adha';
+}
                 const isSunday = dtObj.getDay() === 0; 
                 const isToday = realToday.toDateString() === dtObj.toDateString();
 
-                const redClass = (isSunday || namaLibur) ? 'is-real-holiday' : '';
+                const isNationalHoliday = !!namaLibur;
+
+const redClass = (isSunday || isNationalHoliday)
+    ? 'is-real-holiday'
+    : '';
 
                 grid.innerHTML += `
                     <div class="calendar-date ${isToday ? 'date-today' : ''} ${redClass}">
@@ -1094,7 +1168,7 @@ window.addEventListener('popstate', function(event) {
                             </div>
                         </div>`;
                 }
-            });
+            }
         }
 
         function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); fetchFullCalendarData(); }
