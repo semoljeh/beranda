@@ -879,6 +879,15 @@ window.addEventListener('popstate', function(event) {
                     arab = vArab.verses; indo = vIndo.translations;
                 }
                 let html = "";
+
+if(type === 'surah' && id !== 1 && id !== 9){
+
+    html += `
+        <div class="surah-basmallah-outside">
+            بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+        </div>
+    `;
+}
                 if(type === 'surah' && audioData) {
                     const aUrl = audioData.audio_file.audio_url.startsWith('http') ? audioData.audio_file.audio_url : `https:${audioData.audio_file.audio_url}`;
                     html += `<div class="text-center py-4"><button id="murottal-btn" onclick="handleMurottal('${aUrl}')" class="murottal-control-btn"><i class="fa-solid fa-play"></i> <span>Putar Murottal</span></button></div>`;
@@ -955,8 +964,25 @@ html += `
             <div class="w-full text-right" dir="rtl">
 
                 <span class="font-arab text-4xl text-slate-800">
-                    ${a.text_uthmani}
-                </span>
+
+${
+    (ayahNum == 1 &&
+     surahNum !== 1 &&
+     surahNum !== 9)
+
+    ? a.text_uthmani.replace(
+        'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+        `
+        <div class="surah-basmallah-outside">
+            بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+        </div>
+        `
+      )
+
+    : a.text_uthmani
+}
+
+</span>
 
                 <span class="ayah-end-number">
                     ۝${toArabicNumber(ayahNum)}
