@@ -653,6 +653,9 @@ window.addEventListener('popstate', function(event) {
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
              ============================================= -->
+<!-- =============================================
+             KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
+             ============================================= -->
 <section id="module-quran">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
@@ -687,6 +690,91 @@ window.addEventListener('popstate', function(event) {
         .murottal-control-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d9488; color: white; padding: 10px 24px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 0 auto 20px auto; box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25); border: none; }
         .murottal-control-btn.playing { background: #ef4444; }
         .surah-badge { font-size: 8px; border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; border-radius: 50px; text-transform: uppercase; font-weight: 800; color: #ccfbf1; }
+		
+.surah-separator{
+    margin:32px 0 24px;
+    text-align:center;
+}
+
+.surah-frame{
+    position:relative;
+    background:linear-gradient(135deg,#fdfcf7 0%,#f7f3e8 100%);
+    border:3px solid #c7b37a;
+    border-radius:18px;
+    padding:10px 10px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.surah-frame::before{
+    content:'';
+    position:absolute;
+    inset:6px;
+    border:1px solid rgba(212,175,55,.4);
+    border-radius:18px;
+    pointer-events:none;
+}
+
+.surah-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.surah-side{
+    background:white;
+    border:2px solid #c7b37a;
+    border-radius:999px;
+    padding:5px 12px;
+    font-size:10px;
+    font-weight:800;
+    color:#7c5a10;
+    min-width:74px;
+}
+
+.surah-center{
+    flex:1;
+    background:white;
+    border:2px solid #c7b37a;
+    border-radius:999px;
+    padding:6px 16px;
+    font-family:'Amiri', serif;
+    font-size:22px;
+    color:#111827;
+}
+
+.surah-basmallah{
+    margin-top:12px;
+    font-family:'Amiri', serif;
+    font-size:34px;
+    color:#111827;
+}
+
+
+.surah-basmallah-outside{
+    margin-top:18px;
+    font-family:'Amiri', serif;
+    font-size:34px;
+    color:#111827;
+    text-align:center;
+    line-height:2;
+    animation:fadeBasmallah .5s ease;
+}
+
+@keyframes fadeBasmallah{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
     </style>
 
     <div id="quran-modal" class="modal-full">
@@ -783,22 +871,105 @@ window.addEventListener('popstate', function(event) {
                     const aUrl = audioData.audio_file.audio_url.startsWith('http') ? audioData.audio_file.audio_url : `https:${audioData.audio_file.audio_url}`;
                     html += `<div class="text-center py-4"><button id="murottal-btn" onclick="handleMurottal('${aUrl}')" class="murottal-control-btn"><i class="fa-solid fa-play"></i> <span>Putar Murottal</span></button></div>`;
                 }
-                arab.forEach((a, i) => {
-                    const ayahNum = a.verse_key ? a.verse_key.split(':')[1] : (i + 1);
-                    const translation = (indo[i]) ? indo[i].text.replace(/<(?:.|\n)*?>/gm, '') : '...';
-                    const hiddenClass = isTranslationVisible ? '' : 'hidden';
-                    html += `<div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
-                        <div class="w-full text-right" dir="rtl">
-                            <span class="font-arab text-4xl text-slate-800">${a.text_uthmani}</span>
-                            <span class="ayah-end-number">\u06DD${toArabicNumber(ayahNum)}</span>
-                        </div>
-                        <div class="flex items-start gap-4 mt-4">
-                            <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">${ayahNum}</span>
-                            <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">${translation}</p>
-                        </div>
-                    </div>`;
-                });
-                c.innerHTML = html;
+
+let lastSurahNumber = null;
+
+for (const [i, a] of arab.entries()) {
+
+    const surahNum = parseInt(
+        a.verse_key.split(':')[0]
+    );
+
+    const ayahNum = a.verse_key
+        ? a.verse_key.split(':')[1]
+        : (i + 1);
+
+    const translation = (indo[i])
+        ? indo[i].text.replace(/<(?:.|\\n)*?>/gm, '')
+        : '...';
+
+    if(type === 'juz' && surahNum !== lastSurahNumber){
+
+        const surahInfo = await fetch(
+            `https://api.quran.com/api/v4/chapters/${surahNum}?language=id`
+        ).then(r => r.json());
+
+        
+html += `
+    <div class="surah-separator">
+
+        <div class="surah-frame">
+
+            <div class="surah-top">
+
+                <div class="surah-side">
+                    ${surahInfo.chapter.revelation_place === 'makkah'
+                        ? 'Makkiyah'
+                        : 'Madaniyah'}
+                </div>
+
+                <div class="surah-center">
+                    ${surahInfo.chapter.name_arabic}
+                </div>
+
+                <div class="surah-side">
+                    ${surahInfo.chapter.verses_count} Ayat
+                </div>
+
+            </div>
+
+        </div>
+
+        ${surahNum !== 9 ? `
+            <div class="surah-basmallah-outside">
+                بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+            </div>
+        ` : ''}
+
+    </div>
+`;
+
+        lastSurahNumber = surahNum;
+
+    }
+
+    const hiddenClass = isTranslationVisible
+        ? ''
+        : 'hidden';
+
+    html += `
+        <div class="p-6 border-b border-slate-100 bg-white mb-3 rounded-2xl shadow-sm">
+
+            <div class="w-full text-right" dir="rtl">
+
+                <span class="font-arab text-4xl text-slate-800">
+                    ${a.text_uthmani}
+                </span>
+
+                <span class="ayah-end-number">
+                    ۝${toArabicNumber(ayahNum)}
+                </span>
+
+            </div>
+
+            <div class="flex items-start gap-4 mt-4">
+
+                <span class="translation-text text-[10px] font-bold text-teal-600 bg-teal-50 w-6 h-6 flex items-center justify-center rounded-full shrink-0 ${hiddenClass}">
+                    ${ayahNum}
+                </span>
+
+                <p class="translation-text text-sm text-slate-500 italic leading-relaxed ${hiddenClass}">
+                    ${translation}
+                </p>
+
+            </div>
+
+        </div>
+    `;
+}
+
+c.innerHTML = html;
+
             } catch (e) { c.innerHTML = '<p class="text-center p-10">Gagal memuat konten.</p>'; }
         }
 
