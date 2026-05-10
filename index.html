@@ -454,30 +454,42 @@ body {
     </div>
 
     <div class="grid grid-cols-3 gap-3 p-6">
+	
+	      <div onclick="openJadwalModal()" class="menu-card">
+            <div class="icon-box text-sky-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-kaaba"></i></div>
+            <span class="menu-label">Jadwal</span>
+        </div>
+	
+	  
         <div onclick="toggleAppModal('dzikir')" class="menu-card">
-            <div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-solid fa-mosque "></i></div>
             <span class="menu-label">Dzikir</span>
         </div>
+		
+		
+		
         <div onclick="toggleAppModal('yasin')" class="menu-card">
             <div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div>
             <span class="menu-label">Yasin</span>
         </div>
-        <div onclick="toggleAppModal('ratib')" class="menu-card">
+  
+        <div onclick="toggleAppModal('maulid')" class="menu-card">
+		<div class="icon-box text-lime-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <span class="menu-label">Maulid</span>
+        </div>
+		
+        <div onclick="toggleAppModal('sholawat')" class="menu-card">
+            <div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div>
+            <span class="menu-label">Sholawat</span>
+        </div>
+		
+		    <div onclick="toggleAppModal('ratib')" class="menu-card">
             <div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div>
             <span class="menu-label">Ratib</span>
         </div>
-        <div onclick="toggleAppModal('maulid')" class="menu-card">
-            <div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div>
-            <span class="menu-label">Maulid</span>
-        </div>
-        <div onclick="toggleAppModal('sholawat')" class="menu-card">
-            <div class="icon-box text-blue-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-music"></i></div>
-            <span class="menu-label">Sholawat</span>
-        </div>
-        <div onclick="openJadwalModal()" class="menu-card">
-            <div class="icon-box text-teal-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-clock"></i></div>
-            <span class="menu-label">Jadwal</span>
-        </div>
+	
+		
+  
     </div>
 
     <div id="app-modal" class="modal-full">
