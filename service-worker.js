@@ -1,94 +1,60 @@
-const CACHE_NAME = 'almukhtar-v5';
-
+const CACHE_NAME = 'almukhtar-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json',
-
-  './assets/css/tailwind.min.css',
-  './assets/css/all.min.css',
-
-  './app.js',
-  './data.json',
-
-  './icon-192.png',
-  './icon-512.png',
-  './foto-profil.jpg',
-  './notif.mp3'
+  
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+  'https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
+  
 ];
 
-// INSTALL
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
-
   self.skipWaiting();
 });
 
-// ACTIVATE
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     })
   );
-
-  self.clients.claim();
 });
 
-// FETCH
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
 
-  // hanya GET request
-  if (event.request.method !== 'GET') return;
+  // Menangkap API Quran, Jadwal Sholat, dan Hari Libur
+  const isApiRequest = url.origin.includes('api.quran.com') || 
+                       url.origin.includes('api.aladhan.com') || 
+                       url.origin.includes('libur.deno.dev');
 
-  event.respondWith(
-
-    caches.match(event.request).then((cachedResponse) => {
-
-      // jika ada cache → pakai cache
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // jika tidak ada → fetch internet
-      return fetch(event.request)
-        .then((networkResponse) => {
-
-          // response tidak valid
-          if (!networkResponse || networkResponse.status !== 200) {
-            return networkResponse;
-          }
-
-          // clone response
-          const responseClone = networkResponse.clone();
-
-          // simpan cache
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-
-          return networkResponse;
+  if (isApiRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const resClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          return response;
         })
-        .catch(() => {
-
-          // fallback offline
-          if (event.request.destination === 'document') {
-            return caches.match('./index.html');
-          }
-
+        .catch(() => caches.match(event.request))
+    );
+  } 
+  else {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
+          return networkResponse;
         });
-
-    })
-
-  );
-
+        return cachedResponse || fetchPromise;
+      })
+    );
+  }
 });
