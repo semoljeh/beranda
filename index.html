@@ -403,10 +403,6 @@ body {
      ============================================= -->
 
 
-<!-- =============================================
-     KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM (FINAL SUCCESS)
-     ============================================= -->
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -502,8 +498,9 @@ body {
 
 <script>
 /* 1. DATA & AUDIO */
+/* 1. DATA & AUDIO */
 const notifAudio = new Audio('notif.mp3');
-let currentSchedule = {}; // Untuk menyimpan data jadwal agar bisa dicek tiap menit
+let currentSchedule = null; // Default null agar tidak error saat looping
 
 const menuData = {
     dzikir: { title: "Kumpulan Dzikir", items: [{ id: 1, title: "Dzikir Pagi", path: "datadoa/pagi.json" }, { id: 2, title: "Dzikir Petang", path: "datadoa/petang.json" }] },
@@ -513,47 +510,63 @@ const menuData = {
     sholawat: { title: "Kumpulan Sholawat", items: [{ id: 1, title: "Sholawat Nariyah", path: "datadoa/nariyah.json" }, { id: 2, title: "Sholawat Tibbil Qulub", path: "datadoa/tibbil.json" }] }
 };
 
-/* 2. NOTIFIKASI & ALARM LOGIC (FITUR BARU) */
-function playNotif() {
-    notifAudio.currentTime = 0;
-    notifAudio.play().catch(e => console.log("User interaction required for audio"));
+/* 2. CORE ENGINE: FETCH DATA & ALARM CHECKER */
+// Fungsi ambil data tanpa buka modal
+async function fetchJadwalData() {
+    try {
+        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=2');
+        const d = await res.json();
+        const t = d.data.timings;
+        currentSchedule = { 
+            Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha 
+        };
+        console.log("Jadwal Sinkron:", currentSchedule);
+    } catch (e) { console.error("Gagal sinkron jadwal otomatis"); }
 }
 
-function showToast(msg) {
-    const toast = document.getElementById('app-toast');
-    toast.innerText = msg;
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 5000); // Lebih lama agar terbaca
-}
-
-// Fungsi utama pengecek waktu sholat
 function startTimeChecker() {
     setInterval(() => {
-        const now = new Date();
-        const currentTimeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        
-        // Cek setiap jadwal yang ada
-        for (const [name, time] of Object.entries(currentSchedule)) {
-            if (!localStorage.getItem('alarm_' + name)) continue; // Skip jika alarm dimatikan
+        if (!currentSchedule) return; // Jangan jalan kalau data belum siap
 
-            // 1. Cek Tepat Waktu
+        const now = new Date();
+        const jam = now.getHours().toString().padStart(2, '0');
+        const menit = now.getMinutes().toString().padStart(2, '0');
+        const currentTimeString = `${jam}:${menit}`;
+        
+        for (const [name, time] of Object.entries(currentSchedule)) {
+            if (!localStorage.getItem('alarm_' + name)) continue;
+
+            // Logika Tepat Waktu
             if (currentTimeString === time) {
                 playNotif();
                 showToast("WAKTUNYA SHALAT " + name.toUpperCase());
             }
 
-            // 2. Cek 10 Menit Sebelum
+            // Logika 10 Menit Sebelum
             const [h, m] = time.split(':').map(Number);
-            const scheduleDate = new Date();
-            scheduleDate.setHours(h, m - 10, 0);
-            const tenMinBefore = scheduleDate.getHours().toString().padStart(2, '0') + ":" + scheduleDate.getMinutes().toString().padStart(2, '0');
+            const targetDate = new Date();
+            targetDate.setHours(h, m - 10, 0);
+            const tenMinBefore = targetDate.getHours().toString().padStart(2, '0') + ":" + targetDate.getMinutes().toString().padStart(2, '0');
 
             if (currentTimeString === tenMinBefore) {
                 playNotif();
                 showToast("10 MENIT LAGI MENUJU " + name.toUpperCase());
             }
         }
-    }, 60000); // Cek setiap 1 menit
+    }, 60000);
+}
+
+/* 3. UI FUNCTIONS */
+function playNotif() {
+    notifAudio.currentTime = 0;
+    notifAudio.play().catch(e => console.log("Interaksi user diperlukan untuk suara"));
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('app-toast');
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 5000);
 }
 
 function handleAlarm(btn, name) {
@@ -568,7 +581,6 @@ function handleAlarm(btn, name) {
     }
 }
 
-/* 3. JADWAL REAL-TIME */
 async function openJadwalModal() {
     const modal = document.getElementById('app-modal');
     const content = document.getElementById('modal-content-list');
@@ -584,10 +596,7 @@ async function openJadwalModal() {
         const t = d.data.timings;
         const h = d.data.date.hijri;
 
-        // Simpan ke variable global agar bisa dicek oleh startTimeChecker
-        currentSchedule = { 
-            Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha 
-        };
+        currentSchedule = { Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha };
 
         const schedule = [
             { n: 'Imsak', t: t.Imsak, i: 'fa-clock' },
@@ -634,18 +643,72 @@ async function openJadwalModal() {
 
         content.innerHTML = html;
         setInterval(() => { 
-            if(document.getElementById('live-clock')) 
-                document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('id-ID'); 
+            const clock = document.getElementById('live-clock');
+            if(clock) clock.innerText = new Date().toLocaleTimeString('id-ID'); 
         }, 1000);
 
     } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-500 font-bold">KONEKSI GAGAL</p>`; }
 }
 
-// Jalankan pengecek waktu saat web dibuka
-startTimeChecker();
+/* 4. NAVIGATION & CONTENT */
+function handleMenuScroll(el) { 
+    document.getElementById('app-sticky-header').classList.toggle('doa-header-slim', el.scrollTop > 50); 
+}
 
-/* 4. NAVIGATION & CONTENT ... (Sisanya sama) */
+function toggleAppModal(cat) {
+    const m = document.getElementById('app-modal');
+    window.history.pushState({ view: 'list', cat: cat }, '', '#' + cat);
+    m.classList.add('modal-show');
+    loadMenuList(cat);
+}
+
+function loadMenuList(cat) {
+    const data = menuData[cat];
+    if(!data) return;
+    document.getElementById('modal-title').innerText = data.title;
+    document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
+        <div onclick="loadMenuDetail('${cat}', ${item.id})" class="dzikir-item-card active:scale-95 transition-all">
+            <div class="dzikir-number">${i+1}</div>
+            <span class="font-bold text-xs text-slate-700 uppercase flex-1">${item.title}</span>
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+        </div>`).join('');
+}
+
+async function loadMenuDetail(cat, id) {
+    window.history.pushState({ view: 'detail', cat: cat, id: id }, '', '#detail');
+    const info = menuData[cat].items.find(x => x.id === id);
+    const content = document.getElementById('modal-content-list');
+    document.getElementById('modal-title').innerText = info.title;
+    content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse">MEMUAT...</div>`;
+    try {
+        const res = await fetch(info.path);
+        const d = await res.json();
+        content.innerHTML = `
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <p class="font-arab text-3xl mb-10 leading-[2.8] text-center" dir="rtl">${Array.isArray(d.arab)?d.arab.join(' '):d.arab}</p>
+                <div class="w-16 h-1 bg-teal-50 mx-auto mb-6"></div>
+                <p class="text-slate-500 italic text-sm text-justify px-2">"${Array.isArray(d.arti)?d.arti.join(' '):d.arti}"</p>
+            </div>
+            <div class="mt-8 text-center pb-20">
+                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+            </div>`;
+    } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-400 font-bold">ERROR MEMUAT KONTEN</p>`; }
+}
+
+window.addEventListener('popstate', (e) => {
+    const m = document.getElementById('app-modal');
+    if (!e || !e.state) m.classList.remove('modal-show');
+    else if (e.state.view === 'list') loadMenuList(e.state.cat);
+    else if (e.state.view === 'jadwal') openJadwalModal();
+});
+
+// INISIALISASI SAAT STARTUP
+fetchJadwalData(); // Ambil jadwal segera
+startTimeChecker(); // Jalankan pengecek waktu
 </script>
+
 
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
