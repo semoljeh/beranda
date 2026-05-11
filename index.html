@@ -496,80 +496,11 @@ const notifAudio = new Audio('notif.mp3');
 let currentSchedule = null;
 
 const menuData = {
-  dzikir: {
-    title: "Kumpulan Dzikir",
-    items: [
-      {
-        id: 1,
-        title: "Dzikir Pagi",
-        path: "https://semoljeh.github.io/beranda/datadoa/pagi.json"
-      },
-      {
-        id: 2,
-        title: "Dzikir Petang",
-        path: "https://semoljeh.github.io/beranda/datadoa/petang.json"
-      }
-    ]
-  },
-
-  yasin: {
-    title: "Yasin & Tahlil",
-    items: [
-      {
-        id: 1,
-        title: "Surah Yasin",
-        path: "https://semoljeh.github.io/beranda/datadoa/yasin.json"
-      },
-      {
-        id: 2,
-        title: "Tahlil Arwah",
-        path: "https://semoljeh.github.io/beranda/datadoa/tahlil.json"
-      }
-    ]
-  },
-
-  ratib: {
-    title: "Kumpulan Ratib",
-    items: [
-      {
-        id: 1,
-        title: "Ratib Al-Athas",
-        path: "https://semoljeh.github.io/beranda/ratib/alathas.json"
-      },
-      {
-        id: 2,
-        title: "Ratib Al-Haddad",
-        path: "https://semoljeh.github.io/beranda/datadoa/haddad.json"
-      }
-    ]
-  },
-
-  maulid: {
-    title: "Kumpulan Maulid",
-    items: [
-      {
-        id: 1,
-        title: "Simtudduror",
-        path: "https://semoljeh.github.io/beranda/datadoa/simtudduror.json"
-      }
-    ]
-  },
-
-  sholawat: {
-    title: "Kumpulan Sholawat",
-    items: [
-      {
-        id: 1,
-        title: "Sholawat Nariyah",
-        path: "https://semoljeh.github.io/beranda/datadoa/nariyah.json"
-      },
-      {
-        id: 2,
-        title: "Sholawat Tibbil Qulub",
-        path: "https://semoljeh.github.io/beranda/datadoa/tibbil.json"
-      }
-    ]
-  }
+    dzikir: { title: "Kumpulan Dzikir", items: [{ id: 1, title: "Dzikir Pagi", path: "datadoa/pagi.json" }, { id: 2, title: "Dzikir Petang", path: "datadoa/petang.json" }] },
+    yasin: { title: "Yasin & Tahlil", items: [{ id: 1, title: "Surah Yasin", path: "datadoa/yasin.json" }, { id: 2, title: "Tahlil Arwah", path: "datadoa/tahlil.json" }] },
+    ratib: { title: "Kumpulan Ratib", items: [{ id: 1, title: "Ratib Al-Athas", path: "ratib/alathas.json" }, { id: 2, title: "Ratib Al-Haddad", path: "datadoa/haddad.json" }] },
+    maulid: { title: "Kumpulan Maulid", items: [{ id: 1, title: "Simtudduror", path: "datadoa/simtudduror.json" }] },
+    sholawat: { title: "Kumpulan Sholawat", items: [{ id: 1, title: "Sholawat Nariyah", path: "datadoa/nariyah.json" }, { id: 2, title: "Sholawat Tibbil Qulub", path: "datadoa/tibbil.json" }] }
 };
 
 /* --- 1. MESIN ANIMASI --- */
@@ -1657,7 +1588,7 @@ const redClass = (isSunday || isNationalHoliday)
     <!-- Kartu Profil Paten -->
     <div class="profile-card relative">
        <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden border-4 border-teal-50 shadow-lg">
-        <img src="https://semoljeh.github.io/beranda/foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
+        <img src="foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
     </div>
         <h3 class="text-2xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
         <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
@@ -1672,39 +1603,10 @@ const redClass = (isSunday || isNationalHoliday)
         <p class="mt-6 text-[11px] text-slate-400 font-medium leading-relaxed">
             Membangun aplikasi web modern <br>Semoga Bermanfaat Untuk Ummat.
         </p>
-		
-		
-		
-		<div class="flex flex-col items-center mt-2 mb-3">
-
-  <a 
-    href="https://github.com/semoljeh/beranda/raw/main/app/semoljeh.apk"
-    download
-    class="inline-flex items-center justify-center gap-1.5
-           px-4 py-2
-           text-[13px] font-semibold
-           text-blue-600
-           border border-blue-500
-           rounded-lg
-           hover:bg-blue-500 hover:text-white
-           transition-all duration-300"
-  >
-    <i class="fas fa-download text-xs"></i>
-    Download Aplikasi
-  </a>
-
-</div>
-
-<button 
-  id="closeProfileModal"
-  class="w-full bg-[#149c90] text-white font-bold py-3 rounded-2xl shadow-lg"
->
-  TUTUP PROFIL
-</button>
-		
-		
-		
-
+        
+        <button onclick="toggleProfile()" class="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">
+            Tutup Profil
+        </button>
     </div>
 </div>
 
