@@ -577,18 +577,21 @@ async function loadMenuDetailLogic(cat, id) {
     try {
         const res = await fetch(info.path);
         const d = await res.json();
+        
+        // REVISI: Teks Arab diubah jadi text-justify (Rata Kanan Kiri) dan style text-align-last dihapus
         content.innerHTML = `<div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <p class="font-arab text-3xl mb-10 leading-[2.5] text-center" style="text-align-last: center;" dir="rtl">${Array.isArray(d.arab)?d.arab.join(' '):d.arab}</p>
+                <p class="font-arab text-3xl mb-10 leading-[2.5] text-justify" dir="rtl">${Array.isArray(d.arab)?d.arab.join(' '):d.arab}</p>
                 <div class="w-16 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
                 <p class="text-slate-500 italic text-sm text-justify px-2">"${Array.isArray(d.arti)?d.arti.join(' '):d.arti}"</p>
             </div>
             <div class="mt-8 text-center pb-20">
-                <!-- Tombol kembali sekarang cukup pakai history.back() karena popstate sudah kita tangani di atas -->
                 <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                     <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
                 </button>
             </div>`;
-    } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-400 font-bold text-xs uppercase tracking-widest">Gagal memuat konten</p>`; }
+    } catch (e) { 
+        content.innerHTML = `<p class="text-center p-10 text-red-400 font-bold text-xs uppercase tracking-widest">Gagal memuat konten</p>`; 
+    }
 }
 
 async function openJadwalModalLogic() {
