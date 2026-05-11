@@ -398,11 +398,6 @@ body {
 
 
 
-<!-- =============================================
-     KLP 5: OMNI-MODAL ZOOM & HISTORY SYSTEM (FINAL SUCCESS)
-     ============================================= -->
-
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -425,9 +420,25 @@ body {
         .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 16px; }
         .menu-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; }
 
-        /* MODAL & HEADER PREMIUM */
-        .modal-full { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: none; flex-direction: column; opacity: 0; transform: scale(0.85); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 500px; margin: 0 auto; }
-        .modal-show { display: flex; opacity: 1; transform: scale(1); }
+        /* MODAL PREMIUM DENGAN TRANSISI HALUS */
+        .modal-full { 
+            position: fixed; inset: 0; background: #f8fafc; z-index: 9999; 
+            display: none; flex-direction: column; 
+            max-width: 500px; margin: 0 auto;
+            /* State Awal untuk Animasi */
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Aktifkan Flexbox tanpa animasi dulu */
+        .modal-show { display: flex; }
+        
+        /* Trigger Animasi via class baru */
+        .modal-visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
 
         .dzikir-header-premium { 
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
@@ -498,9 +509,8 @@ body {
 
 <script>
 /* 1. DATA & AUDIO */
-/* 1. DATA & AUDIO */
 const notifAudio = new Audio('notif.mp3');
-let currentSchedule = null; // Default null agar tidak error saat looping
+let currentSchedule = null;
 
 const menuData = {
     dzikir: { title: "Kumpulan Dzikir", items: [{ id: 1, title: "Dzikir Pagi", path: "datadoa/pagi.json" }, { id: 2, title: "Dzikir Petang", path: "datadoa/petang.json" }] },
@@ -510,56 +520,52 @@ const menuData = {
     sholawat: { title: "Kumpulan Sholawat", items: [{ id: 1, title: "Sholawat Nariyah", path: "datadoa/nariyah.json" }, { id: 2, title: "Sholawat Tibbil Qulub", path: "datadoa/tibbil.json" }] }
 };
 
-/* 2. CORE ENGINE: FETCH DATA & ALARM CHECKER */
-// Fungsi ambil data tanpa buka modal
+/* 2. CORE ENGINE: ALARM & FETCH */
 async function fetchJadwalData() {
     try {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=2');
         const d = await res.json();
         const t = d.data.timings;
-        currentSchedule = { 
-            Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha 
-        };
-        console.log("Jadwal Sinkron:", currentSchedule);
+        currentSchedule = { Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha };
     } catch (e) { console.error("Gagal sinkron jadwal otomatis"); }
 }
 
 function startTimeChecker() {
     setInterval(() => {
-        if (!currentSchedule) return; // Jangan jalan kalau data belum siap
-
+        if (!currentSchedule) return;
         const now = new Date();
-        const jam = now.getHours().toString().padStart(2, '0');
-        const menit = now.getMinutes().toString().padStart(2, '0');
-        const currentTimeString = `${jam}:${menit}`;
+        const currentTimeString = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
         
         for (const [name, time] of Object.entries(currentSchedule)) {
             if (!localStorage.getItem('alarm_' + name)) continue;
-
-            // Logika Tepat Waktu
-            if (currentTimeString === time) {
-                playNotif();
-                showToast("WAKTUNYA SHALAT " + name.toUpperCase());
-            }
-
-            // Logika 10 Menit Sebelum
+            if (currentTimeString === time) { playNotif(); showToast("WAKTUNYA SHALAT " + name.toUpperCase()); }
+            
             const [h, m] = time.split(':').map(Number);
             const targetDate = new Date();
             targetDate.setHours(h, m - 10, 0);
             const tenMinBefore = targetDate.getHours().toString().padStart(2, '0') + ":" + targetDate.getMinutes().toString().padStart(2, '0');
-
-            if (currentTimeString === tenMinBefore) {
-                playNotif();
-                showToast("10 MENIT LAGI MENUJU " + name.toUpperCase());
-            }
+            if (currentTimeString === tenMinBefore) { playNotif(); showToast("10 MENIT LAGI MENUJU " + name.toUpperCase()); }
         }
     }, 60000);
 }
 
-/* 3. UI FUNCTIONS */
+/* 3. TRANSITION LOGIC (PENTING AGAR HALUS) */
+function showModalUI() {
+    const m = document.getElementById('app-modal');
+    m.classList.add('modal-show');
+    setTimeout(() => { m.classList.add('modal-visible'); }, 10);
+}
+
+function hideModalUI() {
+    const m = document.getElementById('app-modal');
+    m.classList.remove('modal-visible');
+    setTimeout(() => { m.classList.remove('modal-show'); }, 400); // Sesuai durasi CSS transition
+}
+
+/* 4. UI FUNCTIONS */
 function playNotif() {
     notifAudio.currentTime = 0;
-    notifAudio.play().catch(e => console.log("Interaksi user diperlukan untuk suara"));
+    notifAudio.play().catch(e => console.log("Interaksi diperlukan"));
 }
 
 function showToast(msg) {
@@ -571,22 +577,14 @@ function showToast(msg) {
 
 function handleAlarm(btn, name) {
     const isActive = btn.classList.toggle('alarm-active');
-    if(isActive) {
-        playNotif();
-        showToast("Alarm " + name + " Aktif");
-        localStorage.setItem('alarm_'+name, 'true');
-    } else {
-        showToast("Alarm Dimatikan");
-        localStorage.removeItem('alarm_'+name);
-    }
+    if(isActive) { playNotif(); showToast("Alarm " + name + " Aktif"); localStorage.setItem('alarm_'+name, 'true'); }
+    else { showToast("Alarm Dimatikan"); localStorage.removeItem('alarm_'+name); }
 }
 
 async function openJadwalModal() {
-    const modal = document.getElementById('app-modal');
-    const content = document.getElementById('modal-content-list');
-    
+    showModalUI();
     window.history.pushState({ view: 'jadwal' }, '', '#jadwal');
-    modal.classList.add('modal-show');
+    const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = "JADWAL SHALAT";
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse">SINKRONISASI...</div>`;
 
@@ -595,71 +593,43 @@ async function openJadwalModal() {
         const d = await res.json();
         const t = d.data.timings;
         const h = d.data.date.hijri;
-
         currentSchedule = { Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha };
-
         const schedule = [
-            { n: 'Imsak', t: t.Imsak, i: 'fa-clock' },
-            { n: 'Subuh', t: t.Fajr, i: 'fa-cloud-sun' },
-            { n: 'Terbit', t: t.Sunrise, i: 'fa-sun' },
-            { n: 'Dzuhur', t: t.Dhuhr, i: 'fa-sun' },
-            { n: 'Ashar', t: t.Asr, i: 'fa-cloud-sun-rain' },
-            { n: 'Maghrib', t: t.Maghrib, i: 'fa-moon' },
-            { n: 'Isya', t: t.Isha, i: 'fa-star' }
+            { n: 'Imsak', t: t.Imsak, i: 'fa-clock' }, { n: 'Subuh', t: t.Fajr, i: 'fa-cloud-sun' },
+            { n: 'Terbit', t: t.Sunrise, i: 'fa-sun' }, { n: 'Dzuhur', t: t.Dhuhr, i: 'fa-sun' },
+            { n: 'Ashar', t: t.Asr, i: 'fa-cloud-sun-rain' }, { n: 'Maghrib', t: t.Maghrib, i: 'fa-moon' }, { n: 'Isya', t: t.Isha, i: 'fa-star' }
         ];
 
         let html = `
-            <div class="bg-gradient-to-br from-teal-900 to-teal-700 p-6 rounded-[32px] text-white mb-6 shadow-xl relative overflow-hidden">
-                <div class="relative z-10 text-center">
-                    <h2 id="live-clock" class="text-3xl font-black mb-1">${new Date().toLocaleTimeString('id-ID')}</h2>
-                    <p class="text-[10px] uppercase tracking-widest opacity-70 mb-4">Bangkalan, Jawa Timur</p>
-                    <div class="flex justify-between text-[9px] font-bold border-t border-white/10 pt-4 uppercase">
-                        <span>${h.day} ${h.month.en} ${h.year} H</span>
-                        <span>${d.data.date.readable}</span>
-                    </div>
+            <div class="bg-gradient-to-br from-teal-900 to-teal-700 p-6 rounded-[32px] text-white mb-6 shadow-xl text-center">
+                <h2 id="live-clock" class="text-3xl font-black mb-1">${new Date().toLocaleTimeString('id-ID')}</h2>
+                <p class="text-[10px] uppercase opacity-70 mb-4">Bangkalan, Jawa Timur</p>
+                <div class="flex justify-between text-[9px] font-bold border-t border-white/10 pt-4 uppercase">
+                    <span>${h.day} ${h.month.en} ${h.year} H</span><span>${d.data.date.readable}</span>
                 </div>
-            </div>
-            <div class="space-y-3">
-        `;
-
-        html += schedule.map(s => {
-            const active = localStorage.getItem('alarm_'+s.n) ? 'alarm-active' : '';
-            return `
-                <div class="flex items-center justify-between p-4 bg-white rounded-3xl border border-slate-50 shadow-sm mb-3">
-                    <div class="flex items-center gap-4">
-                        <div class="w-11 h-11 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600">
-                            <i class="fa-solid ${s.i} text-base"></i>
-                        </div>
-                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${s.n}</span>
-                    </div>
-                    <div class="flex items-center gap-5">
-                        <span class="text-lg font-black text-slate-900 font-mono">${s.t}</span>
-                        <button onclick="handleAlarm(this, '${s.n}')" class="text-slate-200 transition-all ${active}">
-                            <i class="fa-solid fa-bell text-sm"></i>
-                        </button>
-                    </div>
-                </div>`;
-        }).join('') + `</div>`;
-
+            </div>`;
+        html += schedule.map(s => `
+            <div class="flex items-center justify-between p-4 bg-white rounded-3xl border border-slate-50 shadow-sm mb-3">
+                <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600"><i class="fa-solid ${s.i}"></i></div>
+                    <span class="text-xs font-black text-slate-700 uppercase">${s.n}</span>
+                </div>
+                <div class="flex items-center gap-5">
+                    <span class="text-lg font-black text-slate-900 font-mono">${s.t}</span>
+                    <button onclick="handleAlarm(this, '${s.n}')" class="text-slate-200 ${localStorage.getItem('alarm_'+s.n)?'alarm-active':''}"><i class="fa-solid fa-bell text-sm"></i></button>
+                </div>
+            </div>`).join('');
         content.innerHTML = html;
-        setInterval(() => { 
-            const clock = document.getElementById('live-clock');
-            if(clock) clock.innerText = new Date().toLocaleTimeString('id-ID'); 
-        }, 1000);
-
     } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-500 font-bold">KONEKSI GAGAL</p>`; }
 }
 
-/* 4. NAVIGATION & CONTENT */
-function handleMenuScroll(el) { 
-    document.getElementById('app-sticky-header').classList.toggle('doa-header-slim', el.scrollTop > 50); 
-}
+/* 5. NAVIGATION & CONTENT */
+function handleMenuScroll(el) { document.getElementById('app-sticky-header').classList.toggle('doa-header-slim', el.scrollTop > 50); }
 
 function toggleAppModal(cat) {
-    const m = document.getElementById('app-modal');
     window.history.pushState({ view: 'list', cat: cat }, '', '#' + cat);
-    m.classList.add('modal-show');
     loadMenuList(cat);
+    showModalUI();
 }
 
 function loadMenuList(cat) {
@@ -689,24 +659,24 @@ async function loadMenuDetail(cat, id) {
                 <div class="w-16 h-1 bg-teal-50 mx-auto mb-6"></div>
                 <p class="text-slate-500 italic text-sm text-justify px-2">"${Array.isArray(d.arti)?d.arti.join(' '):d.arti}"</p>
             </div>
-            <div class="mt-8 text-center pb-20">
-                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
-                </button>
-            </div>`;
+            <div class="mt-8 text-center pb-20"><button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button></div>`;
     } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-400 font-bold">ERROR MEMUAT KONTEN</p>`; }
 }
 
 window.addEventListener('popstate', (e) => {
-    const m = document.getElementById('app-modal');
-    if (!e || !e.state) m.classList.remove('modal-show');
-    else if (e.state.view === 'list') loadMenuList(e.state.cat);
-    else if (e.state.view === 'jadwal') openJadwalModal();
+    if (!e || !e.state) {
+        hideModalUI();
+    } else {
+        if (e.state.view === 'list') loadMenuList(e.state.cat);
+        else if (e.state.view === 'jadwal') openJadwalModal();
+        showModalUI();
+    }
 });
 
-// INISIALISASI SAAT STARTUP
-fetchJadwalData(); // Ambil jadwal segera
-startTimeChecker(); // Jalankan pengecek waktu
+// STARTUP
+fetchJadwalData();
+startTimeChecker();
+setInterval(() => { const clock = document.getElementById('live-clock'); if(clock) clock.innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
 </script>
 
 
