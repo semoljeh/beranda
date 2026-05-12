@@ -1626,20 +1626,6 @@ const redClass = (isSunday || isNationalHoliday)
 </div>
 
 <script>
-    function toggleProfile() {
-        const modal = document.getElementById('profile-modal');
-        if (!modal) return;
-
-        if (modal.classList.contains('hidden')) {
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.add('opacity-100'), 10);
-            if (typeof pushState === 'function') pushState('profile');
-        } else {
-            modal.classList.remove('opacity-100');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-    }
-</script>
     /**
      * Fungsi Toggle Profile yang sinkron dengan sistem pushState (KLP 3)
      */
@@ -1660,7 +1646,6 @@ const redClass = (isSunday || isNationalHoliday)
         }
     }
 </script>
-	
 	
 	
 	
