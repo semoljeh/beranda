@@ -125,6 +125,43 @@ body {
 
         /* CSS TAMBAHAN UNTUK PROFILE (MODERN) */
         .btn-profile-info { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; border: 1px solid rgba(255,255,255,0.1); z-index: 30; transition: all 0.2s; }
+		
+		.btn-download-modern{
+    position:absolute;
+    top:25px;
+    right:75px;
+
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(8px);
+
+    border-radius:12px;
+
+    color:white;
+    border:1px solid rgba(255,255,255,0.1);
+
+    z-index:30;
+
+    transition:all .25s ease;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.08);
+}
+
+.btn-download-modern:active{
+    transform:scale(.90);
+}
+
+.btn-download-modern i{
+    font-size:14px;
+}
+		
         .btn-profile-info:active { transform: scale(0.9); }
         #profile-popup { z-index: 500; }
         .profile-card { background: white; border-radius: 35px; padding: 35px; width: 88%; max-width: 350px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.9); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -271,9 +308,19 @@ body {
         </style>
 
         <div class="header-bg">
-            <button onclick="toggleProfile()" class="btn-profile-info">
-                <i class="fa-solid fa-circle-info text-xl"></i>
-            </button>
+            <!-- Tombol Download -->
+<a 
+    href="https://github.com/semoljeh/beranda/raw/main/app/semoljeh.apk"
+    target="_blank"
+    class="btn-download-modern"
+>
+    <i class="fa-solid fa-download"></i>
+</a>
+
+<!-- Tombol Profile -->
+<button onclick="toggleProfile()" class="btn-profile-info">
+    <i class="fa-solid fa-circle-info text-xl"></i>
+</button>
 
             <div onclick="toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
@@ -1588,7 +1635,7 @@ const redClass = (isSunday || isNationalHoliday)
     <!-- Kartu Profil Paten -->
     <div class="profile-card relative">
        <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden border-4 border-teal-50 shadow-lg">
-        <img src="foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
+        <img src="https://github.com/semoljeh/beranda/blob/main/foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
     </div>
         <h3 class="text-2xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
         <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
