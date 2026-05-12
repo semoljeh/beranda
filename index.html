@@ -1810,6 +1810,9 @@ function toggleCalendar() {
 <!-- =============================================
      KLP 11: PROFILE SYSTEM (MODAL & STYLING)
      ============================================= -->
+<!-- =============================================
+     KLP 11: PROFILE SYSTEM (MODAL & STYLING)
+     ============================================= -->
 <style>
     /* Z-Index tinggi agar modal muncul di depan semua elemen */
     #profile-modal { z-index: 500; }
@@ -1879,25 +1882,92 @@ function toggleCalendar() {
 </div>
 
 <script>
-    /**
-     * Fungsi Toggle Profile yang sinkron dengan sistem pushState (KLP 3)
-     */
-    function toggleProfile() {
-        const modal = document.getElementById('profile-modal');
-        if (!modal) return;
+/**
+ * PROFILE MODAL SYSTEM
+ * Sinkron dengan tombol back HP/browser
+ */
+function toggleProfile() {
 
-        if (modal.classList.contains('hidden')) {
-            modal.classList.remove('hidden');
-            // Timeout 10ms agar transisi opacity terlihat oleh browser
-            setTimeout(() => modal.classList.add('opacity-100'), 10);
-            // Tambah history state agar bisa ditutup tombol Back (KLP 3)
-            if (typeof pushState === 'function') pushState('profile');
-        } else {
-            modal.classList.remove('opacity-100');
-            // Tunggu animasi transisi 300ms selesai sebelum hidden total
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
+    const modal =
+        document.getElementById('profile-modal');
+
+    const isOpen =
+        !modal.classList.contains('hidden');
+
+    // =========================
+    // BUKA MODAL
+    // =========================
+    if (!isOpen) {
+
+        // PUSH HISTORY
+        history.pushState(
+            { modal: 'profile' },
+            '',
+            '#profile'
+        );
+
+        // TAMPILKAN
+        modal.classList.remove('hidden');
+
+        // DELAY AGAR TRANSISI JALAN
+        requestAnimationFrame(() => {
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+        });
     }
+
+    // =========================
+    // TUTUP MODAL
+    // =========================
+    else {
+
+    // KEMBALIKAN HISTORY
+    if (location.hash === '#profile') {
+
+        history.back();
+
+    } else {
+
+        closeProfileModal();
+    }
+}
+}
+
+/**
+ * CLOSE PROFILE MODAL
+ */
+function closeProfileModal() {
+
+    const modal =
+        document.getElementById('profile-modal');
+
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+
+    // TUNGGU ANIMASI
+    setTimeout(() => {
+
+        modal.classList.add('hidden');
+
+    }, 300);
+}
+
+/**
+ * TOMBOL BACK HP / BROWSER
+ */
+window.addEventListener('popstate', () => {
+
+    const modal =
+        document.getElementById('profile-modal');
+
+    if (
+        modal &&
+        !modal.classList.contains('hidden')
+    ) {
+
+        closeProfileModal();
+    }
+});
 </script>
 	
 	
