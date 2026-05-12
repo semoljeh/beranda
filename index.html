@@ -1117,7 +1117,6 @@ c.innerHTML = html;
      ============================================= -->
 
 
-
 <section id="module-calendar">
     <style>
         #calendar-modal { font-family: 'Inter', sans-serif; transition: all 0.4s ease; }
@@ -1140,7 +1139,6 @@ c.innerHTML = html;
             margin-top: 15px;
         }
 
-        /* TAMPILAN KALENDER DINDING (MENYATU) */
         .calendar-container {
             background: white;
             border-radius: 20px;
@@ -1153,7 +1151,7 @@ c.innerHTML = html;
         .calendar-grid { 
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
-            gap: 0; /* Gap Nol agar menyatu */
+            gap: 0;
         }
         
         .day-label { 
@@ -1172,38 +1170,39 @@ c.innerHTML = html;
             transition: background 0.2s;
         }
 
-        /* Hilangkan border kanan pada kolom terakhir */
         .calendar-date:nth-child(7n) { border-right: none; }
 
         .date-masehi { font-size: 15px; font-weight: 700; color: #334155; }
         .date-hijri { font-size: 9px; color: #0d9488; font-weight: 600; margin-top: 2px; }
         .date-pasaran { font-size: 6px; color: #94a3b8; text-transform: uppercase; margin-top: 1px; }
 
-        /* Status Khusus */
+        /* --- STATUS KHUSUS WARNA --- */
         .date-today { background: #f0fdfa !important; }
         .date-today::after {
-		.is-real-holiday{
-    background:#fff1f2 !important;
-}
-
-.is-real-holiday .date-masehi{
-    color:#e11d48 !important;
-    font-weight:800;
-}
             content: ''; position: absolute; top: 5px; right: 5px;
             width: 6px; height: 6px; background: #0d9488; border-radius: 50%;
         }
 
-        .is-real-holiday { background: #fff1f2; }
-        .is-real-holiday .date-masehi { color: #e11d48 !important; }
+        .is-real-holiday { background: #fff1f2 !important; }
+        .is-real-holiday .date-masehi { color: #e11d48 !important; font-weight: 800; }
+        
+        .is-cuti-bersama { background: #fffbeb !important; }
+        .is-cuti-bersama .date-masehi { color: #d97706 !important; font-weight: 800; }
         
         .empty-date { background: #fcfdfe !important; }
 
-        /* Card Libur */
+        /* Card List Keterangan */
         .holiday-card { 
             display: flex; align-items: center; gap: 15px; 
             background: #ffffff; padding: 14px; border-radius: 16px; 
-            border-left: 4px solid #e11d48;
+            border-left: 4px solid #e11d48; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .cuti-card {
+            display: flex; align-items: center; gap: 15px; 
+            background: #ffffff; padding: 14px; border-radius: 16px; 
+            border-left: 4px solid #d97706; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
     </style>
@@ -1248,39 +1247,107 @@ c.innerHTML = html;
     <script>
         let currentCalDate = new Date();
         let currentHijriData = [];
-        const bulanIndoMap = { "Dhu al-Qi'dah": "Dzulqo'dah", "Dhu al-Qa'dah": "Dzulqo'dah", "Dhu al-Hijjah": "Dzulhijjah", "Muharram": "Muharram", "Safar": "Safar", "Rabi' al-awwal": "Rabiul Awal", "Rabi' al-thani": "Rabiul Akhir", "Jumada al-ula": "Jumadil Ula", "Jumada al-akhirah": "Jumadil Akhira", "Rajab": "Rajab", "Sha'ban": "Syaban", "Ramadan": "Ramadhan", "Shawwal": "Syawal" };
-
         const holidayCache = {};
 
-async function getHoliday(dateString){
-
-    const year = dateString.split('-')[0];
-
-    if(!holidayCache[year]){
-
-        try{
-
-            const res = await fetch(
-                `https://date.nager.at/api/v3/PublicHolidays/${year}/ID`
-            );
-
-            const data = await res.json();
-
-            holidayCache[year] = Array.isArray(data)
-                ? data
-                : [];
-
-        }catch(e){
-
-            console.log('Holiday API gagal:', e);
-
-            holidayCache[year] = [];
+        // 1. TRANSLATOR BULAN HIJRIAH
+        function getBulanIndo(namaBulanEn) {
+            const s = namaBulanEn.toLowerCase();
+            if (s.includes('muharram')) return "Muharram";
+            if (s.includes('safar')) return "Safar";
+            if (s.includes('rabi') && (s.includes('awwal') || s.includes('1'))) return "Rabiul Awal";
+            if (s.includes('rabi') && (s.includes('thani') || s.includes('akhir') || s.includes('2'))) return "Rabiul Akhir";
+            if (s.includes('jumada') && (s.includes('ula') || s.includes('awwal') || s.includes('1'))) return "Jumadil Ula";
+            if (s.includes('jumada') && (s.includes('akhir') || s.includes('thani') || s.includes('2'))) return "Jumadil Akhir";
+            if (s.includes('rajab')) return "Rajab";
+            if (s.includes('sha')) return "Syaban";
+            if (s.includes('ramadan')) return "Ramadhan";
+            if (s.includes('shawwal')) return "Syawal";
+            if (s.includes('qi') || s.includes('qa')) return "Dzulqa'dah";
+            if (s.includes('hijjah')) return "Dzulhijjah";
+            return namaBulanEn;
         }
+
+        // 2. DATABASE CUTI BERSAMA (AUTO CACHE API)
+        // Tidak wajib diisi manual lagi.
+        const DATABASE_SKB = {};
+
+        // 3. FILTER API: HANYA AMBIL LIBUR DINAMIS YANG SUSAH DIHITUNG MANUAL
+        
+        function extractDynamicHolidays(apiData) {
+
+            const dynamic = {};
+
+            if (Array.isArray(apiData)) {
+
+                apiData.forEach(h => {
+
+                    const name =
+                        (h.localName + " " + h.name).toLowerCase();
+
+                    // TENTUKAN JENIS
+                    let type = 'holiday';
+
+                    if (
+                        name.includes('cuti bersama') ||
+                        name.includes('joint holiday')
+                    ) {
+                        type = 'cuti';
+                    }
+
+                    dynamic[h.date] = {
+                        name: h.localName || h.name,
+                        type: type
+                    };
+                });
+            }
+
+            return dynamic;
+        }
+
+
+       async function getHolidayAPI(year) {
+
+    const cacheKey = `holiday_api_${year}`;
+
+    // 1. CEK MEMORY CACHE
+    if (holidayCache[year]) {
+        return holidayCache[year];
     }
 
-    return holidayCache[year].find(
-        item => item.date === dateString
-    ) || null;
+    // 2. CEK LOCAL STORAGE
+    const localCache = localStorage.getItem(cacheKey);
+
+    if (localCache) {
+        holidayCache[year] = JSON.parse(localCache);
+        return holidayCache[year];
+    }
+
+    // 3. FETCH API
+    try {
+
+        const res = await fetch(
+            `https://date.nager.at/api/v3/PublicHolidays/${year}/ID`
+        );
+
+        const data = await res.json();
+
+        // SIMPAN MEMORY
+        holidayCache[year] = data;
+
+        // SIMPAN OFFLINE
+        localStorage.setItem(
+            cacheKey,
+            JSON.stringify(data)
+        );
+
+        return data;
+
+    } catch (e) {
+
+        console.log('Gagal mengambil API libur nasional');
+
+        return [];
+    }
 }
 
         function toArDigits(n) { const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩']; return n.toString().split('').map(d => id[d]).join(''); }
@@ -1291,253 +1358,279 @@ async function getHoliday(dateString){
             let idx = (diffDays + 3) % 5; return pasaran[idx < 0 ? idx + 5 : idx];
         }
 
-        async function fetchFullCalendarData() {
-            const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth() + 1;
-            const grid = document.getElementById('calendar-days-grid');
-            grid.innerHTML = '<div class="col-span-7 text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Memuat Kalender...</div>';
-            try {
-                const res = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`).then(r => r.json());
-                if (res && res.data) { currentHijriData = res.data; await renderCalendar(); }
-            } catch (e) { grid.innerHTML = '<div class="col-span-7 text-center py-10 text-red-400">Gagal Memuat Data</div>'; }
+   async function fetchFullCalendarData() {
+
+    const y = currentCalDate.getFullYear();
+    const m = currentCalDate.getMonth() + 1;
+
+    const grid = document.getElementById('calendar-days-grid');
+
+    const cacheKey = `hijri_${m}_${y}`;
+
+    grid.innerHTML = `
+        <div class="col-span-7 text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">
+            Memuat Kalender...
+        </div>
+    `;
+
+    try {
+
+        // CEK CACHE DULU
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+            currentHijriData = JSON.parse(cached);
+            await renderCalendar();
+            return;
         }
 
-       async function renderCalendar() {
-            const grid = document.getElementById('calendar-days-grid'); const holEl = document.getElementById('holiday-list');
-            const hHeader = document.getElementById('hijri-detail-header'); const mHeader = document.getElementById('masehi-detail-header');
-            grid.innerHTML = ''; holEl.innerHTML = '';
-            
-            const y = currentCalDate.getFullYear(); const m = currentCalDate.getMonth();
+        // FETCH API
+        const res = await fetch(
+            `https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`
+        );
+
+        const json = await res.json();
+
+        if (json && json.data) {
+
+            currentHijriData = json.data;
+
+            // SIMPAN CACHE OFFLINE
+            localStorage.setItem(
+                cacheKey,
+                JSON.stringify(json.data)
+            );
+
+            await renderCalendar();
+        }
+
+    } catch (e) {
+
+        // FALLBACK OFFLINE
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+
+            currentHijriData = JSON.parse(cached);
+
+            await renderCalendar();
+
+        } else {
+
+            grid.innerHTML = `
+                <div class="col-span-7 text-center py-10 text-red-400 font-bold text-xs uppercase">
+                    Kalender Offline Tidak Tersedia
+                </div>
+            `;
+        }
+    }
+}
+
+
+        async function renderCalendar() {
+            const grid = document.getElementById('calendar-days-grid');
+            const holEl = document.getElementById('holiday-list');
+            const hHeader = document.getElementById('hijri-detail-header');
+            const mHeader = document.getElementById('masehi-detail-header');
+
+            grid.innerHTML = '';
+            holEl.innerHTML = '';
+
+            const y = currentCalDate.getFullYear();
+            const m = currentCalDate.getMonth();
+
             const realToday = new Date();
+
             const ms = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             const dsIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
             document.getElementById('calendar-month-name').innerText = `${ms[m]} ${y}`;
 
-            const activeDay = (y === realToday.getFullYear() && m === realToday.getMonth()) ? realToday.getDate() : 1;
+            const activeDay =
+                (y === realToday.getFullYear() && m === realToday.getMonth())
+                ? realToday.getDate()
+                : 1;
+
             const hInfo = currentHijriData[activeDay - 1];
+
             if (hInfo) {
-                const nmBulanH = bulanIndoMap[hInfo.hijri.month.en] || hInfo.hijri.month.en;
-                hHeader.innerText = `${hInfo.hijri.day} ${nmBulanH} ${hInfo.hijri.year} H`;
-                mHeader.innerText = `${dsIndo[new Date(y,m,activeDay).getDay()]} ${getPasaran(new Date(y,m,activeDay))}, ${activeDay} ${ms[m]} ${y} M`;
+                hHeader.innerText = `${hInfo.hijri.day} ${getBulanIndo(hInfo.hijri.month.en)} ${hInfo.hijri.year} H`;
+
+                mHeader.innerText =
+                    `${dsIndo[new Date(y, m, activeDay).getDay()]} ${getPasaran(new Date(y, m, activeDay))}, ${activeDay} ${ms[m]} ${y} M`;
             }
 
             const startDay = new Date(y, m, 1).getDay();
-            for (let i = 0; i < startDay; i++) grid.innerHTML += '<div class="calendar-date empty-date"></div>';
 
-           for (const [index, day] of currentHijriData.entries()) {
-                const d = index + 1; const dtObj = new Date(y, m, d);
-                const dtKey = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const holidayData = await getHoliday(dtKey);
+            for (let i = 0; i < startDay; i++) {
+                grid.innerHTML += '<div class="calendar-date empty-date"></div>';
+            }
 
-let namaLibur = holidayData
-    ? holidayData.localName
-    : null;
+            const rawApiHolidays = await getHolidayAPI(y);
+            const dynamicHolidaysMap = extractDynamicHolidays(rawApiHolidays);
 
-/* LIBUR ISLAM OTOMATIS */
+            for (const [index, day] of currentHijriData.entries()) {
 
-const hDay = parseInt(day.hijri.day);
-const hMonth = day.hijri.month.number;
+                const d = index + 1;
 
-/* 1 Muharram */
-if(hDay === 1 && hMonth === 1){
-    namaLibur = 'Tahun Baru Islam';
-}
+                const dtObj = new Date(y, m, d);
 
-/* Maulid Nabi */
-if(hDay === 12 && hMonth === 3){
-    namaLibur = 'Maulid Nabi Muhammad SAW';
-}
+                const dtKey =
+                    `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-/* Isra Mi’raj */
-if(hDay === 27 && hMonth === 7){
-    namaLibur = 'Isra Mi’raj Nabi Muhammad SAW';
-}
+                const hDay = parseInt(day.hijri.day);
+                const hMonth = day.hijri.month.number;
 
-/* Idul Fitri */
-if((hDay === 1 || hDay === 2) && hMonth === 10){
-    namaLibur = 'Hari Raya Idul Fitri';
-}
+                const gMonth = m + 1;
+                const gDay = d;
 
-/* Idul Adha */
-if(hDay === 10 && hMonth === 12){
-    namaLibur = 'Hari Raya Idul Adha';
-}
-                const isSunday = dtObj.getDay() === 0; 
-                const isToday = realToday.toDateString() === dtObj.toDateString();
+                const isSunday = dtObj.getDay() === 0;
 
-                const isNationalHoliday = !!namaLibur;
+                let namaLibur = null;
+                let isCutiBersama = false;
 
-const redClass = (isSunday || isNationalHoliday)
-    ? 'is-real-holiday'
-    : '';
+                // CUTI BERSAMA MANUAL (JIKA ADA)
+                if (DATABASE_SKB[dtKey]) {
+                    namaLibur = DATABASE_SKB[dtKey];
+                    isCutiBersama = true;
+                }
+
+                // LIBUR MASEHI TETAP
+                if (!namaLibur) {
+
+                    if (gMonth === 1 && gDay === 1) {
+                        namaLibur = 'Tahun Baru Masehi';
+                    }
+
+                    else if (gMonth === 5 && gDay === 1) {
+                        namaLibur = 'Hari Buruh Internasional';
+                    }
+
+                    else if (gMonth === 6 && gDay === 1) {
+                        namaLibur = 'Hari Lahir Pancasila';
+                    }
+
+                    else if (gMonth === 8 && gDay === 17) {
+                        namaLibur = 'Hari Kemerdekaan RI';
+                    }
+
+                    else if (gMonth === 12 && gDay === 25) {
+                        namaLibur = 'Hari Raya Natal';
+                    }
+                }
+
+                // LIBUR ISLAM OTOMATIS
+                if (!namaLibur) {
+
+                    if (hDay === 1 && hMonth === 1) {
+                        namaLibur = 'Tahun Baru Islam';
+                    }
+
+                    else if (hDay === 12 && hMonth === 3) {
+                        namaLibur = 'Maulid Nabi Muhammad SAW';
+                    }
+
+                    else if (hDay === 27 && hMonth === 7) {
+                        namaLibur = 'Isra Mi’raj Nabi Muhammad SAW';
+                    }
+
+                    else if ((hDay === 1 || hDay === 2) && hMonth === 10) {
+                        namaLibur = 'Hari Raya Idul Fitri';
+                    }
+
+                    else if (hDay === 10 && hMonth === 12) {
+                        namaLibur = 'Hari Raya Idul Adha';
+                    }
+                }
+
+                // LIBUR & CUTI DINAMIS DARI API
+                if (!namaLibur && dynamicHolidaysMap[dtKey]) {
+
+                    namaLibur =
+                        dynamicHolidaysMap[dtKey].name;
+
+                    if (
+                        dynamicHolidaysMap[dtKey].type === 'cuti'
+                    ) {
+                        isCutiBersama = true;
+                    }
+                }
+
+                // PEWARNAAN
+                let dateColorClass = '';
+
+                if (isSunday || (namaLibur && !isCutiBersama)) {
+                    dateColorClass = 'is-real-holiday';
+                }
+
+                else if (isCutiBersama) {
+                    dateColorClass = 'is-cuti-bersama';
+                }
+
+                const isToday =
+                    realToday.toDateString() === dtObj.toDateString();
 
                 grid.innerHTML += `
-                    <div class="calendar-date ${isToday ? 'date-today' : ''} ${redClass}">
+                    <div class="calendar-date ${isToday ? 'date-today' : ''} ${dateColorClass}">
                         <span class="date-masehi">${d}</span>
                         <span class="date-hijri">${toArDigits(day.hijri.day)}</span>
                         <span class="date-pasaran">${getPasaran(dtObj)}</span>
-                    </div>`;
+                    </div>
+                `;
 
-                if (namaLibur) {
-                    holEl.innerHTML += `
-                        <div class="holiday-card">
-                            <div class="flex-1">
-                                <p class="text-[12px] font-bold text-slate-800">${d} ${ms[m]} - ${namaLibur}</p>
-                            </div>
-                        </div>`;
-                }
-            }
+             if (namaLibur) {
+
+    const cardClass =
+        isCutiBersama
+        ? 'cuti-card'
+        : 'holiday-card';
+
+    const cardHTML = `
+        <div class="${cardClass}">
+            <div class="flex-1">
+                <p class="text-[12px] font-bold text-slate-800">
+                    ${d} ${ms[m]} - ${namaLibur}
+                </p>
+            </div>
+        </div>
+    `;
+
+    // SEMUA URUT SESUAI TANGGAL
+    holEl.innerHTML += cardHTML;
+}
+}
+}
+
+function changeMonth(v) {
+    currentCalDate.setMonth(
+        currentCalDate.getMonth() + v
+    );
+
+    fetchFullCalendarData();
+}
+
+function toggleCalendar() {
+
+    const el = document.getElementById('calendar-modal');
+
+    if (!el.classList.contains('modal-show')) {
+
+        if (typeof pushState === 'function') {
+            pushState('calendar');
         }
 
-        function changeMonth(v) { currentCalDate.setMonth(currentCalDate.getMonth() + v); fetchFullCalendarData(); }
-        function toggleCalendar() {
-            const el = document.getElementById('calendar-modal');
-            if (!el.classList.contains('modal-show')) {
-                if (typeof pushState === 'function') pushState('calendar');
-                el.classList.add('modal-show'); fetchFullCalendarData();
-            } else { window.history.back(); }
-        }
+        el.classList.add('modal-show');
 
-        // Script inisialisasi splash screen
-        window.addEventListener('DOMContentLoaded', () => {
-            const splash = document.getElementById('splash-screen');
-            setTimeout(() => {
-                if (splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => { splash.style.display = 'none'; }, 600);
-                }
-            }, 2500);
-        });
+        fetchFullCalendarData();
+
+    } else {
+
+        window.history.back();
+    }
+}
     </script>
 </section>
 
-<!-- =============================================
-      KLP 8: DAILY DOA (STEADFAST DYNAMIC HEADER)
-      ============================================= -->
-<section id="module-doa">
-    <style>
-        .doa-header-premium { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: calc(40px + env(safe-area-inset-top)) 20px 45px 20px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3); z-index: 50; position: sticky; top: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .doa-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; transition: all 0.4s ease; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-top: 0px; margin-left: 10px; margin-right: 10px; }
-        .doa-header-slim .doa-glassbox { padding: 10px 18px; border-radius: 15px; }
-        .doa-item-card { padding: 0.85rem 1.1rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; }
-        .doa-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
-        .doa-title-text { flex: 1; font-weight: 700; font-size: 13px; color: #334155; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    </style>
-
-    <div id="doa-modal" class="modal-full">
-        <div id="doa-sticky-header" class="doa-header-premium">
-            <div class="flex items-center gap-4">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="doa-glassbox flex-1"><h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Kumpulan Doa</h2></div>
-                <div class="w-10"></div>
-            </div>
-        </div>
-        <div id="doa-content" onscroll="handleDoaScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
-    </div>
-
-<script>
-    /* 1. DATA MASTER DOA */
-    const dataDoaMadasa = [
-        { id: 1, judul: "Al Mulk", path: "datadoa/almulk.json" },
-        { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" },
-        { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" },
-        { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" },
-        { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" }
-    ];
-
-    /* 2. LOGIKA SCROLL HEADER (EFEK SLIM) */
-    function handleDoaScroll(el) {
-        const header = document.getElementById('doa-sticky-header');
-        header.classList.toggle('doa-header-slim', el.scrollTop > 50);
-    }
-
-    /* 3. FUNGSI TOGGLE MODAL DOA */
-    function toggleDoa() {
-        const el = document.getElementById('doa-modal');
-        if (!el.classList.contains('modal-show')) {
-            // Push state awal untuk level LIST
-            pushState('doa', { doa_view: 'list' });
-            el.classList.add('modal-show');
-            loadDoaList();
-        } else {
-            // Pemicu tombol back browser
-            window.history.back();
-        }
-    }
-
-    /* 4. FUNGSI RENDER DAFTAR DOA (LIST VIEW) */
-    function loadDoaList() {
-        const titleEl = document.getElementById('doa-header-title');
-        const content = document.getElementById('doa-content');
-        const header = document.getElementById('doa-sticky-header');
-
-        titleEl.innerText = "Kumpulan Doa";
-        content.scrollTop = 0;
-        header.classList.remove('doa-header-slim');
-
-        content.innerHTML = dataDoaMadasa.map((d, index) => `
-            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card">
-                <div class="doa-number">${index + 1}</div>
-                <span class="doa-title-text">${d.judul}</span>
-                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
-            </div>
-        `).join('');
-    }
-
-    /* 5. FUNGSI RENDER ISI DOA (DETAIL VIEW) */
-    async function loadDoaDetail(id) {
-        // Tambahkan history baru untuk level DETAIL
-        pushState('doa', { doa_view: 'detail' });
-
-        const content = document.getElementById('doa-content');
-        const dInfo = dataDoaMadasa.find(i => i.id === id);
-        const header = document.getElementById('doa-sticky-header');
-        const titleEl = document.getElementById('doa-header-title');
-
-        content.scrollTop = 0;
-        header.classList.remove('doa-header-slim');
-        titleEl.innerText = dInfo.judul;
-
-        // Loading State
-        content.innerHTML = `
-            <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
-                Mengambil Berkah...
-            </div>`;
-
-        try {
-            const response = await fetch(dInfo.path);
-            const d = await response.json();
-
-            // Cek jika ada arti, jika tidak kosongkan
-            const tampilanArti = d.arti && d.arti.trim() !== "" 
-                ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                   <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` 
-                : "";
-
-            content.innerHTML = `
-                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                    <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                    <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-                    <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">
-                        ${d.arab}
-                    </p>
-                    ${tampilanArti}
-                </div>
-                <div class="mt-8 text-center">
-                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
-                    </button>
-                </div>`;
-        } catch (e) {
-            content.innerHTML = `
-                <div class="text-center p-10 text-xs text-red-400 font-bold uppercase">
-                    Gagal memuat doa.
-                </div>`;
-        }
-    }
-</script>
-</section>
 
         <!-- =============================================
              KLP 9: NAVIGATION BAR & LOCATION PICKER
