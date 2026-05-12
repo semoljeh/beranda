@@ -125,43 +125,6 @@ body {
 
         /* CSS TAMBAHAN UNTUK PROFILE (MODERN) */
         .btn-profile-info { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; border: 1px solid rgba(255,255,255,0.1); z-index: 30; transition: all 0.2s; }
-		
-		.btn-download-modern{
-    position:absolute;
-    top:25px;
-    right:75px;
-
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:rgba(255,255,255,0.15);
-    backdrop-filter:blur(8px);
-
-    border-radius:12px;
-
-    color:white;
-    border:1px solid rgba(255,255,255,0.1);
-
-    z-index:30;
-
-    transition:all .25s ease;
-
-    box-shadow:
-        0 4px 15px rgba(0,0,0,.08);
-}
-
-.btn-download-modern:active{
-    transform:scale(.90);
-}
-
-.btn-download-modern i{
-    font-size:14px;
-}
-		
         .btn-profile-info:active { transform: scale(0.9); }
         #profile-popup { z-index: 500; }
         .profile-card { background: white; border-radius: 35px; padding: 35px; width: 88%; max-width: 350px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.9); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -308,19 +271,9 @@ body {
         </style>
 
         <div class="header-bg">
-            <!-- Tombol Download -->
-<a 
-    href="https://github.com/semoljeh/beranda/raw/main/app/semoljeh.apk"
-    target="_blank"
-    class="btn-download-modern"
->
-    <i class="fa-solid fa-download"></i>
-</a>
-
-<!-- Tombol Profile -->
-<button onclick="toggleProfile()" class="btn-profile-info">
-    <i class="fa-solid fa-circle-info text-xl"></i>
-</button>
+            <button onclick="toggleProfile()" class="btn-profile-info">
+                <i class="fa-solid fa-circle-info text-xl"></i>
+            </button>
 
             <div onclick="toggleLocationSheet()" class="location-capsule">
                 <i class="fa-solid fa-location-dot text-white text-[10px]"></i>
@@ -1608,15 +1561,15 @@ const redClass = (isSunday || isNationalHoliday)
     /* Z-Index tinggi agar modal muncul di depan semua elemen */
     #profile-modal { z-index: 500; }
     
-    /* Efek transisi kartu agar lebih smooth */
+    /* Efek transisi kartu agar lebih smooth & ukurannya lebih compact */
     .profile-card {
         background: white;
-        border-radius: 35px;
-        padding: 35px;
-        width: 88%;
-        max-width: 350px;
+        border-radius: 28px; /* Sudut sedikit diperkecil */
+        padding: 24px; /* Padding dikurangi dari 35px agar tidak memenuhi layar */
+        width: 85%; /* Lebar responsif */
+        max-width: 300px; /* Maksimal lebar diperkecil dari 350px */
         text-align: center;
-        box-shadow: 0 25px 60px -15px rgba(0,0,0,0.15);
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
         transform: scale(0.9);
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -1627,37 +1580,66 @@ const redClass = (isSunday || isNationalHoliday)
     }
 </style>
 
-<!-- MODAL PROFILE POPUP -->
 <div id="profile-modal" class="fixed inset-0 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-    <!-- Overlay Gelap Blur -->
     <div onclick="toggleProfile()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
     
-    <!-- Kartu Profil Paten -->
     <div class="profile-card relative">
-       <div class="w-24 h-24 mx-auto mb-5 rounded-3xl overflow-hidden border-4 border-teal-50 shadow-lg">
-        <img src="https://github.com/semoljeh/beranda/blob/main/foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
-    </div>
-        <h3 class="text-2xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
-        <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Programmer & Developer</p>
+        <div class="w-20 h-20 mx-auto mb-3 rounded-2xl overflow-hidden border-4 border-teal-50 shadow-md">
+            <img src="https://raw.githubusercontent.com/semoljeh/beranda/main/foto-profil.jpg" alt="AROM" class="w-full h-full object-cover">
+        </div>
         
-        <!-- Media Sosial (Opsional) -->
-        <div class="mt-6 flex justify-center gap-3">
-             <a href="https://www.tiktok.com/@aromkobama/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 border border-slate-100 active:scale-90"><i class="fa-brands fa-tiktok"></i></a>
-             <a href="https://www.facebook.com/arom.kobama.2025/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-blue-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-facebook"></i></a>
-             <a href="https://www.instagram.com/aromkobama/" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-pink-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-instagram"></i></a>
+        <h3 class="text-xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
+        <p class="text-teal-600 font-bold text-[9px] uppercase tracking-[0.15em] mt-1">Programmer & Developer</p>
+        
+        <div class="mt-4 flex justify-center gap-2.5">
+             <a href="https://www.tiktok.com/@aromkobama/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 border border-slate-100 active:scale-90"><i class="fa-brands fa-tiktok text-sm"></i></a>
+             <a href="https://www.facebook.com/arom.kobama.2025/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-blue-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-facebook text-sm"></i></a>
+             <a href="https://www.instagram.com/aromkobama/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-pink-500 border border-slate-100 active:scale-90"><i class="fa-brands fa-instagram text-sm"></i></a>
         </div>
 
-        <p class="mt-6 text-[11px] text-slate-400 font-medium leading-relaxed">
+        <p class="mt-4 text-[10px] text-slate-400 font-medium leading-relaxed">
             Membangun aplikasi web modern <br>Semoga Bermanfaat Untuk Ummat.
         </p>
         
-        <button onclick="toggleProfile()" class="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">
+<a 
+            href="https://raw.githubusercontent.com/semoljeh/beranda/main/raw/main/app/semoljeh.apk"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="semoljeh.apk"
+            class="mt-4 inline-flex items-center justify-center gap-1.5
+                   px-3 py-1.5
+                   text-[9px] font-bold uppercase tracking-[0.1em]
+                   text-teal-600
+                   bg-teal-50 border border-teal-100
+                   rounded-lg
+                   shadow-sm
+                   active:scale-95 transition-all"
+        >
+            <i class="fa-solid fa-download text-[9px]"></i>
+            Download
+        </a>
+        
+        <button onclick="toggleProfile()" class="mt-5 w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-teal-100 active:scale-95 transition-all">
             Tutup Profil
         </button>
     </div>
 </div>
 
 <script>
+    function toggleProfile() {
+        const modal = document.getElementById('profile-modal');
+        if (!modal) return;
+
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('opacity-100'), 10);
+            if (typeof pushState === 'function') pushState('profile');
+        } else {
+            modal.classList.remove('opacity-100');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+</script>
     /**
      * Fungsi Toggle Profile yang sinkron dengan sistem pushState (KLP 3)
      */
