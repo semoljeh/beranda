@@ -1993,7 +1993,9 @@ function toggleCalendar() {
      KLP 11: PROFILE SYSTEM (MODAL & STYLING)
      ============================================= -->
 
-<style>
+
+	<style>
+        /* 1. CSS DASAR */
         #profile-modal { z-index: 500; }
         .profile-card {
             background: white; border-radius: 28px; padding: 24px; width: 85%; max-width: 300px;
@@ -2002,23 +2004,27 @@ function toggleCalendar() {
         }
         #profile-modal.opacity-100 .profile-card { transform: scale(1); }
 
+        /* 2. MODAL UPDATE PRO */
         #update-alert-box {
             position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%) scale(0.9);
             width: 85%; max-width: 320px; background: white;
-            border: 1px solid #f1f5f9; border-radius: 35px;
-            padding: 30px 25px; text-align: center; 
+            border-radius: 35px; padding: 35px 25px; text-align: center; 
             display: none; z-index: 10001;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
+            opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         #update-alert-box.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .update-icon-circle {
-            width: 60px; height: 60px; background: #f0fdfa; color: #0d9488; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px;
+        
+        .update-status-icon {
+            width: 70px; height: 70px; margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; border-radius: 50%; transition: all 0.5s ease;
         }
-        .animate-spin-slow { animation: spin 3s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .icon-bg-wait { background: #f0fdf4; color: #0d9488; }
+        .icon-bg-success { background: #10b981; color: white; transform: scale(1.1); }
+
+        .hidden-update { display: none !important; }
     </style>
 
     <div id="profile-modal" class="fixed inset-0 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
@@ -2027,69 +2033,92 @@ function toggleCalendar() {
             <div class="w-20 h-20 mx-auto mb-3 rounded-2xl overflow-hidden border-4 border-teal-50 shadow-md">
                 <img src="https://raw.githubusercontent.com/semoljeh/beranda/main/foto-profil.jpg" class="w-full h-full object-cover">
             </div>
-            <h3 class="text-xl font-black text-slate-800 tracking-tight text-center">Arom Kobama</h3>
-            <p class="text-teal-600 font-bold text-[9px] uppercase tracking-[0.15em] mt-1 text-center">Programmer & Developer</p>
-            <div class="mt-4 flex justify-center gap-2.5">
-                 <a href="https://semoljeh.github.io/beranda/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-blue-500 border border-slate-100"><i class="fa-solid fa-globe text-sm"></i></a>
-                 <a href="https://www.tiktok.com/@aromkobama/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 border border-slate-100"><i class="fa-brands fa-tiktok text-sm"></i></a>
-                 <a href="https://www.instagram.com/aromkobama/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-pink-500 border border-slate-100"><i class="fa-brands fa-instagram text-sm"></i></a>
-            </div>
-            <p class="mt-4 text-[10px] text-slate-400 font-medium leading-relaxed text-center">Membangun aplikasi web modern <br>Semoga Bermanfaat Untuk Ummat.</p>
-            <div class="flex gap-2 mt-5">
-                <a href="https://raw.githubusercontent.com/semoljeh/beranda/main/raw/main/app/semoljeh.apk" target="_blank" download class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[9px] font-bold uppercase text-teal-600 bg-teal-50 border border-teal-100 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-download"></i> APK</a>
-                <button onclick="forceUpdateApp()" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[9px] font-bold uppercase text-sky-600 bg-sky-50 border border-sky-100 rounded-xl relative active:scale-95 transition-all">
-                    <i class="fa-solid fa-rotate"></i> Update
-                    <span id="update-label" class="absolute -top-2 -right-1 bg-red-500 text-white text-[7px] px-1.5 py-0.5 rounded-full hidden">NEW</span>
+            <h3 class="text-lg font-black text-slate-800">Arom Kobama</h3>
+            <p class="text-teal-600 font-bold text-[9px] uppercase tracking-widest mt-1">Programmer & Developer</p>
+            <div class="mt-5 flex gap-2">
+                <button onclick="forceUpdateApp()" class="flex-1 py-2.5 text-[9px] font-bold uppercase text-sky-600 bg-sky-50 border border-sky-100 rounded-xl relative">
+                    Update <span id="update-label" class="absolute -top-2 -right-1 bg-red-500 text-white text-[7px] px-1.5 py-0.5 rounded-full hidden">NEW</span>
                 </button>
             </div>
-            <button onclick="toggleProfile()" class="mt-3 w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-[10px] uppercase active:scale-95 transition-all">Tutup Profil</button>
+            <button onclick="toggleProfile()" class="mt-3 w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-[10px] uppercase">Tutup Profil</button>
         </div>
     </div>
 
     <div id="update-alert-box">
-        <div class="update-icon-circle"><i class="fa-solid fa-sync animate-spin-slow"></i></div>
-        <h4 class="text-teal-700 font-black text-xs uppercase tracking-widest mb-3 text-center">Pembaruan Tersedia!</h4>
-        <p class="text-slate-600 text-[11px] leading-relaxed font-medium mb-6 text-center">Versi terbaru sudah siap. Klik tombol di bawah untuk memperbarui fitur terbaru secara otomatis.</p>
-        <div class="flex flex-col gap-2">
-            <button onclick="forceUpdateApp()" class="w-full py-3 bg-teal-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest active:scale-95 shadow-lg shadow-teal-200"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Update Sekarang</button>
-            <button onclick="closeUpdateAlert()" class="w-full py-2 text-slate-400 font-bold text-[9px] uppercase tracking-wider active:scale-95">Nanti Saja</button>
+        <div id="update-icon-area" class="update-status-icon icon-bg-wait">
+            <i id="main-update-icon" class="fa-solid fa-rotate animate-spin"></i>
+        </div>
+        
+        <h4 id="update-title" class="text-teal-800 font-black text-xs uppercase tracking-widest mb-3">Pembaruan Tersedia</h4>
+        <p id="update-desc" class="text-slate-500 text-[11px] leading-relaxed mb-6">
+            Klik tombol di bawah untuk menyinkronkan daftar menu terbaru.
+        </p>
+
+        <div id="update-btn-group">
+            <button onclick="startProUpdate()" class="w-full py-3 bg-teal-600 text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg shadow-teal-100">Update Sekarang</button>
+            <button onclick="closeUpdateAlert()" class="w-full py-2 mt-2 text-slate-400 font-bold text-[9px] uppercase">Nanti Saja</button>
         </div>
     </div>
 
     <script>
         const CURRENT_VERSION = "1.0.2"; 
 
-        // --- 1. MODAL PROFILE & BACK HP ---
+        // --- 1. PRO UPDATE LOGIC (SPINNER & SUCCESS) ---
+        async function startProUpdate() {
+            const iconArea = document.getElementById('update-icon-area');
+            const icon = document.getElementById('main-update-icon');
+            const title = document.getElementById('update-title');
+            const desc = document.getElementById('update-desc');
+            const btnGroup = document.getElementById('update-btn-group');
+
+            // Tahap 1: Loading Berputar
+            btnGroup.classList.add('hidden-update');
+            title.innerText = "SINKRONISASI...";
+            desc.innerText = "Mohon tunggu sebentar, sedang mengambil data terbaru dari server.";
+            
+            // Bersihkan Cache
+            if ('caches' in window) {
+                const names = await caches.keys();
+                for (let name of names) await caches.delete(name);
+            }
+
+            // Simulasi loading agar estetik
+            setTimeout(() => {
+                // Tahap 2: Muncul Centang
+                iconArea.classList.replace('icon-bg-wait', 'icon-bg-success');
+                icon.classList.replace('fa-rotate', 'fa-check');
+                icon.classList.remove('animate-spin');
+                title.innerText = "BERHASIL!";
+                desc.innerText = "Menu telah diperbarui. Aplikasi akan memuat ulang secara otomatis.";
+
+                // Tahap 3: Muat Ulang Tanpa Splash Screen
+                setTimeout(() => {
+                    const target = window.location.origin + window.location.pathname + '?mode=silent';
+                    window.location.replace(target);
+                }, 1500);
+            }, 2500);
+        }
+
+        // --- 2. SISTEM NAVIGASI & MODAL ---
         function toggleProfile() {
             const modal = document.getElementById('profile-modal');
-            if (!modal) return;
             if (modal.classList.contains('hidden')) {
                 history.pushState({ modal: 'profile' }, '', '#profile');
-                showProfileVisuals();
-            } else {
-                if (window.location.hash === '#profile') { history.back(); } 
-                else { hideProfileVisuals(); }
-            }
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 10);
+            } else { if (window.location.hash === '#profile') history.back(); else hideProfile(); }
         }
 
-        function showProfileVisuals() {
-            const modal = document.getElementById('profile-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 10);
-        }
-
-        function hideProfileVisuals() {
+        function hideProfile() {
             const modal = document.getElementById('profile-modal');
             modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        window.addEventListener('popstate', (event) => {
-            const modal = document.getElementById('profile-modal');
-            if (modal && !modal.classList.contains('hidden')) { hideProfileVisuals(); }
+        window.addEventListener('popstate', () => {
+            if (!document.getElementById('profile-modal').classList.contains('hidden')) hideProfile();
         });
 
-        // --- 2. SISTEM UPDATE ---
         async function checkForUpdate() {
             if (!navigator.onLine) return;
             try {
@@ -2097,51 +2126,47 @@ function toggleCalendar() {
                 const data = await res.json();
                 if (data.version !== CURRENT_VERSION) {
                     const alertBox = document.getElementById('update-alert-box');
-                    if(alertBox) {
-                        alertBox.style.display = 'block';
-                        setTimeout(() => alertBox.classList.add('show'), 100);
-                    }
+                    alertBox.style.display = 'block';
+                    setTimeout(() => alertBox.classList.add('show'), 100);
                 }
             } catch (e) {}
         }
 
-        function forceUpdateApp() {
-            if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
-            // Langsung timpa halaman sekarang dengan parameter unik
-            const target = window.location.origin + window.location.pathname + '?upd=' + Date.now();
-            window.location.replace(target);
-        }
-
         function closeUpdateAlert() {
-            const alertBox = document.getElementById('update-alert-box');
-            if(alertBox) {
-                alertBox.classList.remove('show');
-                setTimeout(() => alertBox.style.display = 'none', 400);
-            }
+            const box = document.getElementById('update-alert-box');
+            box.classList.remove('show');
+            setTimeout(() => box.style.display = 'none', 500);
         }
 
-        // --- 3. CORE INITIALIZATION (KUNCI HISTORY HP) ---
+        // --- 3. INITIALIZATION (SISTEM ANTI-LOADING ULANG) ---
         window.onload = () => {
-            // PENTING: Jika URL mengandung parameter update (?upd=), 
-            // segera bersihkan URL tanpa menambah riwayat baru.
-            if (window.location.search.includes('upd=')) {
-                const cleanUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }
-
-            try { updateDateTime(); } catch(e){}
-
             const splash = document.getElementById('splash-screen');
-            setTimeout(() => {
-                if (splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.visibility = 'hidden', 600);
-                }
-                try { startCountdown(); } catch(e){}
-                try { getCoreData(); } catch(e){}
-                if(navigator.onLine) checkForUpdate();
-            }, 2500);
+            const isSilent = window.location.search.includes('mode=silent');
+
+            // Jika mode silent (setelah update), langsung hapus splash & bersihkan riwayat
+            if (isSilent) {
+                if (splash) splash.style.display = 'none';
+                history.replaceState({}, '', window.location.pathname);
+                initApp();
+            } else {
+                // Loading normal jika bukan setelah update
+                setTimeout(() => {
+                    if (splash) {
+                        splash.style.opacity = '0';
+                        setTimeout(() => splash.style.visibility = 'hidden', 600);
+                    }
+                    initApp();
+                }, 2500);
+            }
         };
+
+        function initApp() {
+            try { updateDateTime(); } catch(e){}
+            try { startCountdown(); } catch(e){}
+            try { getCoreData(); } catch(e){}
+            if(navigator.onLine) checkForUpdate();
+        }
     </script>
+
 </body>
 </html>
