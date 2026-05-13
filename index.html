@@ -542,7 +542,8 @@ const menuData = {
         items: [
             { id: 1, title: "Sholawat Nariyah", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
 			 { id: 2, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-            { id: 3, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
+			{ id: 3, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
+            { id: 4, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
         ]
     }
 };
@@ -2214,7 +2215,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.5'
+                './service-worker.js?v=2.0.6'
             );
 
             console.log('Service Worker Aktif');
@@ -2342,27 +2343,40 @@ box.innerHTML = `
 document.body.appendChild(box);
 	
 
-                        document
-                            .getElementById('update-btn')
-                            .onclick = () => {
+                      document
+    .getElementById('update-btn')
+    .onclick = () => {
 
-                                newWorker.postMessage({
-                                    action: 'skipWaiting'
-                                });
+        document.getElementById('update-btn').innerHTML =
+            'MENGUPDATE...';
 
-                            };
+        document.getElementById('update-btn').disabled = true;
+
+        newWorker.postMessage({
+            action: 'skipWaiting'
+        });
+
+    };
                     }
 
                 });
 
             });
 
-            navigator.serviceWorker.addEventListener(
-                'controllerchange',
-                () => {
-                    window.location.reload();
-                }
-            );
+           let refreshing = false;
+
+navigator.serviceWorker.addEventListener(
+    'controllerchange',
+    () => {
+
+        if (refreshing) return;
+
+        refreshing = true;
+
+        window.location.reload();
+
+    }
+);
 
         } catch (err) {
 
