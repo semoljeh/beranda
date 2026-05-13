@@ -2204,5 +2204,99 @@ window.addEventListener('popstate', () => {
     }, 2500); // Beri jeda sedikit lebih lama agar transisinya elegan
 };
     </script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+
+    window.addEventListener('load', async () => {
+
+        try {
+
+            const reg = await navigator.serviceWorker.register(
+                './service-worker.js?v=2.0.1'
+            );
+
+            console.log('Service Worker Aktif');
+
+            reg.addEventListener('updatefound', () => {
+
+                const newWorker = reg.installing;
+
+                newWorker.addEventListener('statechange', () => {
+
+                    if (
+                        newWorker.state === 'installed' &&
+                        navigator.serviceWorker.controller
+                    ) {
+
+                        const box = document.createElement('div');
+
+                        box.innerHTML = `
+                            <div style="
+                                position:fixed;
+                                bottom:20px;
+                                left:50%;
+                                transform:translateX(-50%);
+                                background:#0f766e;
+                                color:white;
+                                padding:14px 20px;
+                                border-radius:20px;
+                                z-index:99999;
+                                font-size:12px;
+                                font-weight:bold;
+                                box-shadow:0 10px 30px rgba(0,0,0,.2);
+                            ">
+                                Update Baru Tersedia
+                                
+                                <button id="update-btn" style="
+                                    margin-left:10px;
+                                    background:white;
+                                    color:#0f766e;
+                                    border:none;
+                                    padding:6px 12px;
+                                    border-radius:10px;
+                                    font-weight:bold;
+                                ">
+                                    Update
+                                </button>
+                            </div>
+                        `;
+
+                        document.body.appendChild(box);
+
+                        document
+                            .getElementById('update-btn')
+                            .onclick = () => {
+
+                                newWorker.postMessage({
+                                    action: 'skipWaiting'
+                                });
+
+                            };
+                    }
+
+                });
+
+            });
+
+            navigator.serviceWorker.addEventListener(
+                'controllerchange',
+                () => {
+                    window.location.reload();
+                }
+            );
+
+        } catch (err) {
+
+            console.log('SW gagal', err);
+
+        }
+
+    });
+
+}
+</script>
+	
 </body>
 </html>
