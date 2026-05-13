@@ -481,9 +481,9 @@ body {
 
     <div id="app-modal" class="modal-full">
         <div id="app-sticky-header" class="dzikir-header-premium">
-            <!-- HEADER LAYOUT DIPERBARUI: Kiri (Back), Tengah (Judul), Kanan (Next/Prev) -->
             <div class="flex items-center justify-between gap-3">
                 <div class="w-[80px] flex justify-start">
+                    <!-- TOMBOL KEMBALI DI HEADER -->
                     <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
                 </div>
                 <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest truncate">MENU</h2></div>
@@ -553,8 +553,15 @@ function toggleAppModal(cat) {
     showModalUI();
 }
 
+// Digunakan saat MEMBUKA pertama kali dari Daftar Isi
 function loadMenuDetail(cat, id) {
     window.history.pushState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
+    loadMenuDetailLogic(cat, id);
+}
+
+// Digunakan khusus untuk tombol NEXT & PREV (Agar history tidak menumpuk)
+function navigateMenuDetail(cat, id) {
+    window.history.replaceState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
     loadMenuDetailLogic(cat, id);
 }
 
@@ -577,7 +584,6 @@ window.addEventListener('popstate', (e) => {
         } else if (e.state.view === 'jadwal') {
             openJadwalModalLogic();
         } else if (e.state.view === 'detail') {
-            // Ditambahkan untuk mendukung navigasi tombol prev/next browser native
             loadMenuDetailLogic(e.state.cat, e.state.id);
         }
     } else {
@@ -611,20 +617,20 @@ async function loadMenuDetailLogic(cat, id) {
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = info.title;
     
-    // ========== LOGIKA TOMBOL PREV / NEXT ==========
+    // ========== LOGIKA TOMBOL PREV / NEXT (MENGGUNAKAN navigateMenuDetail) ==========
     let navHtml = '';
     // Jika BUKAN urutan pertama, tampilkan tombol PREV
     if (currentIndex > 0) {
         const prevId = items[currentIndex - 1].id;
-        navHtml += `<button onclick="loadMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
     }
     // Jika BUKAN urutan terakhir, tampilkan tombol NEXT
     if (currentIndex < items.length - 1) {
         const nextId = items[currentIndex + 1].id;
-        navHtml += `<button onclick="loadMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
     }
     document.getElementById('nav-controls').innerHTML = navHtml;
-    // ================================================
+    // ================================================================================
 
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Mengambil Berkah...</div>`;
     
@@ -656,6 +662,7 @@ async function loadMenuDetailLogic(cat, id) {
         </div>
 
         <div class="mt-8 text-center pb-20">
+            <!-- TOMBOL KEMBALI DI BAWAH -->
             <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
             </button>
@@ -666,7 +673,7 @@ async function loadMenuDetailLogic(cat, id) {
         <div class="text-center py-20">
             <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
             <p class="text-red-500 font-bold text-xs uppercase">Gagal Memuat Data</p>
-            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan Lancar.</p>
+            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan link JSON valid.</p>
         </div>
         <div class="mt-4 text-center pb-20">
             <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
