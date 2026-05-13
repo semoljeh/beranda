@@ -486,26 +486,18 @@ body {
     <div id="app-modal" class="modal-full">
         <div id="app-sticky-header" class="dzikir-header-premium">
             
-            <!-- HEADER LAYOUT TERBARU: Fleksibel, Anti Nabrak, Responsif -->
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
-                
-                <!-- KIRI: Tombol Back -->
                 <div class="shrink-0 flex justify-start">
                     <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
-                
-                <!-- TENGAH: Kotak Judul (Hanya selebar isi, tapi tidak melebihi ruang yang ada) -->
                 <div class="flex-1 flex justify-center min-w-0">
                     <div class="dzikir-glassbox !m-0 !py-1.5 !px-3 md:!px-4 w-fit max-w-full flex justify-center items-center">
                         <h2 id="modal-title" class="text-white text-[11px] md:text-xs font-extrabold uppercase tracking-wide leading-tight mt-[1px] text-center break-words">MENU</h2>
                     </div>
                 </div>
-                
-                <!-- KANAN: Tombol Next/Prev (min-w-[40px] sebagai penyeimbang jika kosong) -->
                 <div id="nav-controls" class="shrink-0 flex justify-end gap-1 min-w-[40px]"></div>
-                
             </div>
             
         </div>
@@ -558,13 +550,8 @@ const menuData = {
 };
 
 /* --- 1. MESIN ANIMASI --- */
-function showModalUI() {
-    document.getElementById('app-modal').classList.add('modal-show');
-}
-
-function hideModalUI() {
-    document.getElementById('app-modal').classList.remove('modal-show'); 
-}
+function showModalUI() { document.getElementById('app-modal').classList.add('modal-show'); }
+function hideModalUI() { document.getElementById('app-modal').classList.remove('modal-show'); }
 
 /* --- 2. LOGIKA NAVIGASI BERTINGKAT --- */
 function toggleAppModal(cat) {
@@ -608,17 +595,17 @@ window.addEventListener('popstate', (e) => {
     }
 });
 
-/* --- FUNGSI UNTUK SHOW/HIDE TERJEMAHAN --- */
+/* --- FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) --- */
 function toggleTerjemahan() {
     const container = document.getElementById('doa-terjemahan-container');
     const btn = document.getElementById('btn-toggle-terjemahan');
     
     if (container.style.display === 'none') {
         container.style.display = 'block';
-        btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan';
+        btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Detail';
     } else {
         container.style.display = 'none';
-        btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan';
+        btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Detail';
     }
 }
 
@@ -627,9 +614,7 @@ function loadMenuList(cat) {
     const data = menuData[cat];
     if(!data) return;
     document.getElementById('modal-title').innerText = data.title;
-    
     document.getElementById('nav-controls').innerHTML = ''; 
-
     document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
         <div onclick="loadMenuDetail('${cat}', ${item.id})" class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
             <div class="dzikir-number">${i+1}</div>
@@ -638,18 +623,15 @@ function loadMenuList(cat) {
         </div>`).join('');
 }
 
-// LOGIKA RENDER ISI KONTEN
+// LOGIKA RENDER ISI KONTEN DOA
 async function loadMenuDetailLogic(cat, id) {
     const items = menuData[cat].items;
     const currentIndex = items.findIndex(x => x.id === id);
     const info = items[currentIndex];
-    
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = info.title;
     
-    // ========== LOGIKA TOMBOL PREV / NEXT DI KANAN ==========
     let navHtml = '';
-    
     if (currentIndex > 0) {
         const prevId = items[currentIndex - 1].id;
         navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
@@ -658,9 +640,7 @@ async function loadMenuDetailLogic(cat, id) {
         const nextId = items[currentIndex + 1].id;
         navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
     }
-    
     document.getElementById('nav-controls').innerHTML = navHtml;
-    // =========================================================
 
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Mengambil Berkah...</div>`;
     
@@ -668,25 +648,29 @@ async function loadMenuDetailLogic(cat, id) {
         const res = await fetch(info.path);
         const d = await res.json();
         
-        // --- LOGIKA TERJEMAHAN DENGAN TOMBOL SHOW/HIDE ---
-        let teksArti = "";
-        if (d.arti) {
-            teksArti = Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti;
-        }
+        let teksLatin = d.latin ? (Array.isArray(d.latin) ? d.latin.join('<br><br>') : d.latin) : "";
+        let teksArti = d.arti ? (Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti) : "";
 
+        const adaLatin = teksLatin.trim() !== "" && teksLatin.trim() !== "-";
         const adaArti = teksArti.trim() !== "" && teksArti.trim() !== "-";
 
-        const tampilanArti = adaArti 
+        let kontenTambahan = "";
+        if (adaLatin) {
+            kontenTambahan += `<p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">${teksLatin}</p>`;
+        }
+        if (adaArti) {
+            kontenTambahan += `<p class="text-slate-500 italic text-sm text-justify px-2">"${teksArti}"</p>`;
+        }
+
+        const tampilanDetail = (adaLatin || adaArti) 
             ? `<div class="mt-4 text-center mb-6">
                    <button onclick="toggleTerjemahan()" id="btn-toggle-terjemahan" class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
-                       <i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan
+                       <i class="fa-solid fa-eye mr-1"></i> Tampilkan Detail
                    </button>
                </div>
-               <div id="doa-terjemahan-container" style="display: block;">
+               <div id="doa-terjemahan-container" style="display: none;">
                    <div class="w-16 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                   <p class="text-slate-500 italic text-sm text-justify px-2">
-                       "${teksArti}"
-                   </p>
+                   ${kontenTambahan}
                </div>` 
             : "";
             
@@ -694,22 +678,17 @@ async function loadMenuDetailLogic(cat, id) {
 
         content.innerHTML = `
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-            
             ${d.judul ? `
             <p class="font-arab text-3xl mb-4 leading-[2.5] text-center text-teal-800 font-bold" dir="rtl">
                 ${d.judul}
             </p>
             <hr class="border-t border-slate-100 mb-8 w-full">
             ` : ''}
-
             <p class="font-arab text-3xl mb-4 leading-[2.5] text-justify" dir="rtl">
                 ${teksArab}
             </p>
-
-            ${tampilanArti}
-
+            ${tampilanDetail}
         </div>
-
         <div class="mt-8 text-center pb-20">
             <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
@@ -717,47 +696,168 @@ async function loadMenuDetailLogic(cat, id) {
         </div>
         `;
     } catch (error) {
-        content.innerHTML = `
-        <div class="text-center py-20">
-            <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
-            <p class="text-red-500 font-bold text-xs uppercase">Gagal Memuat Data</p>
-            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan lancar.</p>
-        </div>
-        <div class="mt-4 text-center pb-20">
-            <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
-            </button>
-        </div>`;
+        content.innerHTML = `<div class="text-center py-20"><i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i><p class="text-red-500 font-bold text-xs uppercase">Gagal Memuat Data</p></div>`;
     }
 }
 
-// FUNGSI JADWAL SHALAT
+// ==========================================
+// FUNGSI JADWAL SHALAT (UPDATE LOKASI DISINI)
+// ==========================================
 async function openJadwalModalLogic() {
-    const content = document.getElementById('modal-content-list');
-    document.getElementById('modal-title').innerText = "JADWAL SHALAT";
-    
-    document.getElementById('nav-controls').innerHTML = ''; 
 
-    content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">SINKRONISASI WAKTU...</div>`;
-    try {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=2');
-        const d = await res.json();
-        const t = d.data.timings;
-        const h = d.data.date.hijri;
-        currentSchedule = { Subuh: t.Fajr, Dzuhur: t.Dhuhr, Ashar: t.Asr, Maghrib: t.Maghrib, Isya: t.Isha };
-        let html = `<div class="bg-gradient-to-br from-teal-900 to-teal-700 p-6 rounded-[32px] text-white mb-6 shadow-xl text-center">
-                <h2 id="live-clock" class="text-3xl font-black mb-1">${new Date().toLocaleTimeString('id-ID')}</h2>
-                <div class="flex justify-between text-[9px] font-bold border-t border-white/10 pt-4 uppercase"><span>${h.day} ${h.month.en} ${h.year} H</span><span>${d.data.date.readable}</span></div>
-            </div>`;
-        const schedule = [{n:'Imsak',t:t.Imsak,i:'fa-clock'},{n:'Subuh',t:t.Fajr,i:'fa-cloud-sun'},{n:'Terbit',t:t.Sunrise,i:'fa-sun'},{n:'Dzuhur',t:t.Dhuhr,i:'fa-sun'},{n:'Ashar',t:t.Asr,i:'fa-cloud-sun-rain'},{n:'Maghrib',t:t.Maghrib,i:'fa-moon'},{n:'Isya',t:t.Isha,i:'fa-star'}];
-        html += schedule.map(s => `<div class="flex items-center justify-between p-4 bg-white rounded-3xl border border-slate-50 shadow-sm mb-3">
-                <div class="flex items-center gap-4"><div class="w-11 h-11 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600"><i class="fa-solid ${s.i} text-base"></i></div><span class="text-xs font-black text-slate-700 uppercase tracking-tight">${s.n}</span></div>
-                <div class="flex items-center gap-5"><span class="text-lg font-black text-slate-900 font-mono">${s.t}</span><button onclick="handleAlarm(this, '${s.n}')" class="text-slate-200 transition-all ${localStorage.getItem('alarm_'+s.n)?'alarm-active':''}"><i class="fa-solid fa-bell text-sm"></i></button></div>
-            </div>`).join('');
-        content.innerHTML = html;
-    } catch (e) { 
-        content.innerHTML = `<p class="text-center p-10 text-red-500 font-bold text-xs uppercase">Koneksi Gagal</p>`; 
+    const content = document.getElementById('modal-content-list');
+
+    document.getElementById('modal-title').innerText = "JADWAL SHALAT";
+    document.getElementById('nav-controls').innerHTML = '';
+
+    content.innerHTML = `
+    <div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">
+        MELACAK LOKASI...
+    </div>`;
+
+    // CEK SUPPORT GPS
+    if (!navigator.geolocation) {
+        content.innerHTML = `
+        <p class="text-center p-10 text-red-500 font-bold text-xs uppercase">
+            GPS Tidak Didukung
+        </p>`;
+        return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async(position) => {
+
+            try {
+
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                // API JADWAL BERDASARKAN KOORDINAT
+                const res = await fetch(
+                    `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`
+                );
+
+                const d = await res.json();
+
+                const t = d.data.timings;
+                const h = d.data.date.hijri;
+
+                currentSchedule = {
+                    Subuh: t.Fajr,
+                    Dzuhur: t.Dhuhr,
+                    Ashar: t.Asr,
+                    Maghrib: t.Maghrib,
+                    Isya: t.Isha
+                };
+
+                // AMBIL NAMA KOTA
+                let lokasiText = "Lokasi Tidak Diketahui";
+
+                try {
+
+                    const lokasiRes = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                    );
+
+                    const lokasiData = await lokasiRes.json();
+
+                    lokasiText =
+                        lokasiData.address.city ||
+                        lokasiData.address.county ||
+                        lokasiData.address.state ||
+                        "Indonesia";
+
+                } catch(e) {}
+
+                // HEADER
+                let html = `
+                <div class="bg-gradient-to-br from-teal-900 to-teal-700 p-6 rounded-[32px] text-white mb-6 shadow-xl text-center">
+
+                    <h2 id="live-clock" class="text-3xl font-black mb-1">
+                        ${new Date().toLocaleTimeString('id-ID')}
+                    </h2>
+
+                    <p class="text-xs text-teal-200 font-semibold mb-4 tracking-widest uppercase">
+                        <i class="fa-solid fa-location-dot mr-1"></i>
+                        ${lokasiText}
+                    </p>
+
+                    <div class="flex justify-between text-[9px] font-bold border-t border-white/10 pt-4 uppercase">
+                        <span>${h.day} ${h.month.en} ${h.year} H</span>
+                        <span>${d.data.date.readable}</span>
+                    </div>
+
+                </div>`;
+
+                // JADWAL
+                const schedule = [
+                    {n:'Imsak',t:t.Imsak,i:'fa-clock'},
+                    {n:'Subuh',t:t.Fajr,i:'fa-cloud-sun'},
+                    {n:'Terbit',t:t.Sunrise,i:'fa-sun'},
+                    {n:'Dzuhur',t:t.Dhuhr,i:'fa-sun'},
+                    {n:'Ashar',t:t.Asr,i:'fa-cloud-sun-rain'},
+                    {n:'Maghrib',t:t.Maghrib,i:'fa-moon'},
+                    {n:'Isya',t:t.Isha,i:'fa-star'}
+                ];
+
+                html += schedule.map(s => `
+                <div class="flex items-center justify-between p-4 bg-white rounded-3xl border border-slate-50 shadow-sm mb-3">
+
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600">
+                            <i class="fa-solid ${s.i} text-base"></i>
+                        </div>
+
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">
+                            ${s.n}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-5">
+
+                        <span class="text-lg font-black text-slate-900 font-mono">
+                            ${s.t}
+                        </span>
+
+                        <button onclick="handleAlarm(this, '${s.n}')"
+                            class="text-slate-200 transition-all ${localStorage.getItem('alarm_'+s.n)?'alarm-active':''}">
+
+                            <i class="fa-solid fa-bell text-sm"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>`).join('');
+
+                content.innerHTML = html;
+
+            } catch(e) {
+
+                content.innerHTML = `
+                <p class="text-center p-10 text-red-500 font-bold text-xs uppercase">
+                    Gagal Mengambil Jadwal
+                </p>`;
+            }
+
+        },
+
+        // JIKA GPS DITOLAK
+        () => {
+
+            content.innerHTML = `
+            <p class="text-center p-10 text-red-500 font-bold text-xs uppercase">
+                IZINKAN AKSES LOKASI
+            </p>`;
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+    );
 }
 
 /* --- 5. UTILITIES & ALARM BOOTSTRAP --- */
@@ -772,9 +872,28 @@ function handleAlarm(btn, name) {
 
 (async () => {
     try {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=2');
-        const d = await res.json();
-        currentSchedule = { Subuh: d.data.timings.Fajr, Dzuhur: d.data.timings.Dhuhr, Ashar: d.data.timings.Asr, Maghrib: d.data.timings.Maghrib, Isya: d.data.timings.Isha };
+
+        navigator.geolocation.getCurrentPosition(async(pos) => {
+
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            const res = await fetch(
+                `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`
+            );
+
+            const d = await res.json();
+
+            currentSchedule = {
+                Subuh: d.data.timings.Fajr,
+                Dzuhur: d.data.timings.Dhuhr,
+                Ashar: d.data.timings.Asr,
+                Maghrib: d.data.timings.Maghrib,
+                Isya: d.data.timings.Isha
+            };
+
+        });
+
     } catch(e) {}
     setInterval(() => {
         if (!currentSchedule) return;
@@ -1841,7 +1960,7 @@ function toggleCalendar() {
         renderDoaDetailLogic(id);
     }
 
-    /* FUNGSI UNTUK SHOW/HIDE TERJEMAHAN */
+    /* FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) */
     function toggleTerjemahan() {
         const container = document.getElementById('doa-terjemahan-container');
         const btn = document.getElementById('btn-toggle-terjemahan');
@@ -1886,20 +2005,31 @@ function toggleCalendar() {
             const response = await fetch(dInfo.path);
             const d = await response.json();
 
-            // LOGIKA CEK TERJEMAHAN YANG DIPERKETAT
-            // Akan bernilai true jika arti ada, tidak kosong, dan bukan sekadar tanda strip "-"
-            const adaArti = d.arti && d.arti.trim() !== "" && d.arti.trim() !== "-";
+            // LOGIKA CEK LATIN DAN ARTI (DUKUNG ARRAY DAN TEKS KOSONG/STRIP)
+            let teksLatin = d.latin ? (Array.isArray(d.latin) ? d.latin.join('<br><br>') : d.latin) : "";
+            let teksArti = d.arti ? (Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti) : "";
 
-            // Jika ada arti, bikin tombol dan kotak artinya. Jika tidak ada, kosongkan ("").
-            const tampilanArti = adaArti 
+            const adaLatin = teksLatin.trim() !== "" && teksLatin.trim() !== "-";
+            const adaArti = teksArti.trim() !== "" && teksArti.trim() !== "-";
+
+            let kontenTambahan = "";
+            if (adaLatin) {
+                kontenTambahan += `<p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">${teksLatin}</p>`;
+            }
+            if (adaArti) {
+                kontenTambahan += `<p class="text-sm text-slate-500 italic leading-relaxed text-justify">"${teksArti}"</p>`;
+            }
+
+            // PERUBAHAN DI SINI: display default menjadi "none" dan teks "Tampilkan Terjemahan"
+            const tampilanDetail = (adaLatin || adaArti) 
                 ? `<div class="mt-2 text-center mb-4">
                        <button onclick="toggleTerjemahan()" id="btn-toggle-terjemahan" class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
-                           <i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan
+                           <i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan
                        </button>
                    </div>
-                   <div id="doa-terjemahan-container" style="display: block;">
+                   <div id="doa-terjemahan-container" style="display: none;">
                        <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                       <p class="text-sm text-slate-500 italic leading-relaxed" style="text-align: justify;">"${d.arti}"</p>
+                       ${kontenTambahan}
                    </div>` 
                 : "";
 
@@ -1914,7 +2044,7 @@ function toggleCalendar() {
                         ${teksArab}
                     </p>
                     
-                    ${tampilanArti}
+                    ${tampilanDetail}
                 </div>
                 <div class="mt-8 text-center">
                     <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
@@ -1937,7 +2067,6 @@ function toggleCalendar() {
     }
 </script>
 </section>
-
         <!-- =============================================
              KLP 9: NAVIGATION BAR & LOCATION PICKER
              ============================================= -->
