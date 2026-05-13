@@ -401,6 +401,10 @@ body {
              KLP 5: MENU GRIDE)
              ============================================= -->
 
+<!-- =============================================
+             KLP 5: MENU GRIDE)
+             ============================================= -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -481,15 +485,29 @@ body {
 
     <div id="app-modal" class="modal-full">
         <div id="app-sticky-header" class="dzikir-header-premium">
-            <div class="flex items-center justify-between gap-3">
-                <div class="w-[80px] flex justify-start">
-                    <!-- TOMBOL KEMBALI DI HEADER -->
-                    <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+            
+            <!-- HEADER LAYOUT TERBARU: Fleksibel, Anti Nabrak, Responsif -->
+            <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
+                
+                <!-- KIRI: Tombol Back -->
+                <div class="shrink-0 flex justify-start">
+                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
                 </div>
-                <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest truncate">MENU</h2></div>
-                <!-- Tempat Tombol Next & Prev Dinamis -->
-                <div id="nav-controls" class="w-[80px] flex justify-end gap-1.5"></div>
+                
+                <!-- TENGAH: Kotak Judul (Hanya selebar isi, tapi tidak melebihi ruang yang ada) -->
+                <div class="flex-1 flex justify-center min-w-0">
+                    <div class="dzikir-glassbox !m-0 !py-1.5 !px-3 md:!px-4 w-fit max-w-full flex justify-center items-center">
+                        <h2 id="modal-title" class="text-white text-[11px] md:text-xs font-extrabold uppercase tracking-wide leading-tight mt-[1px] text-center break-words">MENU</h2>
+                    </div>
+                </div>
+                
+                <!-- KANAN: Tombol Next/Prev (min-w-[40px] sebagai penyeimbang jika kosong) -->
+                <div id="nav-controls" class="shrink-0 flex justify-end gap-1 min-w-[40px]"></div>
+                
             </div>
+            
         </div>
         <div id="modal-content-list" onscroll="handleMenuScroll(this)" class="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24"></div>
     </div>
@@ -519,7 +537,9 @@ const menuData = {
         items: [
             { id: 1, title: "Ratib Al-Athas", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/alathas.json" },
             { id: 2, title: "Ratib Al-Haddad", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/haddad.json" },
-            { id: 3, title: "Syaikhona Kholil Bangkalan", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" }
+			{ id: 3, title: "Syaikhona Kholil Bangkalan", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" },
+            { id: 4, title: "Syaikhona Kholil Bangkalan", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" },
+			{ id: 5, title: "Syaikhona Kholil Bangkalan", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" }
         ]
     },
     maulid: {
@@ -546,20 +566,18 @@ function hideModalUI() {
     document.getElementById('app-modal').classList.remove('modal-show'); 
 }
 
-/* --- 2. LOGIKA NAVIGASI BERTINGKAT (MENU < DAFTAR ISI < ISI) --- */
+/* --- 2. LOGIKA NAVIGASI BERTINGKAT --- */
 function toggleAppModal(cat) {
     window.history.pushState({ modal: 'app', view: 'list', cat: cat }, '', '#' + cat);
     loadMenuList(cat);
     showModalUI();
 }
 
-// Digunakan saat MEMBUKA pertama kali dari Daftar Isi
 function loadMenuDetail(cat, id) {
     window.history.pushState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
     loadMenuDetailLogic(cat, id);
 }
 
-// Digunakan khusus untuk tombol NEXT & PREV (Agar history tidak menumpuk)
 function navigateMenuDetail(cat, id) {
     window.history.replaceState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
     loadMenuDetailLogic(cat, id);
@@ -574,7 +592,6 @@ async function openJadwalModal() {
 /* --- 3. KONTROL TOMBOL BACK DEVICE --- */
 window.addEventListener('popstate', (e) => {
     const m = document.getElementById('app-modal');
-    
     if (e.state && e.state.modal === 'app') {
         m.classList.add('modal-show');
         m.classList.add('modal-visible');
@@ -597,7 +614,6 @@ function loadMenuList(cat) {
     if(!data) return;
     document.getElementById('modal-title').innerText = data.title;
     
-    // HAPUS tombol navigasi Prev/Next saat berada di Daftar Isi
     document.getElementById('nav-controls').innerHTML = ''; 
 
     document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
@@ -617,20 +633,20 @@ async function loadMenuDetailLogic(cat, id) {
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = info.title;
     
-    // ========== LOGIKA TOMBOL PREV / NEXT (MENGGUNAKAN navigateMenuDetail) ==========
+    // ========== LOGIKA TOMBOL PREV / NEXT DI KANAN ==========
     let navHtml = '';
-    // Jika BUKAN urutan pertama, tampilkan tombol PREV
+    
     if (currentIndex > 0) {
         const prevId = items[currentIndex - 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
     }
-    // Jika BUKAN urutan terakhir, tampilkan tombol NEXT
     if (currentIndex < items.length - 1) {
         const nextId = items[currentIndex + 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
     }
+    
     document.getElementById('nav-controls').innerHTML = navHtml;
-    // ================================================================================
+    // =========================================================
 
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Mengambil Berkah...</div>`;
     
@@ -662,7 +678,6 @@ async function loadMenuDetailLogic(cat, id) {
         </div>
 
         <div class="mt-8 text-center pb-20">
-            <!-- TOMBOL KEMBALI DI BAWAH -->
             <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
             </button>
@@ -673,7 +688,7 @@ async function loadMenuDetailLogic(cat, id) {
         <div class="text-center py-20">
             <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
             <p class="text-red-500 font-bold text-xs uppercase">Gagal Memuat Data</p>
-            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan lancar</p>
+            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan lancar.</p>
         </div>
         <div class="mt-4 text-center pb-20">
             <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
@@ -688,7 +703,6 @@ async function openJadwalModalLogic() {
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = "JADWAL SHALAT";
     
-    // HAPUS tombol navigasi Prev/Next saat berada di Jadwal
     document.getElementById('nav-controls').innerHTML = ''; 
 
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">SINKRONISASI WAKTU...</div>`;
@@ -1716,14 +1730,26 @@ function toggleCalendar() {
 
     <div id="doa-modal" class="modal-full">
         <div id="doa-sticky-header" class="doa-header-premium">
-            <!-- HEADER LAYOUT DIPERBARUI UNTUK NEXT/PREV -->
-            <div class="flex items-center justify-between gap-3">
-                <div class="w-[80px] flex justify-start">
-                    <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white shrink-0 active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+            <!-- HEADER LAYOUT TERBARU: Fleksibel, Anti Nabrak, Responsif -->
+            <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
+                
+                <!-- KIRI: Tombol Back -->
+                <div class="shrink-0 flex justify-start">
+                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
                 </div>
-                <div class="doa-glassbox flex-1"><h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none truncate">Kumpulan Doa</h2></div>
-                <!-- Tempat Tombol Next & Prev Dinamis -->
-                <div id="doa-nav-controls" class="w-[80px] flex justify-end gap-1.5"></div>
+                
+                <!-- TENGAH: Kotak Judul (Maksimal 2 baris, fleksibel selebar teks) -->
+                <div class="flex-1 flex justify-center min-w-0">
+                    <div class="doa-glassbox !m-0 !py-1.5 !px-3 md:!px-4 w-fit max-w-full flex justify-center items-center">
+                        <h2 id="doa-header-title" class="text-white text-[11px] md:text-xs font-extrabold uppercase tracking-wide leading-tight mt-[1px] text-center line-clamp-2 break-words">KUMPULAN DOA</h2>
+                    </div>
+                </div>
+                
+                <!-- KANAN: Tombol Next/Prev Kumpul -->
+                <div id="doa-nav-controls" class="shrink-0 flex justify-end gap-1 min-w-[40px]"></div>
+                
             </div>
         </div>
         <div id="doa-content" onscroll="handleDoaScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
@@ -1749,12 +1775,10 @@ function toggleCalendar() {
     function toggleDoa() {
         const el = document.getElementById('doa-modal');
         if (!el.classList.contains('modal-show')) {
-            // Gunakan fungsi pushState bawaan dari framework bapak (jika ada)
             if(typeof pushState === 'function') pushState('doa', { doa_view: 'list' });
             el.classList.add('modal-show');
             loadDoaList();
         } else {
-            // Pemicu tombol back browser
             window.history.back();
         }
     }
@@ -1765,10 +1789,10 @@ function toggleCalendar() {
         const content = document.getElementById('doa-content');
         const header = document.getElementById('doa-sticky-header');
 
-        // HAPUS tombol navigasi Next/Prev saat di Daftar Isi
+        // Bersihkan area tombol kanan
         document.getElementById('doa-nav-controls').innerHTML = ''; 
 
-        titleEl.innerText = "Kumpulan Doa";
+        titleEl.innerText = "KUMPULAN DOA";
         content.scrollTop = 0;
         header.classList.remove('doa-header-slim');
 
@@ -1811,17 +1835,15 @@ function toggleCalendar() {
         header.classList.remove('doa-header-slim');
         titleEl.innerText = dInfo.judul;
 
-        // ========== LOGIKA TOMBOL PREV / NEXT ==========
+        // ========== LOGIKA TOMBOL PREV / NEXT DI KANAN ==========
         let navHtml = '';
-        // Jika BUKAN urutan pertama, tampilkan tombol PREV
         if (currentIndex > 0) {
             const prevId = dataDoaMadasa[currentIndex - 1].id;
-            navHtml += `<button onclick="navigateDoaDetail(${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
+            navHtml += `<button onclick="navigateDoaDetail(${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
         }
-        // Jika BUKAN urutan terakhir, tampilkan tombol NEXT
         if (currentIndex < dataDoaMadasa.length - 1) {
             const nextId = dataDoaMadasa[currentIndex + 1].id;
-            navHtml += `<button onclick="navigateDoaDetail(${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
+            navHtml += `<button onclick="navigateDoaDetail(${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
         }
         document.getElementById('doa-nav-controls').innerHTML = navHtml;
         // ================================================
@@ -1836,13 +1858,11 @@ function toggleCalendar() {
             const response = await fetch(dInfo.path);
             const d = await response.json();
 
-            // Cek jika ada arti, jika tidak kosongkan
             const tampilanArti = d.arti && d.arti.trim() !== "" 
                 ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
                    <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` 
                 : "";
 
-            // Cek untuk memastikan format array dibaca dengan benar (tambahan keamanan)
             const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
 
             content.innerHTML = `
@@ -1855,7 +1875,6 @@ function toggleCalendar() {
                     ${tampilanArti}
                 </div>
                 <div class="mt-8 text-center">
-                    <!-- Tombol Kembali yang lebih bergaya agar seragam -->
                     <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
                     </button>
