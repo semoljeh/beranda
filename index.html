@@ -1858,9 +1858,10 @@ function toggleCalendar() {
             const response = await fetch(dInfo.path);
             const d = await response.json();
 
+            // PENYESUAIAN: Menambahkan 'text-justify' agar teks arti/latin rata kanan-kiri
             const tampilanArti = d.arti && d.arti.trim() !== "" 
                 ? `<div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                   <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` 
+                   <p class="text-sm text-slate-500 italic leading-relaxed text-justify">"${d.arti}"</p>` 
                 : "";
 
             const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
@@ -1869,9 +1870,12 @@ function toggleCalendar() {
                 <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
                     <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
                     <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-                    <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">
+                    
+                    <!-- PENYESUAIAN: Menghapus style="text-align-last: center;" agar teks Arab tidak memaksa rata tengah di baris terakhir -->
+                    <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" dir="rtl">
                         ${teksArab}
                     </p>
+                    
                     ${tampilanArti}
                 </div>
                 <div class="mt-8 text-center">
@@ -1895,7 +1899,6 @@ function toggleCalendar() {
     }
 </script>
 </section>
-
 
 
         <!-- =============================================
