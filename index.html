@@ -543,6 +543,7 @@ const menuData = {
             { id: 1, title: "Sholawat Nariyah", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
 			 { id: 2, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
 			{ id: 3, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
+			{ id: 3, title: "Sholawat Fatih'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
             { id: 4, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
         ]
     }
@@ -2497,12 +2498,14 @@ window.addEventListener('popstate', () => {
 <script>
 if ('serviceWorker' in navigator) {
 
-    window.addEventListener('load', async () => {
+   window.addEventListener('load', () => {
+
+    setTimeout(async () => {
 
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.8'
+                './service-worker.js?v=2.0.9'
             );
 
             console.log('Service Worker Aktif');
@@ -2675,6 +2678,8 @@ navigator.serviceWorker.addEventListener(
     console.log('SW gagal', err);
 
 }
+
+	   }, 4000);
 
 });
 
