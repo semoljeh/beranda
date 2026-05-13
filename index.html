@@ -2166,8 +2166,7 @@ window.addEventListener('popstate', () => {
          KLP 10: GLOBAL INITIALIZATION SCRIPT
          ============================================= -->
     <script>
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./service-worker.js'); }
-
+       
         function updateDateTime() {
             const now = new Date(); 
             const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -2214,7 +2213,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.1'
+                './service-worker.js?v=2.0.2'
             );
 
             console.log('Service Worker Aktif');
