@@ -1743,7 +1743,6 @@ function toggleCalendar() {
 </section>
 
 
-
 <!-- =============================================
       KLP 8: DAILY DOA (STEADFAST DYNAMIC HEADER)
       ============================================= -->
@@ -1762,8 +1761,12 @@ function toggleCalendar() {
         <div id="doa-sticky-header" class="doa-header-premium">
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
                 <div class="shrink-0 flex justify-start">
-                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+                    <button
+                        onclick="window.history.back()"
+                        class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+
                         <i class="fa-solid fa-arrow-left"></i>
+
                     </button>
                 </div>
                 <div class="flex-1 flex justify-center min-w-0">
@@ -1778,173 +1781,457 @@ function toggleCalendar() {
     </div>
 
 <script>
-    /* 1. DATA MASTER DOA */
-    const dataDoaMadasa = [
-        { id: 1, judul: "Doa Bangun Tidur", path: "https://raw.githubusercontent.com/semoljeh/beranda/refs/heads/main/datadoa/Doa%20Bangun%20Tidur.json" },
-        { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" },
-        { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" },
-        { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" },
-        { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" }
-    ];
+const dataDoaMadasa = [
 
-    function handleDoaScroll(el) {
-        const header = document.getElementById('doa-sticky-header');
-        header.classList.toggle('doa-header-slim', el.scrollTop > 50);
+    {
+        id: 1,
+        judul: "Doa Harian",
+        submenu: [
+
+            {
+                id: 101,
+                judul: "Doa Bangun Tidur",
+                path: "https://raw.githubusercontent.com/semoljeh/beranda/refs/heads/main/datadoa/Doa%20Bangun%20Tidur.json"
+            },
+
+            {
+                id: 102,
+                judul: "Doa Masuk Masjid",
+                path: "datadoa/doamasukmasjid.json"
+            },
+
+            {
+                id: 103,
+                judul: "Doa Untuk Orang Tua",
+                path: "datadoa/doaorangtua.json"
+            },
+
+            {
+                id: 104,
+                judul: "Doa Sapu Jagad",
+                path: "datadoa/doasapujagad.json"
+            }
+
+        ]
+    },
+
+    {
+        id: 2,
+        judul: "Doa Walimah",
+        submenu: [
+
+            {
+                id: 201,
+                judul: "Doa Walimatul Ursy",
+                path: "datadoa/walimah.json"
+            },
+
+            {
+                id: 202,
+                judul: "Doa Pengantin",
+                path: "datadoa/pengantin.json"
+            }
+
+        ]
+    },
+
+    {
+        id: 300,
+        judul: "Doa Sapu Jagad",
+        path: "datadoa/doasapujagad.json"
     }
 
-    function toggleDoa() {
-        const el = document.getElementById('doa-modal');
-        if (!el.classList.contains('modal-show')) {
-            if(typeof pushState === 'function') pushState('doa', { doa_view: 'list' });
-            el.classList.add('modal-show');
-            loadDoaList();
-        } else {
-            window.history.back();
-        }
-    }
+];
 
-    function loadDoaList() {
-        const titleEl = document.getElementById('doa-header-title');
-        const content = document.getElementById('doa-content');
-        const header = document.getElementById('doa-sticky-header');
+function handleDoaScroll(el) {
+    const header = document.getElementById('doa-sticky-header');
+    header.classList.toggle('doa-header-slim', el.scrollTop > 50);
+}
 
-        document.getElementById('doa-nav-controls').innerHTML = ''; 
-        titleEl.innerText = "KUMPULAN DOA";
-        content.scrollTop = 0;
-        header.classList.remove('doa-header-slim');
+function toggleDoa() {
+    const el = document.getElementById('doa-modal');
 
-        content.innerHTML = dataDoaMadasa.map((d, index) => `
-            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card active:scale-95 transition-transform">
-                <div class="doa-number">${index + 1}</div>
-                <span class="doa-title-text">${d.judul}</span>
-                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
-            </div>
-        `).join('');
-    }
+    if (!el.classList.contains('modal-show')) {
 
-    function loadDoaDetail(id) {
         if(typeof pushState === 'function') {
-            pushState('doa', { doa_view: 'detail', id: id });
-        } else {
-            window.history.pushState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
+            pushState('doa', { doa_view: 'list' });
         }
-        renderDoaDetailLogic(id);
+
+        el.classList.add('modal-show');
+
+        loadDoaList();
+
+    } else {
+
+        window.history.back();
+
+    }
+}
+
+function loadDoaList() {
+
+    const titleEl = document.getElementById('doa-header-title');
+    const content = document.getElementById('doa-content');
+    const header = document.getElementById('doa-sticky-header');
+
+    document.getElementById('doa-nav-controls').innerHTML = '';
+
+    titleEl.innerText = "KUMPULAN DOA";
+
+    content.scrollTop = 0;
+
+    header.classList.remove('doa-header-slim');
+
+    content.innerHTML = dataDoaMadasa.map((d, index) => `
+
+        <div
+            onclick="
+                ${d.submenu
+                    ? `loadDoaSubmenu(${d.id})`
+                    : `loadDoaDetail(${d.id})`
+                }
+            "
+            class="doa-item-card active:scale-95 transition-transform"
+        >
+
+            <div class="doa-number">${index + 1}</div>
+
+            <span class="doa-title-text">${d.judul}</span>
+
+            ${d.submenu
+                ? `<i class="fa-solid fa-folder text-teal-500 text-[12px]"></i>`
+                : `<i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>`
+            }
+
+        </div>
+
+    `).join('');
+}
+
+function loadDoaSubmenu(id){
+
+    const folder = dataDoaMadasa.find(x => x.id === id);
+
+    const content = document.getElementById('doa-content');
+
+    document.getElementById('doa-header-title')
+        .innerText = folder.judul;
+
+    content.scrollTop = 0;
+
+    content.innerHTML = folder.submenu.map((d, index) => `
+
+        <div
+            onclick="loadDoaDetail(${d.id}, ${folder.id})"
+            class="doa-item-card active:scale-95 transition-transform"
+        >
+
+            <div class="doa-number">${index + 1}</div>
+
+            <span class="doa-title-text">${d.judul}</span>
+
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+
+        </div>
+
+    `).join('');
+}
+
+
+function loadDoaDetail(id, parentId = null) {
+
+    const content = document.getElementById('doa-content');
+
+    content.innerHTML = `
+        <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
+            Mengambil Berkah...
+        </div>
+    `;
+
+    if(typeof pushState === 'function') {
+
+        pushState('doa', {
+            doa_view: 'detail',
+            id: id,
+            parentId: parentId
+        });
+
+    } else {
+
+        window.history.pushState({
+            modal: 'doa',
+            view: 'detail',
+            id: id,
+            parentId: parentId
+        }, '', '#detail');
+
     }
 
-    function navigateDoaDetail(id) {
-        if(typeof window.history.replaceState === 'function') {
-            window.history.replaceState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
-        }
-        renderDoaDetailLogic(id);
+    renderDoaDetailLogic(id);
+}
+
+
+function navigateDoaDetail(id) {
+
+    if(typeof window.history.replaceState === 'function') {
+
+        window.history.replaceState({
+            modal: 'doa',
+            view: 'detail',
+            id: id
+        }, '', '#detail');
+
     }
 
-    /* FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) */
-    function toggleTerjemahan() {
-        const container = document.getElementById('doa-terjemahan-container');
-        const btn = document.getElementById('btn-toggle-terjemahan');
-        
-        if (container.style.display === 'none') {
-            container.style.display = 'block';
-            btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan';
-        } else {
-            container.style.display = 'none';
-            btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan';
-        }
+    renderDoaDetailLogic(id);
+}
+
+function toggleTerjemahan() {
+
+    const container = document.getElementById('doa-terjemahan-container');
+
+    const btn = document.getElementById('btn-toggle-terjemahan');
+
+    if (container.style.display === 'none') {
+
+        container.style.display = 'block';
+
+        btn.innerHTML =
+            '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan';
+
+    } else {
+
+        container.style.display = 'none';
+
+        btn.innerHTML =
+            '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan';
+
+    }
+}
+
+async function renderDoaDetailLogic(id) {
+
+    const content = document.getElementById('doa-content');
+
+    const semuaDoa = dataDoaMadasa.flatMap(x => {
+
+    if (x.submenu) {
+        return x.submenu;
     }
 
-    async function renderDoaDetailLogic(id) {
-        const content = document.getElementById('doa-content');
-        const currentIndex = dataDoaMadasa.findIndex(i => i.id === id);
-        const dInfo = dataDoaMadasa[currentIndex];
-        const header = document.getElementById('doa-sticky-header');
-        const titleEl = document.getElementById('doa-header-title');
+    return [x];
 
-        content.scrollTop = 0;
-        header.classList.remove('doa-header-slim');
-        titleEl.innerText = dInfo.judul;
+});
 
-        let navHtml = '';
-        if (currentIndex > 0) {
-            const prevId = dataDoaMadasa[currentIndex - 1].id;
-            navHtml += `<button onclick="navigateDoaDetail(${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
+    const currentIndex = semuaDoa.findIndex(i => i.id === id);
+
+    let parentId = null;
+
+    dataDoaMadasa.forEach(folder => {
+
+        if(folder.submenu){
+
+            folder.submenu.forEach(item => {
+
+                if(item.id === id){
+                    parentId = folder.id;
+                }
+
+            });
+
         }
-        if (currentIndex < dataDoaMadasa.length - 1) {
-            const nextId = dataDoaMadasa[currentIndex + 1].id;
-            navHtml += `<button onclick="navigateDoaDetail(${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
+
+    });
+
+    const dInfo = {
+        ...semuaDoa[currentIndex],
+        parentId
+    };
+
+    const header = document.getElementById('doa-sticky-header');
+
+    const titleEl = document.getElementById('doa-header-title');
+
+    content.scrollTop = 0;
+
+    header.classList.remove('doa-header-slim');
+
+    titleEl.innerText = dInfo.judul;
+
+    let navHtml = '';
+
+    if (currentIndex > 0) {
+
+        const prevId = semuaDoa[currentIndex - 1].id;
+
+        navHtml += `
+            <button onclick="navigateDoaDetail(${prevId})"
+                class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+        `;
+    }
+
+    if (currentIndex < semuaDoa.length - 1) {
+
+        const nextId = semuaDoa[currentIndex + 1].id;
+
+        navHtml += `
+            <button onclick="navigateDoaDetail(${nextId})"
+                class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        `;
+    }
+
+    document.getElementById('doa-nav-controls').innerHTML = navHtml;
+
+    content.innerHTML = `
+        <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
+            Mengambil Berkah...
+        </div>`;
+
+    try {
+
+        const response = await fetch(dInfo.path);
+
+        const d = await response.json();
+
+        let teksLatin = d.latin
+            ? (Array.isArray(d.latin)
+                ? d.latin.join('<br><br>')
+                : d.latin)
+            : "";
+
+        let teksArti = d.arti
+            ? (Array.isArray(d.arti)
+                ? d.arti.join('<br><br>')
+                : d.arti)
+            : "";
+
+        const adaLatin =
+            teksLatin.trim() !== "" &&
+            teksLatin.trim() !== "-";
+
+        const adaArti =
+            teksArti.trim() !== "" &&
+            teksArti.trim() !== "-";
+
+        let kontenTambahan = "";
+
+        if (adaLatin) {
+
+            kontenTambahan += `
+                <p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">
+                    ${teksLatin}
+                </p>
+            `;
         }
-        document.getElementById('doa-nav-controls').innerHTML = navHtml;
+
+        if (adaArti) {
+
+            kontenTambahan += `
+                <p class="text-sm text-slate-500 italic leading-relaxed text-justify">
+                    "${teksArti}"
+                </p>
+            `;
+        }
+
+        const tampilanDetail = (adaLatin || adaArti)
+
+            ? `
+                <div class="mt-2 text-center mb-4">
+
+                    <button
+                        onclick="toggleTerjemahan()"
+                        id="btn-toggle-terjemahan"
+                        class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
+
+                        <i class="fa-solid fa-eye mr-1"></i>
+
+                        Tampilkan Terjemahan
+
+                    </button>
+
+                </div>
+
+                <div id="doa-terjemahan-container" style="display:none;">
+
+                    <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+
+                    ${kontenTambahan}
+
+                </div>
+            `
+            : "";
+
+        const teksArab = Array.isArray(d.arab)
+            ? d.arab.join('<br><br>')
+            : d.arab;
 
         content.innerHTML = `
-            <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
-                Mengambil Berkah...
-            </div>`;
+            <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
 
-        try {
-            const response = await fetch(dInfo.path);
-            const d = await response.json();
+                <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">
+                    بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+                </h3>
 
-            // LOGIKA CEK LATIN DAN ARTI (DUKUNG ARRAY DAN TEKS KOSONG/STRIP)
-            let teksLatin = d.latin ? (Array.isArray(d.latin) ? d.latin.join('<br><br>') : d.latin) : "";
-            let teksArti = d.arti ? (Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti) : "";
+                <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
 
-            const adaLatin = teksLatin.trim() !== "" && teksLatin.trim() !== "-";
-            const adaArti = teksArti.trim() !== "" && teksArti.trim() !== "-";
+                <p class="font-arab text-3xl mb-8 leading-[2.5]"
+                    style="text-align:justify;"
+                    dir="rtl">
 
-            let kontenTambahan = "";
-            if (adaLatin) {
-                kontenTambahan += `<p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">${teksLatin}</p>`;
-            }
-            if (adaArti) {
-                kontenTambahan += `<p class="text-sm text-slate-500 italic leading-relaxed text-justify">"${teksArti}"</p>`;
-            }
+                    ${teksArab}
 
-            // PERUBAHAN DI SINI: display default menjadi "none" dan teks "Tampilkan Terjemahan"
-            const tampilanDetail = (adaLatin || adaArti) 
-                ? `<div class="mt-2 text-center mb-4">
-                       <button onclick="toggleTerjemahan()" id="btn-toggle-terjemahan" class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
-                           <i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan
-                       </button>
-                   </div>
-                   <div id="doa-terjemahan-container" style="display: none;">
-                       <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                       ${kontenTambahan}
-                   </div>` 
-                : "";
+                </p>
 
-            const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
+                ${tampilanDetail}
 
-            content.innerHTML = `
-                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-                    <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                    <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-                    
-                    <p class="font-arab text-3xl mb-8 leading-[2.5]" style="text-align: justify;" dir="rtl">
-                        ${teksArab}
-                    </p>
-                    
-                    ${tampilanDetail}
-                </div>
-                <div class="mt-8 text-center">
-                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
-                    </button>
-                </div>`;
-        } catch (e) {
-            content.innerHTML = `
-                <div class="text-center p-10">
-                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
-                    <p class="text-xs text-red-500 font-bold uppercase">Gagal memuat doa</p>
-                    <p class="text-[10px] text-slate-400 mt-2">Pastikan internet aktif dan lancar</p>
-                </div>
-                <div class="mt-4 text-center">
-                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
-                    </button>
-                </div>`;
-        }
+            </div>
+
+            <div class="mt-8 text-center">
+
+                <button
+                    onclick="
+                        ${dInfo.parentId
+                            ? `loadDoaSubmenu(${dInfo.parentId})`
+                            : `loadDoaList()`
+                        }
+                    "
+                    class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+
+                    Kembali ke Daftar
+
+                </button>
+
+            </div>
+        `;
+
+    } catch (e) {
+
+        content.innerHTML = `
+            <div class="text-center p-10">
+
+                <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
+
+                <p class="text-xs text-red-500 font-bold uppercase">
+                    Gagal memuat doa
+                </p>
+
+                <p class="text-[10px] text-slate-400 mt-2">
+                    Pastikan internet aktif dan lancar
+                </p>
+
+            </div>
+        `;
     }
+}
 </script>
 </section>
+
         <!-- =============================================
              KLP 9: NAVIGATION BAR & LOCATION PICKER
              ============================================= -->
