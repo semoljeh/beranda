@@ -1709,17 +1709,21 @@ function toggleCalendar() {
         .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
         .doa-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; transition: all 0.4s ease; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-top: 0px; margin-left: 10px; margin-right: 10px; }
         .doa-header-slim .doa-glassbox { padding: 10px 18px; border-radius: 15px; }
-        .doa-item-card { padding: 0.85rem 1.1rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; }
+        .doa-item-card { padding: 0.85rem 1.1rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .doa-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
         .doa-title-text { flex: 1; font-weight: 700; font-size: 13px; color: #334155; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     </style>
 
     <div id="doa-modal" class="modal-full">
         <div id="doa-sticky-header" class="doa-header-premium">
-            <div class="flex items-center gap-4">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white shrink-0"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="doa-glassbox flex-1"><h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none">Kumpulan Doa</h2></div>
-                <div class="w-10"></div>
+            <!-- HEADER LAYOUT DIPERBARUI UNTUK NEXT/PREV -->
+            <div class="flex items-center justify-between gap-3">
+                <div class="w-[80px] flex justify-start">
+                    <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white shrink-0 active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="doa-glassbox flex-1"><h2 id="doa-header-title" class="text-white text-sm font-extrabold uppercase tracking-widest leading-none truncate">Kumpulan Doa</h2></div>
+                <!-- Tempat Tombol Next & Prev Dinamis -->
+                <div id="doa-nav-controls" class="w-[80px] flex justify-end gap-1.5"></div>
             </div>
         </div>
         <div id="doa-content" onscroll="handleDoaScroll(this)" class="flex-1 overflow-y-auto p-5 bg-slate-50 pb-24"></div>
@@ -1745,8 +1749,8 @@ function toggleCalendar() {
     function toggleDoa() {
         const el = document.getElementById('doa-modal');
         if (!el.classList.contains('modal-show')) {
-            // Push state awal untuk level LIST
-            pushState('doa', { doa_view: 'list' });
+            // Gunakan fungsi pushState bawaan dari framework bapak (jika ada)
+            if(typeof pushState === 'function') pushState('doa', { doa_view: 'list' });
             el.classList.add('modal-show');
             loadDoaList();
         } else {
@@ -1761,12 +1765,15 @@ function toggleCalendar() {
         const content = document.getElementById('doa-content');
         const header = document.getElementById('doa-sticky-header');
 
+        // HAPUS tombol navigasi Next/Prev saat di Daftar Isi
+        document.getElementById('doa-nav-controls').innerHTML = ''; 
+
         titleEl.innerText = "Kumpulan Doa";
         content.scrollTop = 0;
         header.classList.remove('doa-header-slim');
 
         content.innerHTML = dataDoaMadasa.map((d, index) => `
-            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card">
+            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card active:scale-95 transition-transform">
                 <div class="doa-number">${index + 1}</div>
                 <span class="doa-title-text">${d.judul}</span>
                 <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
@@ -1774,19 +1781,50 @@ function toggleCalendar() {
         `).join('');
     }
 
-    /* 5. FUNGSI RENDER ISI DOA (DETAIL VIEW) */
-    async function loadDoaDetail(id) {
-        // Tambahkan history baru untuk level DETAIL
-        pushState('doa', { doa_view: 'detail' });
+    /* 5. FUNGSI PEMISAH: MASUK DARI DAFTAR (Tambah History Baru) */
+    function loadDoaDetail(id) {
+        if(typeof pushState === 'function') {
+            pushState('doa', { doa_view: 'detail', id: id });
+        } else {
+            window.history.pushState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
+        }
+        renderDoaDetailLogic(id);
+    }
 
+    /* 6. FUNGSI PEMISAH: PINDAH DARI TOMBOL NEXT/PREV (Ganti Isi Tanpa Tambah History) */
+    function navigateDoaDetail(id) {
+        if(typeof window.history.replaceState === 'function') {
+            window.history.replaceState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
+        }
+        renderDoaDetailLogic(id);
+    }
+
+    /* 7. FUNGSI RENDER ISI DOA (DETAIL VIEW) */
+    async function renderDoaDetailLogic(id) {
         const content = document.getElementById('doa-content');
-        const dInfo = dataDoaMadasa.find(i => i.id === id);
+        const currentIndex = dataDoaMadasa.findIndex(i => i.id === id);
+        const dInfo = dataDoaMadasa[currentIndex];
         const header = document.getElementById('doa-sticky-header');
         const titleEl = document.getElementById('doa-header-title');
 
         content.scrollTop = 0;
         header.classList.remove('doa-header-slim');
         titleEl.innerText = dInfo.judul;
+
+        // ========== LOGIKA TOMBOL PREV / NEXT ==========
+        let navHtml = '';
+        // Jika BUKAN urutan pertama, tampilkan tombol PREV
+        if (currentIndex > 0) {
+            const prevId = dataDoaMadasa[currentIndex - 1].id;
+            navHtml += `<button onclick="navigateDoaDetail(${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
+        }
+        // Jika BUKAN urutan terakhir, tampilkan tombol NEXT
+        if (currentIndex < dataDoaMadasa.length - 1) {
+            const nextId = dataDoaMadasa[currentIndex + 1].id;
+            navHtml += `<button onclick="navigateDoaDetail(${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
+        }
+        document.getElementById('doa-nav-controls').innerHTML = navHtml;
+        // ================================================
 
         // Loading State
         content.innerHTML = `
@@ -1804,24 +1842,35 @@ function toggleCalendar() {
                    <p class="text-sm text-slate-500 italic leading-relaxed">"${d.arti}"</p>` 
                 : "";
 
+            // Cek untuk memastikan format array dibaca dengan benar (tambahan keamanan)
+            const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
+
             content.innerHTML = `
                 <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
                     <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
                     <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
                     <p class="font-arab text-3xl mb-8 leading-[2.5] text-justify" style="text-align-last: center;" dir="rtl">
-                        ${d.arab}
+                        ${teksArab}
                     </p>
                     ${tampilanArti}
                 </div>
                 <div class="mt-8 text-center">
-                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <!-- Tombol Kembali yang lebih bergaya agar seragam -->
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
                     </button>
                 </div>`;
         } catch (e) {
             content.innerHTML = `
-                <div class="text-center p-10 text-xs text-red-400 font-bold uppercase">
-                    Gagal memuat doa.
+                <div class="text-center p-10">
+                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
+                    <p class="text-xs text-red-500 font-bold uppercase">Gagal memuat doa</p>
+                    <p class="text-[10px] text-slate-400 mt-2">Pastikan internet aktif dan link JSON valid.</p>
+                </div>
+                <div class="mt-4 text-center">
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                    </button>
                 </div>`;
         }
     }
