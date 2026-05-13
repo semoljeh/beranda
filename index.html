@@ -541,6 +541,7 @@ const menuData = {
         title: "Kumpulan Sholawat",
         items: [
             { id: 1, title: "Sholawat Nariyah", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
+			 { id: 1, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
             { id: 2, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
         ]
     }
@@ -2213,7 +2214,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.2'
+                './service-worker.js?v=2.0.3'
             );
 
             console.log('Service Worker Aktif');
