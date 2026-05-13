@@ -396,6 +396,7 @@ body {
         </script>
     </section>
 
+
 <!-- =============================================
              KLP 5: MENU GRIDE)
              ============================================= -->
@@ -423,8 +424,7 @@ body {
         .menu-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; }
 
         /* MODAL PREMIUM: TRANSISI DUA ARAH */
-       /* MODAL PREMIUM KLP 5 */
-#app-modal.modal-full { background: #f8fafc; z-index: 9999; }
+        #app-modal.modal-full { background: #f8fafc; z-index: 9999; }
 
         .dzikir-header-premium { 
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
@@ -435,7 +435,7 @@ body {
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
-        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; }
+        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; overflow: hidden; }
         .doa-header-slim .dzikir-glassbox { padding: 10px 18px; border-radius: 15px; }
 
         .dzikir-item-card { padding: 1rem 1.2rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; }
@@ -481,10 +481,14 @@ body {
 
     <div id="app-modal" class="modal-full">
         <div id="app-sticky-header" class="dzikir-header-premium">
-            <div class="flex items-center gap-4">
-                <button onclick="window.history.back()" class="p-2 bg-white/10 rounded-xl text-white active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
-                <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest">MENU</h2></div>
-                <div class="w-10"></div>
+            <!-- HEADER LAYOUT DIPERBARUI: Kiri (Back), Tengah (Judul), Kanan (Next/Prev) -->
+            <div class="flex items-center justify-between gap-3">
+                <div class="w-[80px] flex justify-start">
+                    <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div class="dzikir-glassbox"><h2 id="modal-title" class="text-white text-xs font-extrabold uppercase tracking-widest truncate">MENU</h2></div>
+                <!-- Tempat Tombol Next & Prev Dinamis -->
+                <div id="nav-controls" class="w-[80px] flex justify-end gap-1.5"></div>
             </div>
         </div>
         <div id="modal-content-list" onscroll="handleMenuScroll(this)" class="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24"></div>
@@ -514,8 +518,8 @@ const menuData = {
         title: "Kumpulan Ratib",
         items: [
             { id: 1, title: "Ratib Al-Athas", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/alathas.json" },
-            { id: 2, title: "Ratib Al-Haddad", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" },
-			 { id: 3, title: "Ratib Syaikhona Kholil", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" }
+            { id: 2, title: "Ratib Al-Haddad", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/haddad.json" },
+            { id: 3, title: "Syaikhona Kholil Bangkalan", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/ratib/syaikhona.json" }
         ]
     },
     maulid: {
@@ -533,7 +537,6 @@ const menuData = {
     }
 };
 
-
 /* --- 1. MESIN ANIMASI --- */
 function showModalUI() {
     document.getElementById('app-modal').classList.add('modal-show');
@@ -545,14 +548,12 @@ function hideModalUI() {
 
 /* --- 2. LOGIKA NAVIGASI BERTINGKAT (MENU < DAFTAR ISI < ISI) --- */
 function toggleAppModal(cat) {
-    // PUSH STATE 1: Buka DAFTAR ISI (Level 1)
     window.history.pushState({ modal: 'app', view: 'list', cat: cat }, '', '#' + cat);
     loadMenuList(cat);
     showModalUI();
 }
 
 function loadMenuDetail(cat, id) {
-    // PUSH STATE 2: Buka ISI (Level 2)
     window.history.pushState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
     loadMenuDetailLogic(cat, id);
 }
@@ -563,25 +564,23 @@ async function openJadwalModal() {
     showModalUI();
 }
 
-/* --- 3. KONTROL TOMBOL BACK DEVICE (Fungsi Inti) --- */
+/* --- 3. KONTROL TOMBOL BACK DEVICE --- */
 window.addEventListener('popstate', (e) => {
     const m = document.getElementById('app-modal');
     
-    // Cek apakah riwayat (state) saat ini milik modul KLP 5 ini
     if (e.state && e.state.modal === 'app') {
-        
-        // PAKSA MODAL TETAP BUKA (Agar tidak ditutup otomatis oleh script KLP 3)
         m.classList.add('modal-show');
         m.classList.add('modal-visible');
 
         if (e.state.view === 'list') {
-            // MUNDUR DARI "ISI" KE "DAFTAR ISI"
             loadMenuList(e.state.cat);
         } else if (e.state.view === 'jadwal') {
             openJadwalModalLogic();
+        } else if (e.state.view === 'detail') {
+            // Ditambahkan untuk mendukung navigasi tombol prev/next browser native
+            loadMenuDetailLogic(e.state.cat, e.state.id);
         }
     } else {
-        // MUNDUR DARI "DAFTAR ISI" KE "MENU BERANDA"
         hideModalUI();
     }
 });
@@ -591,6 +590,10 @@ function loadMenuList(cat) {
     const data = menuData[cat];
     if(!data) return;
     document.getElementById('modal-title').innerText = data.title;
+    
+    // HAPUS tombol navigasi Prev/Next saat berada di Daftar Isi
+    document.getElementById('nav-controls').innerHTML = ''; 
+
     document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
         <div onclick="loadMenuDetail('${cat}', ${item.id})" class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
             <div class="dzikir-number">${i+1}</div>
@@ -599,34 +602,88 @@ function loadMenuList(cat) {
         </div>`).join('');
 }
 
+// LOGIKA RENDER ISI KONTEN
 async function loadMenuDetailLogic(cat, id) {
-    const info = menuData[cat].items.find(x => x.id === id);
+    const items = menuData[cat].items;
+    const currentIndex = items.findIndex(x => x.id === id);
+    const info = items[currentIndex];
+    
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = info.title;
+    
+    // ========== LOGIKA TOMBOL PREV / NEXT ==========
+    let navHtml = '';
+    // Jika BUKAN urutan pertama, tampilkan tombol PREV
+    if (currentIndex > 0) {
+        const prevId = items[currentIndex - 1].id;
+        navHtml += `<button onclick="loadMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-left"></i></button>`;
+    }
+    // Jika BUKAN urutan terakhir, tampilkan tombol NEXT
+    if (currentIndex < items.length - 1) {
+        const nextId = items[currentIndex + 1].id;
+        navHtml += `<button onclick="loadMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-arrow-right"></i></button>`;
+    }
+    document.getElementById('nav-controls').innerHTML = navHtml;
+    // ================================================
+
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Mengambil Berkah...</div>`;
+    
     try {
         const res = await fetch(info.path);
         const d = await res.json();
         
-        // REVISI: Teks Arab diubah jadi text-justify (Rata Kanan Kiri) dan style text-align-last dihapus
-        content.innerHTML = `<div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <p class="font-arab text-3xl mb-10 leading-[2.5] text-justify" dir="rtl">${Array.isArray(d.arab)?d.arab.join(' '):d.arab}</p>
-                <div class="w-16 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-                <p class="text-slate-500 italic text-sm text-justify px-2">"${Array.isArray(d.arti)?d.arti.join(' '):d.arti}"</p>
-            </div>
-            <div class="mt-8 text-center pb-20">
-                <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
-                </button>
-            </div>`;
-    } catch (e) { 
-        content.innerHTML = `<p class="text-center p-10 text-red-400 font-bold text-xs uppercase tracking-widest">Gagal memuat konten</p>`; 
+        content.innerHTML = `
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            
+            ${d.judul ? `
+            <p class="font-arab text-3xl mb-4 leading-[2.5] text-center text-teal-800 font-bold" dir="rtl">
+                ${d.judul}
+            </p>
+            <hr class="border-t border-slate-100 mb-8 w-full">
+            ` : ''}
+
+            <p class="font-arab text-3xl mb-10 leading-[2.5] text-justify" dir="rtl">
+                ${Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab}
+            </p>
+
+            ${d.arti ? `
+            <div class="w-16 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+            <p class="text-slate-500 italic text-sm text-justify px-2">
+                "${Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti}"
+            </p>
+            ` : ''}
+
+        </div>
+
+        <div class="mt-8 text-center pb-20">
+            <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
+            </button>
+        </div>
+        `;
+    } catch (error) {
+        content.innerHTML = `
+        <div class="text-center py-20">
+            <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
+            <p class="text-red-500 font-bold text-xs uppercase">Gagal Memuat Data</p>
+            <p class="text-[10px] font-normal mt-2 text-slate-400">Pastikan internet aktif dan Lancar.</p>
+        </div>
+        <div class="mt-4 text-center pb-20">
+            <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+            </button>
+        </div>`;
     }
 }
 
+// FUNGSI JADWAL SHALAT
 async function openJadwalModalLogic() {
     const content = document.getElementById('modal-content-list');
     document.getElementById('modal-title').innerText = "JADWAL SHALAT";
+    
+    // HAPUS tombol navigasi Prev/Next saat berada di Jadwal
+    document.getElementById('nav-controls').innerHTML = ''; 
+
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">SINKRONISASI WAKTU...</div>`;
     try {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=2');
@@ -644,7 +701,9 @@ async function openJadwalModalLogic() {
                 <div class="flex items-center gap-5"><span class="text-lg font-black text-slate-900 font-mono">${s.t}</span><button onclick="handleAlarm(this, '${s.n}')" class="text-slate-200 transition-all ${localStorage.getItem('alarm_'+s.n)?'alarm-active':''}"><i class="fa-solid fa-bell text-sm"></i></button></div>
             </div>`).join('');
         content.innerHTML = html;
-    } catch (e) { content.innerHTML = `<p class="text-center p-10 text-red-500 font-bold text-xs uppercase">Koneksi Gagal</p>`; }
+    } catch (e) { 
+        content.innerHTML = `<p class="text-center p-10 text-red-500 font-bold text-xs uppercase">Koneksi Gagal</p>`; 
+    }
 }
 
 /* --- 5. UTILITIES & ALARM BOOTSTRAP --- */
