@@ -2076,14 +2076,27 @@ function toggleCalendar() {
 
         function closeUpdateAlert() { document.getElementById('update-alert-box').classList.remove('show'); }
 
-        function forceUpdateApp() {
-            if(typeof showToast === 'function') showToast("Menyinkronkan data terbaru...");
-            if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
-            setTimeout(() => { 
-                // Otomatis kembali ke root beranda tanpa hash agar bersih
-                window.location.href = 'https://semoljeh.github.io/beranda/?v=' + new Date().getTime();
-            }, 1000);
-        }
+        /**
+ * 2. FUNGSI UPDATE PAKSA (VERSI ANTI-NYANGKUT)
+ */
+function forceUpdateApp() {
+    if(typeof showToast === 'function') showToast("Menyinkronkan data terbaru...");
+    
+    // 1. Bersihkan Cache PWA
+    if ('caches' in window) {
+        caches.keys().then(names => {
+            for (let name of names) caches.delete(name);
+        });
+    }
+    
+    // 2. Gunakan .replace() agar TIDAK menumpuk di history/tombol back HP
+    setTimeout(() => {
+        const targetUrl = 'https://semoljeh.github.io/beranda/?v=' + new Date().getTime();
+        
+        // PAKAI INI: Mengganti halaman sekarang, bukan menambah yang baru
+        window.location.replace(targetUrl);
+    }, 1000);
+}
 
         function toggleProfile() {
             const modal = document.getElementById('profile-modal');
