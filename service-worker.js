@@ -1,4 +1,4 @@
-const CACHE_NAME = "semoljeh-v2.0.8";
+const CACHE_NAME = "semoljeh-v2.0.9";
 
 const urlsToCache = [
   "./",
@@ -11,7 +11,7 @@ const urlsToCache = [
 // INSTALL
 self.addEventListener("install", event => {
 
-  self.skipWaiting();
+
 
   event.waitUntil(
 
