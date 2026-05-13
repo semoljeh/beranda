@@ -1,60 +1,52 @@
-const CACHE_NAME = 'almukhtar-v4';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
-  
+const CACHE_NAME = "semoljeh-v2.0.0";
+
+const urlsToCache = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./notif.mp3"
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
+// INSTALL
+self.addEventListener("install", event => {
   self.skipWaiting();
+
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
 });
 
-self.addEventListener('activate', (event) => {
+// ACTIVATE
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then(keys => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
       );
     })
   );
+
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Menangkap API Quran, Jadwal Sholat, dan Hari Libur
-  const isApiRequest = url.origin.includes('api.quran.com') || 
-                       url.origin.includes('api.aladhan.com') || 
-                       url.origin.includes('libur.deno.dev');
-
-  if (isApiRequest) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const resClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-  } 
-  else {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
-          return networkResponse;
-        });
-        return cachedResponse || fetchPromise;
+// FETCH
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
       })
-    );
+  );
+});
+
+// FORCE UPDATE
+self.addEventListener('message', event => {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
   }
 });
