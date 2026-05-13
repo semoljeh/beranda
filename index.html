@@ -2172,6 +2172,85 @@ function toggleCalendar() {
             if(navigator.onLine) checkForUpdate();
         }
     </script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+        try {
+            const reg = await navigator.serviceWorker.register('./service-worker.js');
+
+            console.log('SW aktif');
+
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+
+                newWorker.addEventListener('statechange', () => {
+                    if (
+                        newWorker.state === 'installed' &&
+                        navigator.serviceWorker.controller
+                    ) {
+
+                        const updateBox = document.createElement('div');
+
+                        updateBox.innerHTML = `
+                            <div style="
+                                position:fixed;
+                                bottom:20px;
+                                left:50%;
+                                transform:translateX(-50%);
+                                background:#0f766e;
+                                color:white;
+                                padding:14px 20px;
+                                border-radius:20px;
+                                z-index:99999;
+                                font-size:12px;
+                                font-weight:bold;
+                                box-shadow:0 10px 30px rgba(0,0,0,.2);
+                            ">
+                                Versi baru tersedia
+                                <button id="update-app-btn" style="
+                                    margin-left:10px;
+                                    background:white;
+                                    color:#0f766e;
+                                    border:none;
+                                    padding:6px 12px;
+                                    border-radius:10px;
+                                    font-weight:bold;
+                                ">
+                                    Update
+                                </button>
+                            </div>
+                        `;
+
+                        document.body.appendChild(updateBox);
+
+                        document
+                          .getElementById('update-app-btn')
+                          .onclick = () => {
+                              newWorker.postMessage({
+                                  action: 'skipWaiting'
+                              });
+                          };
+                    }
+                });
+            });
+
+            navigator.serviceWorker.addEventListener(
+              'controllerchange',
+              () => {
+                  window.location.reload();
+              }
+            );
+
+        } catch (e) {
+            console.log('SW gagal', e);
+        }
+    });
+}
+</script>
+
+	
 </body>
 </html>
 
