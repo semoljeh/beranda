@@ -1994,7 +1994,6 @@ function toggleCalendar() {
      ============================================= -->
 
 <style>
-        /* 1. CSS PROFILE */
         #profile-modal { z-index: 500; }
         .profile-card {
             background: white; border-radius: 28px; padding: 24px; width: 85%; max-width: 300px;
@@ -2003,26 +2002,20 @@ function toggleCalendar() {
         }
         #profile-modal.opacity-100 .profile-card { transform: scale(1); }
 
-        /* 2. CSS UPDATE MODAL (Anti-Blokir Tombol i) */
         #update-alert-box {
             position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%) scale(0.9);
             width: 85%; max-width: 320px; background: white;
             border: 1px solid #f1f5f9; border-radius: 35px;
             padding: 30px 25px; text-align: center; 
-            display: none; /* Benar-benar hilang agar tombol i bisa ditekan */
-            z-index: 10001;
+            display: none; z-index: 10001;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        #update-alert-box.show {
-            display: block; opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
+        #update-alert-box.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .update-icon-circle {
             width: 60px; height: 60px; background: #f0fdfa; color: #0d9488; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
-            font-size: 24px;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px;
         }
         .animate-spin-slow { animation: spin 3s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -2034,7 +2027,7 @@ function toggleCalendar() {
             <div class="w-20 h-20 mx-auto mb-3 rounded-2xl overflow-hidden border-4 border-teal-50 shadow-md">
                 <img src="https://raw.githubusercontent.com/semoljeh/beranda/main/foto-profil.jpg" class="w-full h-full object-cover">
             </div>
-            <h3 class="text-xl font-black text-slate-800 tracking-tight">Arom Kobama</h3>
+            <h3 class="text-xl font-black text-slate-800 tracking-tight text-center">Arom Kobama</h3>
             <p class="text-teal-600 font-bold text-[9px] uppercase tracking-[0.15em] mt-1 text-center">Programmer & Developer</p>
             <div class="mt-4 flex justify-center gap-2.5">
                  <a href="https://semoljeh.github.io/beranda/" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-blue-500 border border-slate-100"><i class="fa-solid fa-globe text-sm"></i></a>
@@ -2055,8 +2048,8 @@ function toggleCalendar() {
 
     <div id="update-alert-box">
         <div class="update-icon-circle"><i class="fa-solid fa-sync animate-spin-slow"></i></div>
-        <h4 class="text-teal-700 font-black text-xs uppercase tracking-widest mb-3">Pembaruan Tersedia!</h4>
-        <p class="text-slate-600 text-[11px] leading-relaxed font-medium mb-6">Versi terbaru sudah siap. Klik tombol di bawah untuk memperbarui fitur terbaru secara otomatis.</p>
+        <h4 class="text-teal-700 font-black text-xs uppercase tracking-widest mb-3 text-center">Pembaruan Tersedia!</h4>
+        <p class="text-slate-600 text-[11px] leading-relaxed font-medium mb-6 text-center">Versi terbaru sudah siap. Klik tombol di bawah untuk memperbarui fitur terbaru secara otomatis.</p>
         <div class="flex flex-col gap-2">
             <button onclick="forceUpdateApp()" class="w-full py-3 bg-teal-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest active:scale-95 shadow-lg shadow-teal-200"><i class="fa-solid fa-cloud-arrow-down mr-2"></i> Update Sekarang</button>
             <button onclick="closeUpdateAlert()" class="w-full py-2 text-slate-400 font-bold text-[9px] uppercase tracking-wider active:scale-95">Nanti Saja</button>
@@ -2064,28 +2057,47 @@ function toggleCalendar() {
     </div>
 
     <script>
-        const CURRENT_VERSION = "1.0.2"; 
+        const CURRENT_VERSION = "1.0.1"; 
 
-        // --- 1. MODAL PROFILE ---
+        // --- 1. MODAL PROFILE & BACK BUTTON FIX ---
         function toggleProfile() {
             const modal = document.getElementById('profile-modal');
             if (!modal) return;
+
             if (modal.classList.contains('hidden')) {
-                history.replaceState({ modal: 'profile' }, '', '#profile');
-                modal.classList.remove('hidden');
-                setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 10);
-            } else { closeProfileModal(); }
+                // Gunakan pushState agar tombol back HP bisa menutup modal
+                history.pushState({ modal: 'profile' }, '', '#profile');
+                showProfileVisuals();
+            } else {
+                // Jika tombol Tutup ditekan, kita perintah history untuk back
+                if (window.location.hash === '#profile') {
+                    history.back();
+                } else {
+                    hideProfileVisuals();
+                }
+            }
         }
 
-        function closeProfileModal() {
+        function showProfileVisuals() {
             const modal = document.getElementById('profile-modal');
-            if (!modal) return;
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            setTimeout(() => { 
-                modal.classList.add('hidden');
-                history.replaceState(null, '', window.location.origin + window.location.pathname);
-            }, 300);
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 10);
         }
+
+        function hideProfileVisuals() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // Listen tombol back HP
+        window.addEventListener('popstate', (event) => {
+            const modal = document.getElementById('profile-modal');
+            // Jika modal terbuka, tutup modalnya
+            if (modal && !modal.classList.contains('hidden')) {
+                hideProfileVisuals();
+            }
+        });
 
         // --- 2. SISTEM UPDATE ---
         async function checkForUpdate() {
@@ -2105,9 +2117,9 @@ function toggleCalendar() {
 
         function forceUpdateApp() {
             if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
-            // PENTING: Gunakan origin + pathname agar link bersih tanpa ?v= lama
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.location.replace(cleanUrl + '?upd=' + Date.now());
+            // replaceState menghapus jejak halaman ini dari history
+            const target = window.location.origin + window.location.pathname + '?upd=' + Date.now();
+            window.location.replace(target);
         }
 
         function closeUpdateAlert() {
@@ -2118,9 +2130,11 @@ function toggleCalendar() {
             }
         }
 
-        // --- 3. CORE LOADING (PERBAIKAN WAKTU & NAVIGASI) ---
+        // --- 3. CORE INITIALIZATION ---
         window.onload = () => {
-            // Jalankan update waktu segera
+            // Anchor: Set state awal agar history bersih
+            history.replaceState({ modal: null }, '', window.location.pathname);
+            
             try { updateDateTime(); } catch(e){}
 
             const splash = document.getElementById('splash-screen');
@@ -2129,18 +2143,9 @@ function toggleCalendar() {
                     splash.style.opacity = '0';
                     setTimeout(() => splash.style.visibility = 'hidden', 600);
                 }
-                
-                // Panggil fungsi inti yang sempat berhenti
                 try { startCountdown(); } catch(e){}
                 try { getCoreData(); } catch(e){}
-                
-                if(navigator.onLine) {
-                    checkForUpdate();
-                    setTimeout(() => {
-                        try { loadSurahList(); } catch(e){}
-                        try { loadDoaList(); } catch(e){}
-                    }, 1000);
-                }
+                if(navigator.onLine) checkForUpdate();
             }, 2500);
         };
     </script>
