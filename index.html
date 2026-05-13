@@ -2059,22 +2059,16 @@ function toggleCalendar() {
     <script>
         const CURRENT_VERSION = "1.0.2"; 
 
-        // --- 1. MODAL PROFILE & BACK BUTTON FIX ---
+        // --- 1. MODAL PROFILE & BACK HP ---
         function toggleProfile() {
             const modal = document.getElementById('profile-modal');
             if (!modal) return;
-
             if (modal.classList.contains('hidden')) {
-                // Gunakan pushState agar tombol back HP bisa menutup modal
                 history.pushState({ modal: 'profile' }, '', '#profile');
                 showProfileVisuals();
             } else {
-                // Jika tombol Tutup ditekan, kita perintah history untuk back
-                if (window.location.hash === '#profile') {
-                    history.back();
-                } else {
-                    hideProfileVisuals();
-                }
+                if (window.location.hash === '#profile') { history.back(); } 
+                else { hideProfileVisuals(); }
             }
         }
 
@@ -2090,13 +2084,9 @@ function toggleCalendar() {
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // Listen tombol back HP
         window.addEventListener('popstate', (event) => {
             const modal = document.getElementById('profile-modal');
-            // Jika modal terbuka, tutup modalnya
-            if (modal && !modal.classList.contains('hidden')) {
-                hideProfileVisuals();
-            }
+            if (modal && !modal.classList.contains('hidden')) { hideProfileVisuals(); }
         });
 
         // --- 2. SISTEM UPDATE ---
@@ -2117,7 +2107,7 @@ function toggleCalendar() {
 
         function forceUpdateApp() {
             if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
-            // replaceState menghapus jejak halaman ini dari history
+            // Langsung timpa halaman sekarang dengan parameter unik
             const target = window.location.origin + window.location.pathname + '?upd=' + Date.now();
             window.location.replace(target);
         }
@@ -2130,11 +2120,15 @@ function toggleCalendar() {
             }
         }
 
-        // --- 3. CORE INITIALIZATION ---
+        // --- 3. CORE INITIALIZATION (KUNCI HISTORY HP) ---
         window.onload = () => {
-            // Anchor: Set state awal agar history bersih
-            history.replaceState({ modal: null }, '', window.location.pathname);
-            
+            // PENTING: Jika URL mengandung parameter update (?upd=), 
+            // segera bersihkan URL tanpa menambah riwayat baru.
+            if (window.location.search.includes('upd=')) {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
             try { updateDateTime(); } catch(e){}
 
             const splash = document.getElementById('splash-screen');
