@@ -402,6 +402,11 @@ body {
              ============================================= -->
 
 
+<!-- =============================================
+             KLP 5: MENU GRIDE)
+             ============================================= -->
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -485,7 +490,7 @@ body {
             
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
                 <div class="shrink-0 flex justify-start">
-                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+                    <button onclick="handleHeaderBack()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
@@ -509,9 +514,139 @@ let currentSchedule = null;
 const menuData = {
     dzikir: {
         title: "Kumpulan Dzikir",
+
         items: [
-            { id: 1, title: "Dzikir Pagi", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/pagi.json" },
-            { id: 2, title: "Dzikir Petang", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/petang.json" }
+
+            {
+                id: 1,
+                title: "Dzikir Harian",
+
+                submenu: [
+
+                    {
+                        id: 101,
+                        title: "Wirid Ba'da Sholat Fardu",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/badafardu.json"
+                    },
+
+                    {
+                        id: 102,
+                        title: "Wirid Sebelum Sholat Subuh",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sebelumsubuh.json"
+                    },
+
+                    {
+                        id: 103,
+                        title: "Wirdul Lathif (Pagi)",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulpagi.json"
+                    },
+
+                    {
+                        id: 104,
+                        title: "Wirdul Lathif (Sore)",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulsore.json"
+                    },
+
+                    {
+                        id: 105,
+                        title: "Wirid Menjelang Tidur",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/tidur.json"
+                    },
+
+                    {
+                        id: 106,
+                        title: "Wirid Setelah Sholat Jum'at",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/jumat.json"
+                    }
+
+                ]
+            },
+
+            {
+                id: 2,
+                title: "Istighotsah & Mujahadah",
+
+                submenu: [
+
+                    {
+                        id: 201,
+                        title: "Istighotsah (KH. Romli Tamim)",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/romlitamim.json"
+                    },
+
+                    {
+                        id: 202,
+                        title: "Istighotsah (KH. M. Hasyim Asy'ari)",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/hasyimasyari.json"
+                    },
+
+                    {
+                        id: 203,
+                        title: "Dzikrul Ghafilin",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/ghafilin.json"
+                    },
+
+                    {
+                        id: 204,
+                        title: "Mujahadah (KH. Bisri Syamsuri)",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/bisrisyamsuri.json"
+                    },
+
+                    {
+                        id: 205,
+                        title: "Sayyidul Istighfar",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sayyidulistighfar.json"
+                    },
+
+                    {
+                        id: 206,
+                        title: "I'tiraf",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/itiraf.json"
+                    },
+
+                    {
+                        id: 207,
+                        title: "Yasin Fadilah",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/yasinfadilah.json"
+                    }
+
+                ]
+            }
+,
+
+            {
+                id: 3,
+                title: "Hizib",
+
+                submenu: [
+
+                    {
+                        id: 301,
+                        title: "Hizib Autad",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/autad.json"
+                    },
+
+                    {
+                        id: 302,
+                        title: "Hizib Al-Barr",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/albarr.json"
+                    },
+
+                    {
+                        id: 303,
+                        title: "Hizib Bahr",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/bahr.json"
+                    },
+
+                    {
+                        id: 304,
+                        title: "Hizib Ghazali",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/ghazali.json"
+                    }
+
+                ]
+            }
+
         ]
     },
     yasin: {
@@ -533,8 +668,93 @@ const menuData = {
     },
     maulid: {
         title: "Kumpulan Maulid",
+
         items: [
-            { id: 1, title: "Simtudduror", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/simtudduror.json" }
+
+            {
+                id: 1,
+                title: "Maulid Ad-Diba'i",
+
+                submenu: [
+
+                    {
+                        id: 101,
+                        title: "Niat dan Hadiah Fatihah",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/dibai-niat.json"
+                    },
+
+                    {
+                        id: 102,
+                        title: "Ya Robbi Sholli",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/dibai-sholli.json"
+                    }
+
+                ]
+            },
+
+            {
+                id: 2,
+                title: "Maulid Barzanji",
+
+                submenu: [
+
+                    {
+                        id: 201,
+                        title: "Bab I - Abtadiul Ilma",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/barzanji1.json"
+                    },
+
+                    {
+                        id: 202,
+                        title: "Bab II - Waba'du",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/barzanji2.json"
+                    }
+
+                ]
+            },
+
+            {
+                id: 3,
+                title: "Maulid Syarafil Anam",
+
+                submenu: [
+
+                    {
+                        id: 301,
+                        title: "Assalamu'alaik",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/syaraf1.json"
+                    },
+
+                    {
+                        id: 302,
+                        title: "Ashshalatu 'Alan Nabi",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/syaraf2.json"
+                    }
+
+                ]
+            },
+
+            {
+                id: 4,
+                title: "Simtudduror",
+
+                submenu: [
+
+                    {
+                        id: 401,
+                        title: "Ya Robbi Sholli",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/simt1.json"
+                    },
+
+                    {
+                        id: 402,
+                        title: "Alhamdulillahi",
+                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/simt2.json"
+                    }
+
+                ]
+            }
+
         ]
     },
     sholawat: {
@@ -553,25 +773,62 @@ const menuData = {
 function showModalUI() { document.getElementById('app-modal').classList.add('modal-show'); }
 function hideModalUI() { document.getElementById('app-modal').classList.remove('modal-show'); }
 
+function handleHeaderBack() {
+
+    const title =
+        document.getElementById('modal-title')
+        .innerText;
+
+    // dari detail → submenu
+    if (currentParentSubmenu) {
+
+        loadDzikirSubmenu(
+            currentCategory,
+            currentParentSubmenu
+        );
+
+        currentParentSubmenu = null;
+
+        return;
+    }
+
+    // dari submenu → kumpulan utama
+    if (
+        title !== 'KUMPULAN DZIKIR' &&
+        title !== 'KUMPULAN MAULID'
+    ) {
+
+        loadMenuList(currentCategory);
+
+        return;
+    }
+
+    // dari kumpulan → beranda
+    document.getElementById('app-modal')
+        .classList.remove('modal-show');
+
+    document.body.style.overflow = 'auto';
+}
+
+
+
 /* --- 2. LOGIKA NAVIGASI BERTINGKAT --- */
 function toggleAppModal(cat) {
-    window.history.pushState({ modal: 'app', view: 'list', cat: cat }, '', '#' + cat);
     loadMenuList(cat);
     showModalUI();
 }
 
-function loadMenuDetail(cat, id) {
-    window.history.pushState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
-    loadMenuDetailLogic(cat, id);
+function loadMenuDetail(cat, id, parentId = null) {
+
+    loadMenuDetailLogic(cat, id, parentId);
 }
 
-function navigateMenuDetail(cat, id) {
-    window.history.replaceState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
-    loadMenuDetailLogic(cat, id);
+function navigateMenuDetail(cat, id, parentId = null) {
+
+    loadMenuDetailLogic(cat, id, parentId);
 }
 
 async function openJadwalModal() {
-    window.history.pushState({ modal: 'app', view: 'jadwal' }, '', '#jadwal');
     openJadwalModalLogic();
     showModalUI();
 }
@@ -588,7 +845,11 @@ window.addEventListener('popstate', (e) => {
         } else if (e.state.view === 'jadwal') {
             openJadwalModalLogic();
         } else if (e.state.view === 'detail') {
-            loadMenuDetailLogic(e.state.cat, e.state.id);
+            loadMenuDetailLogic(
+                e.state.cat,
+                e.state.id,
+                e.state.parentId
+            );
         }
     } else {
         hideModalUI();
@@ -610,22 +871,82 @@ function toggleMenuTerjemahan() {
 }
 
 /* --- 4. RENDER KONTEN LIST --- */
+
+function loadDzikirSubmenu(cat, id){
+
+    currentCategory = cat;
+    currentParentSubmenu = id;
+
+
+    const parent = menuData[cat]
+        .items.find(x => x.id === id);
+
+    document.getElementById('modal-title')
+        .innerText = parent.title;
+
+    document.getElementById('nav-controls')
+        .innerHTML = '';
+
+    document.getElementById('modal-content-list')
+        .innerHTML = parent.submenu.map((item, i) => `
+
+        <div
+            onclick="loadMenuDetail('${cat}', ${item.id}, ${parent.id})"
+            class="dzikir-item-card active:scale-95 transition-all cursor-pointer"
+        >
+
+            <div class="dzikir-number">
+                ${i + 1}
+            </div>
+
+            <span class="font-bold text-xs text-slate-700 uppercase flex-1">
+                ${item.title}
+            </span>
+
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+
+        </div>
+
+    `).join('');
+
+}
+
 function loadMenuList(cat) {
     const data = menuData[cat];
     if(!data) return;
     document.getElementById('modal-title').innerText = data.title;
     document.getElementById('nav-controls').innerHTML = ''; 
     document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
-        <div onclick="loadMenuDetail('${cat}', ${item.id})" class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
+        <div onclick="
+            ${item.submenu
+                ? `loadDzikirSubmenu('${cat}', ${item.id})`
+                : `loadMenuDetail('${cat}', ${item.id})`
+            }
+        " class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
             <div class="dzikir-number">${i+1}</div>
             <span class="font-bold text-xs text-slate-700 uppercase flex-1">${item.title}</span>
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+            ${item.submenu
+                ? `<i class="fa-solid fa-folder text-teal-500 text-[12px]"></i>`
+                : `<i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>`
+            }
         </div>`).join('');
 }
 
 // LOGIKA RENDER ISI KONTEN DOA
-async function loadMenuDetailLogic(cat, id) {
-    const items = menuData[cat].items;
+async function loadMenuDetailLogic(cat, id, parentId = null) {
+
+    currentCategory = cat;
+    currentParentSubmenu = parentId;
+
+    const items = menuData[cat].items.flatMap(x => {
+
+    if (x.submenu) {
+        return x.submenu;
+    }
+
+    return [x];
+
+});
     const currentIndex = items.findIndex(x => x.id === id);
     const info = items[currentIndex];
     const content = document.getElementById('modal-content-list');
@@ -634,11 +955,11 @@ async function loadMenuDetailLogic(cat, id) {
     let navHtml = '';
     if (currentIndex > 0) {
         const prevId = items[currentIndex - 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId}, ${parentId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
     }
     if (currentIndex < items.length - 1) {
         const nextId = items[currentIndex + 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId}, ${parentId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
     }
     document.getElementById('nav-controls').innerHTML = navHtml;
 
@@ -690,7 +1011,12 @@ async function loadMenuDetailLogic(cat, id) {
             ${tampilanDetail}
         </div>
         <div class="mt-8 text-center pb-20">
-            <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+            <button onclick="
+                ${parentId
+                    ? `loadDzikirSubmenu('${cat}', ${parentId})`
+                    : `history.back()`
+                }
+            " class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform" >
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
             </button>
         </div>
@@ -2505,7 +2831,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.9'
+                './service-worker.js?v=2.0.10'
             );
 
             console.log('Service Worker Aktif');
