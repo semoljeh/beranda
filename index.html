@@ -403,162 +403,134 @@ body {
 
 
 <!-- 
-  =============================================================
-  AL-MUKHTAR DIGITAL LIBRARY (PREMIUM UNIFIED VERSION)
-  Combining Grid KLP 5 & Premium Style KLP 8
-  =============================================================
+  =============================================
+  KLP 5: MENU GRID (PREMIUM NAVIGATION FIXED)
+  ============================================= 
 -->
 
-<!-- Load Dependencies -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 
-<section id="main-app-container" class="min-h-screen bg-slate-50 pb-12" style="font-family: 'Inter', sans-serif;">
+<section id="module-menu" style="font-family: 'Inter', sans-serif;">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500&family=Inter:wght@400;600;700;800&display=swap');
-        
         .font-kufi { font-family: 'Reem Kufi', sans-serif; }
         .font-arab { font-family: 'LPMQ', 'Amiri', serif; }
 
-        /* --- 1. MENU GRID STYLE (FRONT PAGE) --- */
-        .menu-grid-card { 
-            background: white; border-radius: 1.5rem; padding: 20px 10px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 1px solid #f1f5f9; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+        /* BERANDA GRID STYLE */
+        .menu-card { 
+            background: #ffffff; border-radius: 24px; padding: 18px 10px; 
+            display: flex; flex-direction: column; align-items: center; 
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
         }
-        .menu-grid-card:active { transform: scale(0.92); background-color: #f0fdfa; border-color: #ccfbf1; }
-        
-        .menu-grid-icon { 
-            width: 48px; height: 48px; background: #f0fdfa; color: #0d9488; 
-            border-radius: 16px; display: flex; align-items: center; justify-content: center; 
-            font-size: 1.3rem; margin-bottom: 12px; border: 1px solid #ccfbf1; 
-        }
-        .menu-grid-label { 
-            font-size: 10px; font-weight: 800; text-transform: uppercase; 
-            letter-spacing: 0.05em; color: #334155; text-align: center; 
-        }
+        .menu-card:active { transform: scale(0.92); background-color: #fcfcfc; }
+        .icon-box { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 10px; position: relative; }
+        .icon-bg-overlay { position: absolute; inset: 0; background: currentColor; opacity: 0.12; border-radius: 16px; }
+        .menu-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; }
 
-        /* --- 2. PREMIUM MODAL & LIST STYLE (INNER PAGE) --- */
+        /* MODAL SYSTEM */
         #app-modal { 
             position: fixed; inset: 0; background: #f8fafc; z-index: 9999; 
-            display: none; flex-direction: column; transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none; flex-direction: column;
         }
-        #app-modal.modal-show { display: flex; transform: translateX(0); }
+        #app-modal.modal-show { display: flex !important; }
 
-        .premium-header { 
+        .dzikir-header-premium { 
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); 
             padding: calc(40px + env(safe-area-inset-top)) 20px 45px 20px; 
             border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; 
             box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3); 
-            position: sticky; top: 0; z-index: 50; transition: all 0.4s ease;
+            position: sticky; top: 0; z-index: 50; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .doa-header-slim { padding: calc(10px + env(safe-area-inset-top)) 20px 15px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .dzikir-glassbox { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 25px; padding: 20px; text-align: center; display: flex; justify-content: center; align-items: center; flex: 1; overflow: hidden; }
+        .doa-header-slim .dzikir-glassbox { padding: 10px 18px; border-radius: 15px; }
 
-        .glassbox { 
-            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; 
-            padding: 6px 16px; text-align: center;
-        }
-
-        /* Tombol List di dalam Modal (Sesuai KLP 8) */
-        .premium-item-card { 
-            padding: 0.9rem 1.1rem; background: white; border-radius: 1.25rem; 
-            margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; 
-            align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s;
-        }
-        .premium-item-card:active { transform: scale(0.96); background: #f0fdfa; }
+        /* ITEM CARD (Sesuai KLP 8) */
+        .dzikir-item-card { padding: 1rem 1.2rem; background: white; border-radius: 1.25rem; margin-bottom: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .dzikir-item-card:active { transform: scale(0.96); background: #f0fdfa; }
+        .dzikir-number { width: 32px; height: 32px; background: #f0fdfa; color: #0d9488; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; }
         
-        .item-number { 
-            width: 34px; height: 34px; background: #f0fdfa; color: #0d9488; 
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; 
-            font-size: 12px; font-weight: 800; border: 1px solid #ccfbf1; 
-        }
-        .item-title { flex: 1; font-weight: 700; font-size: 13px; color: #334155; text-transform: uppercase; }
-
-        #app-toast { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: #334155; color: white; padding: 12px 24px; border-radius: 20px; 
-            font-size: 11px; font-weight: 700; z-index: 10000; display: none; 
-        }
-
         .alarm-active { color: #0d9488 !important; transform: scale(1.2); filter: drop-shadow(0 0 5px rgba(13,148,136,0.4)); }
+        #app-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #334155; color: white; padding: 12px 24px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; z-index: 10000; display: none; }
     </style>
 
-    <div id="app-toast">Pesan Notifikasi</div>
+    <div id="app-toast">Alarm Aktif</div>
 
-    <!-- Beranda Title -->
-    <div class="text-center px-8 mb-4 mt-[80px]">
+    <!-- Title Beranda -->
+    <div class="text-center px-8 mb-4 mt-[100px]">
         <h1 class="text-4xl text-teal-600 font-kufi">المختار</h1>
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mt-1">Digital Library</p>
     </div>
 
-    <!-- Menu Grid Utama -->
-    <div class="grid grid-cols-3 gap-4 p-6">
-        <div onclick="openJadwalModal()" class="menu-grid-card">
-            <div class="menu-grid-icon text-sky-600"><i class="fa-solid fa-kaaba"></i></div>
-            <span class="menu-grid-label">Jadwal</span>
+    <!-- Grid Menu Utama -->
+    <div class="grid grid-cols-3 gap-3 p-6">
+        <div onclick="openJadwalModal()" class="menu-card">
+            <div class="icon-box text-sky-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-kaaba"></i></div>
+            <span class="menu-label">Jadwal</span>
         </div>
-        <div onclick="toggleAppModal('dzikir')" class="menu-grid-card">
-            <div class="menu-grid-icon text-emerald-600"><i class="fa-solid fa-mosque"></i></div>
-            <span class="menu-grid-label">Dzikir</span>
+        <div onclick="toggleAppModal('dzikir')" class="menu-card">
+            <div class="icon-box text-emerald-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-mosque"></i></div>
+            <span class="menu-label">Dzikir</span>
         </div>
-        <div onclick="toggleAppModal('yasin')" class="menu-grid-card">
-            <div class="menu-grid-icon text-indigo-600"><i class="fa-solid fa-book-open"></i></div>
-            <span class="menu-grid-label">Yasin</span>
+        <div onclick="toggleAppModal('yasin')" class="menu-card">
+            <div class="icon-box text-indigo-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-book-open"></i></div>
+            <span class="menu-label">Yasin</span>
         </div>
-        <div onclick="toggleAppModal('maulid')" class="menu-grid-card">
-            <div class="menu-grid-icon text-lime-600"><i class="fa-solid fa-hand-holding-heart"></i></div>
-            <span class="menu-grid-label">Maulid</span>
+        <div onclick="toggleAppModal('maulid')" class="menu-card">
+            <div class="icon-box text-lime-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <span class="menu-label">Maulid</span>
         </div>
-        <div onclick="toggleAppModal('sholawat')" class="menu-grid-card">
-            <div class="menu-grid-icon text-rose-600"><i class="fa-solid fa-heart"></i></div>
-            <span class="menu-grid-label">Sholawat</span>
+        <div onclick="toggleAppModal('sholawat')" class="menu-card">
+            <div class="icon-box text-rose-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-heart"></i></div>
+            <span class="menu-label">Sholawat</span>
         </div>
-        <div onclick="toggleAppModal('ratib')" class="menu-grid-card">
-            <div class="menu-grid-icon text-amber-600"><i class="fa-solid fa-scroll"></i></div>
-            <span class="menu-grid-label">Ratib</span>
+        <div onclick="toggleAppModal('ratib')" class="menu-card">
+            <div class="icon-box text-amber-600"><div class="icon-bg-overlay"></div><i class="fa-solid fa-scroll"></i></div>
+            <span class="menu-label">Ratib</span>
         </div>
     </div>
 
-    <!-- Modal Premium -->
+    <!-- Modal Container -->
     <div id="app-modal">
-        <div id="app-sticky-header" class="premium-header">
+        <div id="app-sticky-header" class="dzikir-header-premium">
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
                 <div class="shrink-0">
                     <button onclick="handleHeaderBack()" class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="flex-1 flex justify-center overflow-hidden">
-                    <div class="glassbox w-fit max-w-full">
-                        <h2 id="modal-title" class="text-white text-[11px] font-extrabold uppercase tracking-wide truncate">MENU</h2>
+                <div class="flex-1 flex justify-center min-w-0">
+                    <div class="dzikir-glassbox !m-0 !py-1.5 !px-3 w-fit max-w-full">
+                        <h2 id="modal-title" class="text-white text-[11px] font-extrabold uppercase tracking-wide truncate mt-[1px]">MENU</h2>
                     </div>
                 </div>
-                <div id="nav-controls" class="shrink-0 flex gap-1 min-w-[40px]"></div>
+                <div id="nav-controls" class="shrink-0 flex justify-end gap-1 min-w-[40px]"></div>
             </div>
         </div>
-        <div id="modal-content-list" onscroll="handleMenuScroll(this)" class="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24">
-            <!-- Konten Dinamis Disini -->
-        </div>
+        <div id="modal-content-list" onscroll="handleMenuScroll(this)" class="flex-1 overflow-y-auto p-6 bg-slate-50 pb-24"></div>
     </div>
 </section>
 
 <script>
-/* --- KONFIGURASI DATA --- */
+/* --- 1. DATA CONFIG --- */
 const menuData = {
     dzikir: {
         title: "Kumpulan Dzikir",
         items: [
             { id: 1, title: "Dzikir Harian", submenu: [
                 { id: 101, title: "Wirid Ba'da Sholat Fardu", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/badafardu.json" },
-                { id: 102, title: "Wirid Sebelum Subuh", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sebelumsubuh.json" },
-                { id: 103, title: "Wirdul Lathif (Pagi)", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulpagi.json" }
+                { id: 102, title: "Wirid Sebelum Sholat Subuh", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sebelumsubuh.json" },
+                { id: 103, title: "Wirdul Lathif (Pagi)", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulpagi.json" },
+                { id: 104, title: "Wirdul Lathif (Sore)", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulsore.json" },
+                { id: 105, title: "Wirid Menjelang Tidur", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/tidur.json" }
             ]},
             { id: 2, title: "Istighotsah & Mujahadah", submenu: [
-                { id: 201, title: "KH. Romli Tamim", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/romlitamim.json" },
-                { id: 202, title: "KH. Hasyim Asy'ari", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/hasyimasyari.json" }
+                { id: 201, title: "Istighotsah (KH. Romli Tamim)", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/romlitamim.json" },
+                { id: 202, title: "Istighotsah (KH. M. Hasyim Asy'ari)", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/hasyimasyari.json" },
+                { id: 205, title: "Sayyidul Istighfar", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sayyidulistighfar.json" }
             ]}
         ]
     },
@@ -573,92 +545,102 @@ const menuData = {
         title: "Kumpulan Sholawat",
         items: [
             { id: 1, title: "Sholawat Nariyah", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-            { id: 2, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
+            { id: 4, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
         ]
-    },
-    // Tambahkan kategori lain (ratib, maulid) sesuai format di atas
+    }
 };
 
-/* --- STATE MANAGEMENT --- */
+/* --- 2. NAVIGATION SYSTEM (FIXED) --- */
 let navigationStack = [];
 let currentCategory = null;
 let currentParentId = null;
-let currentSchedule = null;
-const notifAudio = new Audio('notif.mp3');
 
-/* --- NAVIGATION LOGIC --- */
 function toggleAppModal(cat) {
     currentCategory = cat;
     navigationStack = ['home'];
+    // Push state pertama saat buka modal
+    history.pushState({ view: 'home', cat: cat }, '', '');
     loadMenuList(cat);
     document.getElementById('app-modal').classList.add('modal-show');
     document.body.style.overflow = 'hidden';
-    history.pushState({ modalOpen: true }, '', '');
 }
 
-function handleHeaderBack() {
-    if (navigationStack.length <= 1) {
-        document.getElementById('app-modal').classList.remove('modal-show');
-        document.body.style.overflow = 'auto';
-        return;
-    }
-
-    navigationStack.pop();
-    const prevView = navigationStack[navigationStack.length - 1];
-
-    if (prevView === 'home') loadMenuList(currentCategory);
-    else if (prevView === 'submenu') loadSubmenu(currentCategory, currentParentId, true);
-}
-
-window.addEventListener('popstate', () => {
-    if (document.getElementById('app-modal').classList.contains('modal-show')) {
-        handleHeaderBack();
-    }
-});
-
-/* --- RENDERERS --- */
-function loadMenuList(cat) {
-    const data = menuData[cat];
-    if (!data) return;
-    
-    document.getElementById('modal-title').innerText = data.title;
-    document.getElementById('nav-controls').innerHTML = '';
-    
-    const html = data.items.map((item, i) => `
-        <div onclick="${item.submenu ? `loadSubmenu('${cat}', ${item.id})` : `loadDetail('${cat}', ${item.id})`}" class="premium-item-card">
-            <div class="item-number">${i+1}</div>
-            <span class="item-title">${item.title}</span>
-            <i class="fa-solid ${item.submenu ? 'fa-folder text-teal-500' : 'fa-chevron-right text-slate-300'} text-[12px]"></i>
-        </div>
-    `).join('');
-    
-    document.getElementById('modal-content-list').innerHTML = html;
-}
-
-function loadSubmenu(cat, id, isBack = false) {
+function loadDzikirSubmenu(cat, id, isBack = false) {
     currentParentId = id;
-    if(!isBack) navigationStack.push('submenu');
-    
+    if(!isBack) {
+        navigationStack.push('submenu');
+        history.pushState({ view: 'submenu', cat: cat, id: id }, '', '');
+    }
+
     const parent = menuData[cat].items.find(x => x.id === id);
     document.getElementById('modal-title').innerText = parent.title;
+    document.getElementById('nav-controls').innerHTML = '';
     
-    const html = parent.submenu.map((item, i) => `
-        <div onclick="loadDetail('${cat}', ${item.id}, ${id})" class="premium-item-card">
-            <div class="item-number">${i+1}</div>
-            <span class="item-title">${item.title}</span>
+    document.getElementById('modal-content-list').innerHTML = parent.submenu.map((item, i) => `
+        <div onclick="loadMenuDetail('${cat}', ${item.id}, ${id})" class="dzikir-item-card">
+            <div class="dzikir-number">${i + 1}</div>
+            <span class="font-bold text-xs text-slate-700 uppercase flex-1">${item.title}</span>
             <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
         </div>
     `).join('');
-    
-    document.getElementById('modal-content-list').innerHTML = html;
 }
 
-async function loadDetail(cat, id, parentId = null) {
-    navigationStack.push('detail');
+function loadMenuDetail(cat, id, parentId = null, isBack = false) {
+    if(!isBack) {
+        navigationStack.push('detail');
+        history.pushState({ view: 'detail', cat: cat, id: id, parentId: parentId }, '', '');
+    }
+    loadMenuDetailLogic(cat, id, parentId);
+}
+
+function handleHeaderBack() {
+    window.history.back(); // Biarkan popstate yang mengatur UI
+}
+
+/* KUNCI PERBAIKAN: Listener PopState */
+window.addEventListener('popstate', (e) => {
+    const modal = document.getElementById('app-modal');
+    if (!modal.classList.contains('modal-show')) return;
+
+    navigationStack.pop();
+
+    if (navigationStack.length === 0) {
+        // Jika stack habis, tutup modal
+        modal.classList.remove('modal-show');
+        document.body.style.overflow = 'auto';
+    } else {
+        const state = e.state;
+        if (!state) {
+            loadMenuList(currentCategory);
+            return;
+        };
+
+        // Render ulang berdasarkan state history
+        if (state.view === 'home') loadMenuList(state.cat);
+        else if (state.view === 'submenu') loadDzikirSubmenu(state.cat, state.id, true);
+        else if (state.view === 'detail') loadMenuDetail(state.cat, state.id, state.parentId, true);
+    }
+});
+
+/* --- 3. RENDERERS --- */
+function loadMenuList(cat) {
+    const data = menuData[cat];
+    if(!data) return;
+    document.getElementById('modal-title').innerText = data.title;
+    document.getElementById('nav-controls').innerHTML = ''; 
+    document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
+        <div onclick="${item.submenu ? `loadDzikirSubmenu('${cat}', ${item.id})` : `loadMenuDetail('${cat}', ${item.id})`}" class="dzikir-item-card">
+            <div class="dzikir-number">${i+1}</div>
+            <span class="font-bold text-xs text-slate-700 uppercase flex-1">${item.title}</span>
+            ${item.submenu ? `<i class="fa-solid fa-folder text-teal-500 text-[12px]"></i>` : `<i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>`}
+        </div>`).join('');
+}
+
+async function loadMenuDetailLogic(cat, id, parentId) {
     const content = document.getElementById('modal-content-list');
     content.innerHTML = `<div class="text-center py-20 text-teal-600 font-bold text-[10px] animate-pulse uppercase">Mengambil Berkah...</div>`;
-
-    // Cari Info Item
+    
+    // Flatten data untuk navigasi prev/next
     const items = menuData[cat].items.flatMap(x => x.submenu ? x.submenu : [x]);
     const info = items.find(x => x.id === id);
     document.getElementById('modal-title').innerText = info.title;
@@ -666,32 +648,31 @@ async function loadDetail(cat, id, parentId = null) {
     try {
         const res = await fetch(info.path);
         const d = await res.json();
-        
         const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
-        
+
         content.innerHTML = `
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 text-center">
-                <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
-                <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-                <p class="font-arab text-3xl mb-8 leading-[2.5]" dir="rtl">${teksArab}</p>
-                <div id="detail-box" style="display:none" class="mt-6 border-t pt-6">
-                    <p class="text-teal-700 font-semibold text-sm mb-4 text-justify">${d.latin || ''}</p>
-                    <p class="text-slate-500 italic text-sm text-justify">"${d.arti || ''}"</p>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <p class="font-arab text-3xl mb-4 leading-[2.5] text-justify" dir="rtl">${teksArab}</p>
+                <div id="detail-container" style="display:none" class="mt-6 pt-6 border-t border-slate-50">
+                    <p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed">${d.latin || ''}</p>
+                    <p class="text-slate-500 italic text-sm">"${d.arti || ''}"</p>
                 </div>
-                <button onclick="document.getElementById('detail-box').style.display='block'; this.style.display='none'" class="mt-4 text-[10px] font-bold text-teal-700 uppercase bg-teal-50 px-4 py-2 rounded-xl">Tampilkan Detail</button>
+                <div class="mt-4 text-center">
+                    <button onclick="document.getElementById('detail-container').style.display='block'; this.style.display='none'" class="text-[10px] font-bold text-teal-700 uppercase bg-teal-50 py-2 px-4 rounded-xl">Tampilkan Detail</button>
+                </div>
             </div>
-            <div class="mt-8 text-center pb-10">
+            <div class="mt-8 text-center pb-20">
                 <button onclick="handleHeaderBack()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border py-3 px-6 rounded-xl shadow-sm">
                     <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
                 </button>
             </div>
         `;
     } catch (e) {
-        content.innerHTML = `<p class="text-center py-20 text-red-500 font-bold">Gagal memuat data</p>`;
+        content.innerHTML = `<p class="text-center p-20 text-red-500">Gagal Memuat Data</p>`;
     }
 }
 
-/* --- JADWAL & ALARM --- */
+/* --- 4. JADWAL & UTILS --- */
 async function openJadwalModal() {
     toggleAppModal('jadwal');
     const content = document.getElementById('modal-content-list');
@@ -699,9 +680,8 @@ async function openJadwalModal() {
     
     try {
         const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=11');
-        const data = await res.json();
-        const t = data.data.timings;
-        
+        const d = await res.json();
+        const t = d.data.timings;
         const schedule = [
             {n:'Imsak',t:t.Imsak,i:'fa-clock'},
             {n:'Subuh',t:t.Fajr,i:'fa-cloud-sun'},
@@ -712,40 +692,17 @@ async function openJadwalModal() {
         ];
 
         content.innerHTML = schedule.map(s => `
-            <div class="premium-item-card">
-                <div class="item-number"><i class="fa-solid ${s.i} text-[10px]"></i></div>
-                <span class="item-title">${s.n}</span>
-                <span class="font-black text-slate-900 font-mono mr-4">${s.t}</span>
-                <button onclick="handleAlarm(this, '${s.n}')" class="text-slate-200 transition-all ${localStorage.getItem('alarm_'+s.n)?'alarm-active':''}">
-                    <i class="fa-solid fa-bell text-sm"></i>
-                </button>
+            <div class="dzikir-item-card">
+                <div class="dzikir-number"><i class="fa-solid ${s.i} text-[10px]"></i></div>
+                <span class="font-bold text-xs text-slate-700 uppercase flex-1">${s.n}</span>
+                <span class="text-lg font-black text-slate-900 font-mono">${s.t}</span>
             </div>
         `).join('');
-    } catch(e) {
-        content.innerHTML = `<p class="text-center py-20 text-red-500">Koneksi Gagal</p>`;
-    }
+    } catch(e) { content.innerHTML = `<p class="text-center p-20 text-red-500">Koneksi Gagal</p>`; }
 }
 
-/* --- UTILS --- */
-function handleMenuScroll(el) {
-    document.getElementById('app-sticky-header').classList.toggle('header-slim', el.scrollTop > 50);
-}
-
-function handleAlarm(btn, name) {
-    const active = btn.classList.toggle('alarm-active');
-    if(active) {
-        localStorage.setItem('alarm_'+name, 'true');
-        showToast("Alarm " + name + " Aktif");
-    } else {
-        localStorage.removeItem('alarm_'+name);
-        showToast("Alarm Dimatikan");
-    }
-}
-
-function showToast(msg) {
-    const t = document.getElementById('app-toast');
-    t.innerText = msg; t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 3000);
+function handleMenuScroll(el) { 
+    document.getElementById('app-sticky-header').classList.toggle('doa-header-slim', el.scrollTop > 50); 
 }
 </script>
 
