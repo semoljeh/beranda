@@ -835,25 +835,11 @@ async function openJadwalModal() {
 
 /* --- 3. KONTROL TOMBOL BACK DEVICE --- */
 window.addEventListener('popstate', (e) => {
-    const m = document.getElementById('app-modal');
-    if (e.state && e.state.modal === 'app') {
-        m.classList.add('modal-show');
-        m.classList.add('modal-visible');
 
-        if (e.state.view === 'list') {
-            loadMenuList(e.state.cat);
-        } else if (e.state.view === 'jadwal') {
-            openJadwalModalLogic();
-        } else if (e.state.view === 'detail') {
-            loadMenuDetailLogic(
-                e.state.cat,
-                e.state.id,
-                e.state.parentId
-            );
-        }
-    } else {
-        hideModalUI();
-    }
+    e.preventDefault();
+
+    handleHeaderBack();
+
 });
 
 /* --- FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) --- */
@@ -1110,8 +1096,6 @@ function handleAlarm(btn, name) {
     setInterval(() => { const c = document.getElementById('live-clock'); if(c) c.innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
 })();
 </script>
-
-
 
 <!-- =============================================
              KLP 6: AL-QURAN MODULE (STICKY SLIM HEADER)
@@ -2831,7 +2815,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.10'
+                './service-worker.js?v=2.0.11'
             );
 
             console.log('Service Worker Aktif');
