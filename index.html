@@ -853,6 +853,13 @@ function loadMenuDetail(cat, id, parentId = null) {
     currentParentSubmenu = parentId;
 
     navigationStack.push('detail');
+	navigationStack.push('detail');
+
+history.pushState(
+   { modalOpen:true, level:'detail' },
+   '',
+   ''
+);
 
     loadMenuDetailLogic(cat, id, parentId);
 }
@@ -915,6 +922,13 @@ function loadDzikirSubmenu(cat, id){
     currentParentSubmenu = id;
 
     navigationStack.push('submenu');
+	navigationStack.push('submenu');
+
+history.pushState(
+   { modalOpen:true, level:'submenu' },
+   '',
+   ''
+);
 
     const parent = menuData[cat]
         .items.find(x => x.id === id);
@@ -2877,7 +2891,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=3.0.0'
+                './service-worker.js?v=3.0.1'
             );
 
             console.log('Service Worker Aktif');
