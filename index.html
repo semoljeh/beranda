@@ -136,14 +136,6 @@ body {
          ============================================= -->
 
     <script>
-
-let __globalBackLock = false;
-window.addEventListener('popstate', function(event){
-   if(__globalBackLock) return;
-   __globalBackLock = true;
-   setTimeout(()=>__globalBackLock=false,250);
-});
-
         window.addEventListener('popstate', function (event) {
             // Logika Profile Popup
             const pPopup = document.getElementById('profile-popup');
@@ -337,12 +329,12 @@ window.addEventListener('popstate', function(event){
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         try {
                             const { latitude: lat, longitude: lon } = pos.coords;
-                            const lRes = await safeFetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+                            const lRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
                             const lData = await lRes.json();
                             const addr = lData.address.village || lData.address.suburb || lData.address.city || "Lokasi Aktif";
                             document.getElementById('location-text').innerText = addr;
                             localStorage.setItem('last_location', addr);
-                            const res = await safeFetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                             const json = await res.json();
                             localStorage.setItem('last_prayer_data', JSON.stringify(json.data));
                             updateHijriFromCache(json.data.date.hijri);
@@ -391,7 +383,7 @@ window.addEventListener('popstate', function(event){
             }
 
             function startCountdown() {
-                safeInterval(() => {
+                setInterval(() => {
                     if (!nextPrayerTime) return;
                     const diff = nextPrayerTime - new Date();
                     if (diff <= 0) { getCoreData(); return; }
@@ -404,10 +396,6 @@ window.addEventListener('popstate', function(event){
         </script>
     </section>
 
-
-<!-- =============================================
-             KLP 5: MENU GRIDE)
-             ============================================= -->
 
 <!-- =============================================
              KLP 5: MENU GRIDE)
@@ -497,7 +485,7 @@ window.addEventListener('popstate', function(event){
             
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
                 <div class="shrink-0 flex justify-start">
-                    <button onclick="handleHeaderBack()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
+                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
@@ -517,146 +505,13 @@ window.addEventListener('popstate', function(event){
 <script>
 const notifAudio = new Audio('notif.mp3');
 let currentSchedule = null;
-let currentCategory = null;
-let currentParentSubmenu = null;
-let navigationStack = [];
 
 const menuData = {
     dzikir: {
         title: "Kumpulan Dzikir",
-
         items: [
-
-            {
-                id: 1,
-                title: "Dzikir Harian",
-
-                submenu: [
-
-                    {
-                        id: 101,
-                        title: "Wirid Ba'da Sholat Fardu",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/badafardu.json"
-                    },
-
-                    {
-                        id: 102,
-                        title: "Wirid Sebelum Sholat Subuh",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sebelumsubuh.json"
-                    },
-
-                    {
-                        id: 103,
-                        title: "Wirdul Lathif (Pagi)",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulpagi.json"
-                    },
-
-                    {
-                        id: 104,
-                        title: "Wirdul Lathif (Sore)",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/wirdulsore.json"
-                    },
-
-                    {
-                        id: 105,
-                        title: "Wirid Menjelang Tidur",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/tidur.json"
-                    },
-
-                    {
-                        id: 106,
-                        title: "Wirid Setelah Sholat Jum'at",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/jumat.json"
-                    }
-
-                ]
-            },
-
-            {
-                id: 2,
-                title: "Istighotsah & Mujahadah",
-
-                submenu: [
-
-                    {
-                        id: 201,
-                        title: "Istighotsah (KH. Romli Tamim)",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/romlitamim.json"
-                    },
-
-                    {
-                        id: 202,
-                        title: "Istighotsah (KH. M. Hasyim Asy'ari)",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/hasyimasyari.json"
-                    },
-
-                    {
-                        id: 203,
-                        title: "Dzikrul Ghafilin",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/ghafilin.json"
-                    },
-
-                    {
-                        id: 204,
-                        title: "Mujahadah (KH. Bisri Syamsuri)",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/bisrisyamsuri.json"
-                    },
-
-                    {
-                        id: 205,
-                        title: "Sayyidul Istighfar",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/sayyidulistighfar.json"
-                    },
-
-                    {
-                        id: 206,
-                        title: "I'tiraf",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/itiraf.json"
-                    },
-
-                    {
-                        id: 207,
-                        title: "Yasin Fadilah",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/dzikir/yasinfadilah.json"
-                    }
-
-                ]
-            }
-,
-
-            {
-                id: 3,
-                title: "Hizib",
-
-                submenu: [
-
-                    {
-                        id: 301,
-                        title: "Hizib Autad",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/autad.json"
-                    },
-
-                    {
-                        id: 302,
-                        title: "Hizib Al-Barr",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/albarr.json"
-                    },
-
-                    {
-                        id: 303,
-                        title: "Hizib Bahr",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/bahr.json"
-                    },
-
-                    {
-                        id: 304,
-                        title: "Hizib Ghazali",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/hizib/ghazali.json"
-                    }
-
-                ]
-            }
-
+            { id: 1, title: "Dzikir Pagi", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/pagi.json" },
+            { id: 2, title: "Dzikir Petang", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/petang.json" }
         ]
     },
     yasin: {
@@ -678,103 +533,15 @@ const menuData = {
     },
     maulid: {
         title: "Kumpulan Maulid",
-
         items: [
-
-            {
-                id: 1,
-                title: "Maulid Ad-Diba'i",
-
-                submenu: [
-
-                    {
-                        id: 101,
-                        title: "Niat dan Hadiah Fatihah",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/dibai-niat.json"
-                    },
-
-                    {
-                        id: 102,
-                        title: "Ya Robbi Sholli",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/dibai-sholli.json"
-                    }
-
-                ]
-            },
-
-            {
-                id: 2,
-                title: "Maulid Barzanji",
-
-                submenu: [
-
-                    {
-                        id: 201,
-                        title: "Bab I - Abtadiul Ilma",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/barzanji1.json"
-                    },
-
-                    {
-                        id: 202,
-                        title: "Bab II - Waba'du",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/barzanji2.json"
-                    }
-
-                ]
-            },
-
-            {
-                id: 3,
-                title: "Maulid Syarafil Anam",
-
-                submenu: [
-
-                    {
-                        id: 301,
-                        title: "Assalamu'alaik",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/syaraf1.json"
-                    },
-
-                    {
-                        id: 302,
-                        title: "Ashshalatu 'Alan Nabi",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/syaraf2.json"
-                    }
-
-                ]
-            },
-
-            {
-                id: 4,
-                title: "Simtudduror",
-
-                submenu: [
-
-                    {
-                        id: 401,
-                        title: "Ya Robbi Sholli",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/simt1.json"
-                    },
-
-                    {
-                        id: 402,
-                        title: "Alhamdulillahi",
-                        path: "https://raw.githubusercontent.com/semoljeh/beranda/main/maulid/simt2.json"
-                    }
-
-                ]
-            }
-
+            { id: 1, title: "Simtudduror", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/simtudduror.json" }
         ]
     },
     sholawat: {
         title: "Kumpulan Sholawat",
         items: [
             { id: 1, title: "Sholawat Nariyah", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-			 { id: 2, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-			{ id: 3, title: "Sholawat Syifa'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-			{ id: 4, title: "Sholawat Fatih'", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/nariyah.json" },
-            { id: 5, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
+            { id: 2, title: "Sholawat Tibbil Qulub", path: "https://raw.githubusercontent.com/semoljeh/beranda/main/datadoa/tibbil.json" }
         ]
     }
 };
@@ -783,123 +550,46 @@ const menuData = {
 function showModalUI() { document.getElementById('app-modal').classList.add('modal-show'); }
 function hideModalUI() { document.getElementById('app-modal').classList.remove('modal-show'); }
 
-function handleHeaderBack() {
-
-    if (navigationStack.length <= 1) {
-
-        document.getElementById('app-modal')
-            .classList.remove('modal-show');
-
-        document.body.style.overflow = 'auto';
-
-        return;
-    }
-
-    navigationStack.pop();
-
-    const currentView =
-        navigationStack[navigationStack.length - 1];
-
-    // kembali ke submenu
-    if (currentView === 'submenu') {
-
-        loadDzikirSubmenu(
-            currentCategory,
-            currentParentSubmenu
-        );
-
-        navigationStack.pop();
-
-        return;
-    }
-
-    // kembali ke list utama
-    if (currentView === 'home') {
-
-        loadMenuList(currentCategory);
-
-        return;
-    }
-
-    document.getElementById('app-modal')
-        .classList.remove('modal-show');
-
-    document.body.style.overflow = 'auto';
-}
-
-
-
 /* --- 2. LOGIKA NAVIGASI BERTINGKAT --- */
 function toggleAppModal(cat) {
-
-    navigationStack = ['home'];
-
-    currentCategory = cat;
-
-    history.pushState(
-        { modalOpen: true },
-        '',
-        ''
-    );
-
+    window.history.pushState({ modal: 'app', view: 'list', cat: cat }, '', '#' + cat);
     loadMenuList(cat);
-
     showModalUI();
 }
 
-function loadMenuDetail(cat, id, parentId = null) {
-
-    currentCategory = cat;
-    currentParentSubmenu = parentId;
-
-    navigationStack.push('detail');
-
-    history.pushState(
-        {
-            modalOpen: true,
-            view: 'detail'
-        },
-        '',
-        ''
-    );
-
-    loadMenuDetailLogic(cat, id, parentId);
+function loadMenuDetail(cat, id) {
+    window.history.pushState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
+    loadMenuDetailLogic(cat, id);
 }
 
-function navigateMenuDetail(cat, id, parentId = null) {
-
-    loadMenuDetailLogic(cat, id, parentId);
+function navigateMenuDetail(cat, id) {
+    window.history.replaceState({ modal: 'app', view: 'detail', cat: cat, id: id }, '', '#detail');
+    loadMenuDetailLogic(cat, id);
 }
 
 async function openJadwalModal() {
+    window.history.pushState({ modal: 'app', view: 'jadwal' }, '', '#jadwal');
     openJadwalModalLogic();
     showModalUI();
 }
 
 /* --- 3. KONTROL TOMBOL BACK DEVICE --- */
 window.addEventListener('popstate', (e) => {
+    const m = document.getElementById('app-modal');
+    if (e.state && e.state.modal === 'app') {
+        m.classList.add('modal-show');
+        m.classList.add('modal-visible');
 
-    const modal =
-        document.getElementById('app-modal');
-
-    if (
-        modal.classList.contains('modal-show')
-    ) {
-
-        handleHeaderBack();
-
-        if (navigationStack.length > 0) {
-
-            history.pushState(
-                { modalOpen: true },
-                '',
-                ''
-            );
-
+        if (e.state.view === 'list') {
+            loadMenuList(e.state.cat);
+        } else if (e.state.view === 'jadwal') {
+            openJadwalModalLogic();
+        } else if (e.state.view === 'detail') {
+            loadMenuDetailLogic(e.state.cat, e.state.id);
         }
-
+    } else {
+        hideModalUI();
     }
-
 });
 
 /* --- FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) --- */
@@ -917,92 +607,22 @@ function toggleMenuTerjemahan() {
 }
 
 /* --- 4. RENDER KONTEN LIST --- */
-
-function loadDzikirSubmenu(cat, id){
-
-    currentCategory = cat;
-    currentParentSubmenu = id;
-
-    navigationStack.push('submenu');
-
-    history.pushState(
-        {
-            modalOpen: true,
-            view: 'submenu'
-        },
-        '',
-        ''
-    );
-
-    const parent = menuData[cat]
-        .items.find(x => x.id === id);
-
-    document.getElementById('modal-title')
-        .innerText = parent.title;
-
-    document.getElementById('nav-controls')
-        .innerHTML = '';
-
-    document.getElementById('modal-content-list')
-        .innerHTML = parent.submenu.map((item, i) => `
-
-        <div
-            onclick="loadMenuDetail('${cat}', ${item.id}, ${parent.id})"
-            class="dzikir-item-card active:scale-95 transition-all cursor-pointer"
-        >
-
-            <div class="dzikir-number">
-                ${i + 1}
-            </div>
-
-            <span class="font-bold text-xs text-slate-700 uppercase flex-1">
-                ${item.title}
-            </span>
-
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
-
-        </div>
-
-    `).join('');
-
-}
-
 function loadMenuList(cat) {
     const data = menuData[cat];
     if(!data) return;
     document.getElementById('modal-title').innerText = data.title;
     document.getElementById('nav-controls').innerHTML = ''; 
     document.getElementById('modal-content-list').innerHTML = data.items.map((item, i) => `
-        <div onclick="
-            ${item.submenu
-                ? `loadDzikirSubmenu('${cat}', ${item.id})`
-                : `loadMenuDetail('${cat}', ${item.id})`
-            }
-        " class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
+        <div onclick="loadMenuDetail('${cat}', ${item.id})" class="dzikir-item-card active:scale-95 transition-all cursor-pointer">
             <div class="dzikir-number">${i+1}</div>
             <span class="font-bold text-xs text-slate-700 uppercase flex-1">${item.title}</span>
-            ${item.submenu
-                ? `<i class="fa-solid fa-folder text-teal-500 text-[12px]"></i>`
-                : `<i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>`
-            }
+            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
         </div>`).join('');
 }
 
 // LOGIKA RENDER ISI KONTEN DOA
-async function loadMenuDetailLogic(cat, id, parentId = null) {
-
-    currentCategory = cat;
-    currentParentSubmenu = parentId;
-
-    const items = menuData[cat].items.flatMap(x => {
-
-    if (x.submenu) {
-        return x.submenu;
-    }
-
-    return [x];
-
-});
+async function loadMenuDetailLogic(cat, id) {
+    const items = menuData[cat].items;
     const currentIndex = items.findIndex(x => x.id === id);
     const info = items[currentIndex];
     const content = document.getElementById('modal-content-list');
@@ -1011,11 +631,11 @@ async function loadMenuDetailLogic(cat, id, parentId = null) {
     let navHtml = '';
     if (currentIndex > 0) {
         const prevId = items[currentIndex - 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId}, ${parentId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
     }
     if (currentIndex < items.length - 1) {
         const nextId = items[currentIndex + 1].id;
-        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId}, ${parentId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
+        navHtml += `<button onclick="navigateMenuDetail('${cat}', ${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
     }
     document.getElementById('nav-controls').innerHTML = navHtml;
 
@@ -1067,12 +687,7 @@ async function loadMenuDetailLogic(cat, id, parentId = null) {
             ${tampilanDetail}
         </div>
         <div class="mt-8 text-center pb-20">
-            <button onclick="
-                ${parentId
-                    ? `loadDzikirSubmenu('${cat}', ${parentId})`
-                    : `history.back()`
-                }
-            " class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform" >
+            <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar Isi
             </button>
         </div>
@@ -1106,7 +721,7 @@ async function openJadwalModalLogic() {
             readableDate = d.date.readable;
         } else {
             // Backup jika data di beranda belum siap
-            const res = await safeFetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=11');
+            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=11');
             const d = await res.json();
             t = d.data.timings;
             h = d.data.date.hijri;
@@ -1150,12 +765,12 @@ function handleAlarm(btn, name) {
             const d = JSON.parse(cachedPrayer);
             currentSchedule = { Subuh: d.timings.Fajr, Dzuhur: d.timings.Dhuhr, Ashar: d.timings.Asr, Maghrib: d.timings.Maghrib, Isya: d.timings.Isha };
         } else {
-            const res = await safeFetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=11');
+            const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bangkalan&country=Indonesia&method=11');
             const d = await res.json();
             currentSchedule = { Subuh: d.data.timings.Fajr, Dzuhur: d.data.timings.Dhuhr, Ashar: d.data.timings.Asr, Maghrib: d.data.timings.Maghrib, Isya: d.data.timings.Isha };
         }
     } catch(e) {}
-    safeInterval(() => {
+    setInterval(() => {
         if (!currentSchedule) return;
         const now = new Date();
         const cur = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
@@ -1163,7 +778,7 @@ function handleAlarm(btn, name) {
             if (localStorage.getItem('alarm_' + n) && cur === t) { playNotif(); showToast("WAKTUNYA " + n.toUpperCase()); }
         }
     }, 60000);
-    safeInterval(() => { const c = document.getElementById('live-clock'); if(c) c.innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
+    setInterval(() => { const c = document.getElementById('live-clock'); if(c) c.innerText = new Date().toLocaleTimeString('id-ID'); }, 1000);
 })();
 </script>
 
@@ -1330,17 +945,7 @@ function handleAlarm(btn, name) {
             async getAudio(id) { return fetch(`${this.baseUrl}/chapter_recitations/7/${id}`).then(r => r.json()); }
         };
 
-        
-const chapterCache = {};
-async function getCachedChapterInfo(surahNum){
-   if(chapterCache[surahNum]) return chapterCache[surahNum];
-   const r = await safeFetch(`https://api.quran.com/api/v4/chapters/${surahNum}?language=id`);
-   const d = await r.json();
-   chapterCache[surahNum]=d;
-   return d;
-}
-
-const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشر", "الجزء السادس والعشرون", "الجزء السابع والعشر", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
+        const juzNamesArab = ["", "الجزء الأول", "الجزء الثاني", "الجزء الثالث", "الجزء الرابع", "الجزء الخامس", "الجزء السادس", "الجزء السابع", "الجزء الثامن", "الجزء التاسع", "الجزء العاشر", "الجزء الحادي عشر", "الجزء الثاني عشر", "الجزء الثالث عشر", "الجزء الرابع عشر", "الجزء الخامس عشر", "الجزء السادس عشر", "الجزء السابع عشر", "الجزء الثامن عشر", "الجزء التاسع عشر", "الجزء العشرون", "الجزء الحادي والعشرون", "الجزء الثاني والعشرون", "الجزء الثالث والعشرون", "الجزء الرابع والعشرون", "الجزء الخامس والعشر", "الجزء السادس والعشرون", "الجزء السابع والعشر", "الجزء الثامن والعشرون", "الجزء التاسع والعشرون", "الجزء الثلاثون"];
         let currentAudio = null;
         let isTranslationVisible = true;
 
@@ -1426,7 +1031,9 @@ for (const [i, a] of arab.entries()) {
 
     if(type === 'juz' && surahNum !== lastSurahNumber){
 
-        const surahInfo = await getCachedChapterInfo(surahNum);
+        const surahInfo = await fetch(
+            `https://api.quran.com/api/v4/chapters/${surahNum}?language=id`
+        ).then(r => r.json());
 
         
 html += `
@@ -1594,7 +1201,7 @@ c.innerHTML = html;
             if (currentAudio && !currentAudio.paused) { currentAudio.pause(); updateMurottalBtn(false); return; }
             if (!currentAudio || currentAudio.src !== url) {
                 if(currentAudio) currentAudio.pause();
-                if(currentAudio){currentAudio.pause();currentAudio.src='';} currentAudio = new Audio(url);
+                currentAudio = new Audio(url);
                 currentAudio.onplay = () => updateMurottalBtn(true);
                 currentAudio.onpause = () => updateMurottalBtn(false);
                 currentAudio.onended = () => updateMurottalBtn(false);
@@ -2134,6 +1741,7 @@ function toggleCalendar() {
 </section>
 
 
+
 <!-- =============================================
       KLP 8: DAILY DOA (STEADFAST DYNAMIC HEADER)
       ============================================= -->
@@ -2152,12 +1760,8 @@ function toggleCalendar() {
         <div id="doa-sticky-header" class="doa-header-premium">
             <div class="flex items-center justify-between w-full min-h-[40px] gap-2">
                 <div class="shrink-0 flex justify-start">
-                    <button
-                        onclick="window.history.back()"
-                        class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
-
+                    <button onclick="window.history.back()" class="w-10 h-10 flex shrink-0 items-center justify-center bg-white/10 rounded-xl text-white active:scale-90 transition-transform">
                         <i class="fa-solid fa-arrow-left"></i>
-
                     </button>
                 </div>
                 <div class="flex-1 flex justify-center min-w-0">
@@ -2172,457 +1776,173 @@ function toggleCalendar() {
     </div>
 
 <script>
-const dataDoaMadasa = [
+    /* 1. DATA MASTER DOA */
+    const dataDoaMadasa = [
+        { id: 1, judul: "Doa Bangun Tidur", path: "https://raw.githubusercontent.com/semoljeh/beranda/refs/heads/main/datadoa/Doa%20Bangun%20Tidur.json" },
+        { id: 2, judul: "Doa Bangun Tidur", path: "datadoa/doabanguntidur.json" },
+        { id: 3, judul: "Doa Masuk Masjid", path: "datadoa/doamasukmasjid.json" },
+        { id: 4, judul: "Doa Untuk Orang Tua", path: "datadoa/doaorangtua.json" },
+        { id: 5, judul: "Doa Sapu Jagad", path: "datadoa/doasapujagad.json" }
+    ];
 
-    {
-        id: 1,
-        judul: "Doa Harian",
-        submenu: [
-
-            {
-                id: 101,
-                judul: "Doa Bangun Tidur",
-                path: "https://raw.githubusercontent.com/semoljeh/beranda/refs/heads/main/datadoa/Doa%20Bangun%20Tidur.json"
-            },
-
-            {
-                id: 102,
-                judul: "Doa Masuk Masjid",
-                path: "datadoa/doamasukmasjid.json"
-            },
-
-            {
-                id: 103,
-                judul: "Doa Untuk Orang Tua",
-                path: "datadoa/doaorangtua.json"
-            },
-
-            {
-                id: 104,
-                judul: "Doa Sapu Jagad",
-                path: "datadoa/doasapujagad.json"
-            }
-
-        ]
-    },
-
-    {
-        id: 2,
-        judul: "Doa Walimah",
-        submenu: [
-
-            {
-                id: 201,
-                judul: "Doa Walimatul Ursy",
-                path: "datadoa/walimah.json"
-            },
-
-            {
-                id: 202,
-                judul: "Doa Pengantin",
-                path: "datadoa/pengantin.json"
-            }
-
-        ]
-    },
-
-    {
-        id: 300,
-        judul: "Doa Sapu Jagad",
-        path: "datadoa/doasapujagad.json"
+    function handleDoaScroll(el) {
+        const header = document.getElementById('doa-sticky-header');
+        header.classList.toggle('doa-header-slim', el.scrollTop > 50);
     }
 
-];
+    function toggleDoa() {
+        const el = document.getElementById('doa-modal');
+        if (!el.classList.contains('modal-show')) {
+            if(typeof pushState === 'function') pushState('doa', { doa_view: 'list' });
+            el.classList.add('modal-show');
+            loadDoaList();
+        } else {
+            window.history.back();
+        }
+    }
 
-function handleDoaScroll(el) {
-    const header = document.getElementById('doa-sticky-header');
-    header.classList.toggle('doa-header-slim', el.scrollTop > 50);
-}
+    function loadDoaList() {
+        const titleEl = document.getElementById('doa-header-title');
+        const content = document.getElementById('doa-content');
+        const header = document.getElementById('doa-sticky-header');
 
-function toggleDoa() {
-    const el = document.getElementById('doa-modal');
+        document.getElementById('doa-nav-controls').innerHTML = ''; 
+        titleEl.innerText = "KUMPULAN DOA";
+        content.scrollTop = 0;
+        header.classList.remove('doa-header-slim');
 
-    if (!el.classList.contains('modal-show')) {
+        content.innerHTML = dataDoaMadasa.map((d, index) => `
+            <div onclick="loadDoaDetail(${d.id})" class="doa-item-card active:scale-95 transition-transform">
+                <div class="doa-number">${index + 1}</div>
+                <span class="doa-title-text">${d.judul}</span>
+                <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+            </div>
+        `).join('');
+    }
 
+    function loadDoaDetail(id) {
         if(typeof pushState === 'function') {
-            pushState('doa', { doa_view: 'list' });
+            pushState('doa', { doa_view: 'detail', id: id });
+        } else {
+            window.history.pushState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
         }
-
-        el.classList.add('modal-show');
-
-        loadDoaList();
-
-    } else {
-
-        window.history.back();
-
+        renderDoaDetailLogic(id);
     }
-}
 
-function loadDoaList() {
+    function navigateDoaDetail(id) {
+        if(typeof window.history.replaceState === 'function') {
+            window.history.replaceState({ modal: 'doa', view: 'detail', id: id }, '', '#detail');
+        }
+        renderDoaDetailLogic(id);
+    }
 
-    const titleEl = document.getElementById('doa-header-title');
-    const content = document.getElementById('doa-content');
-    const header = document.getElementById('doa-sticky-header');
+    /* FUNGSI UNTUK SHOW/HIDE DETAIL (LATIN & TERJEMAHAN) */
+    function toggleTerjemahan() {
+        const container = document.getElementById('doa-terjemahan-container');
+        const btn = document.getElementById('btn-toggle-terjemahan');
+        
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan';
+        } else {
+            container.style.display = 'none';
+            btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan';
+        }
+    }
 
-    document.getElementById('doa-nav-controls').innerHTML = '';
+    async function renderDoaDetailLogic(id) {
+        const content = document.getElementById('doa-content');
+        const currentIndex = dataDoaMadasa.findIndex(i => i.id === id);
+        const dInfo = dataDoaMadasa[currentIndex];
+        const header = document.getElementById('doa-sticky-header');
+        const titleEl = document.getElementById('doa-header-title');
 
-    titleEl.innerText = "KUMPULAN DOA";
+        content.scrollTop = 0;
+        header.classList.remove('doa-header-slim');
+        titleEl.innerText = dInfo.judul;
 
-    content.scrollTop = 0;
+        let navHtml = '';
+        if (currentIndex > 0) {
+            const prevId = dataDoaMadasa[currentIndex - 1].id;
+            navHtml += `<button onclick="navigateDoaDetail(${prevId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-left"></i></button>`;
+        }
+        if (currentIndex < dataDoaMadasa.length - 1) {
+            const nextId = dataDoaMadasa[currentIndex + 1].id;
+            navHtml += `<button onclick="navigateDoaDetail(${nextId})" class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all"><i class="fa-solid fa-chevron-right"></i></button>`;
+        }
+        document.getElementById('doa-nav-controls').innerHTML = navHtml;
 
-    header.classList.remove('doa-header-slim');
+        content.innerHTML = `
+            <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
+                Mengambil Berkah...
+            </div>`;
 
-    content.innerHTML = dataDoaMadasa.map((d, index) => `
+        try {
+            const response = await fetch(dInfo.path);
+            const d = await response.json();
 
-        <div
-            onclick="
-                ${d.submenu
-                    ? `loadDoaSubmenu(${d.id})`
-                    : `loadDoaDetail(${d.id})`
-                }
-            "
-            class="doa-item-card active:scale-95 transition-transform"
-        >
+            // LOGIKA CEK LATIN DAN ARTI (DUKUNG ARRAY DAN TEKS KOSONG/STRIP)
+            let teksLatin = d.latin ? (Array.isArray(d.latin) ? d.latin.join('<br><br>') : d.latin) : "";
+            let teksArti = d.arti ? (Array.isArray(d.arti) ? d.arti.join('<br><br>') : d.arti) : "";
 
-            <div class="doa-number">${index + 1}</div>
+            const adaLatin = teksLatin.trim() !== "" && teksLatin.trim() !== "-";
+            const adaArti = teksArti.trim() !== "" && teksArti.trim() !== "-";
 
-            <span class="doa-title-text">${d.judul}</span>
-
-            ${d.submenu
-                ? `<i class="fa-solid fa-folder text-teal-500 text-[12px]"></i>`
-                : `<i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>`
+            let kontenTambahan = "";
+            if (adaLatin) {
+                kontenTambahan += `<p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">${teksLatin}</p>`;
+            }
+            if (adaArti) {
+                kontenTambahan += `<p class="text-sm text-slate-500 italic leading-relaxed text-justify">"${teksArti}"</p>`;
             }
 
-        </div>
-
-    `).join('');
-}
-
-function loadDoaSubmenu(id){
-
-    const folder = dataDoaMadasa.find(x => x.id === id);
-
-    const content = document.getElementById('doa-content');
-
-    document.getElementById('doa-header-title')
-        .innerText = folder.judul;
-
-    content.scrollTop = 0;
-
-    content.innerHTML = folder.submenu.map((d, index) => `
-
-        <div
-            onclick="loadDoaDetail(${d.id}, ${folder.id})"
-            class="doa-item-card active:scale-95 transition-transform"
-        >
-
-            <div class="doa-number">${index + 1}</div>
-
-            <span class="doa-title-text">${d.judul}</span>
-
-            <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
-
-        </div>
-
-    `).join('');
-}
-
-
-function loadDoaDetail(id, parentId = null) {
-
-    const content = document.getElementById('doa-content');
-
-    content.innerHTML = `
-        <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
-            Mengambil Berkah...
-        </div>
-    `;
-
-    if(typeof pushState === 'function') {
-
-        pushState('doa', {
-            doa_view: 'detail',
-            id: id,
-            parentId: parentId
-        });
-
-    } else {
-
-        window.history.pushState({
-            modal: 'doa',
-            view: 'detail',
-            id: id,
-            parentId: parentId
-        }, '', '#detail');
-
-    }
-
-    renderDoaDetailLogic(id);
-}
-
-
-function navigateDoaDetail(id) {
-
-    if(typeof window.history.replaceState === 'function') {
-
-        window.history.replaceState({
-            modal: 'doa',
-            view: 'detail',
-            id: id
-        }, '', '#detail');
-
-    }
-
-    renderDoaDetailLogic(id);
-}
-
-function toggleTerjemahan() {
-
-    const container = document.getElementById('doa-terjemahan-container');
-
-    const btn = document.getElementById('btn-toggle-terjemahan');
-
-    if (container.style.display === 'none') {
-
-        container.style.display = 'block';
-
-        btn.innerHTML =
-            '<i class="fa-solid fa-eye-slash mr-1"></i> Sembunyikan Terjemahan';
-
-    } else {
-
-        container.style.display = 'none';
-
-        btn.innerHTML =
-            '<i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan';
-
-    }
-}
-
-async function renderDoaDetailLogic(id) {
-
-    const content = document.getElementById('doa-content');
-
-    const semuaDoa = dataDoaMadasa.flatMap(x => {
-
-    if (x.submenu) {
-        return x.submenu;
-    }
-
-    return [x];
-
-});
-
-    const currentIndex = semuaDoa.findIndex(i => i.id === id);
-
-    let parentId = null;
-
-    dataDoaMadasa.forEach(folder => {
-
-        if(folder.submenu){
-
-            folder.submenu.forEach(item => {
-
-                if(item.id === id){
-                    parentId = folder.id;
-                }
-
-            });
-
-        }
-
-    });
-
-    const dInfo = {
-        ...semuaDoa[currentIndex],
-        parentId
-    };
-
-    const header = document.getElementById('doa-sticky-header');
-
-    const titleEl = document.getElementById('doa-header-title');
-
-    content.scrollTop = 0;
-
-    header.classList.remove('doa-header-slim');
-
-    titleEl.innerText = dInfo.judul;
-
-    let navHtml = '';
-
-    if (currentIndex > 0) {
-
-        const prevId = semuaDoa[currentIndex - 1].id;
-
-        navHtml += `
-            <button onclick="navigateDoaDetail(${prevId})"
-                class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-        `;
-    }
-
-    if (currentIndex < semuaDoa.length - 1) {
-
-        const nextId = semuaDoa[currentIndex + 1].id;
-
-        navHtml += `
-            <button onclick="navigateDoaDetail(${nextId})"
-                class="w-9 h-10 flex shrink-0 items-center justify-center bg-white/20 hover:bg-white/30 rounded-xl text-white active:scale-90 transition-all">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-        `;
-    }
-
-    document.getElementById('doa-nav-controls').innerHTML = navHtml;
-
-    content.innerHTML = `
-        <div class="text-center py-20 animate-pulse text-teal-600 font-bold text-[10px] uppercase">
-            Mengambil Berkah...
-        </div>`;
-
-    try {
-
-        const response = await fetch(dInfo.path);
-
-        const d = await response.json();
-
-        let teksLatin = d.latin
-            ? (Array.isArray(d.latin)
-                ? d.latin.join('<br><br>')
-                : d.latin)
-            : "";
-
-        let teksArti = d.arti
-            ? (Array.isArray(d.arti)
-                ? d.arti.join('<br><br>')
-                : d.arti)
-            : "";
-
-        const adaLatin =
-            teksLatin.trim() !== "" &&
-            teksLatin.trim() !== "-";
-
-        const adaArti =
-            teksArti.trim() !== "" &&
-            teksArti.trim() !== "-";
-
-        let kontenTambahan = "";
-
-        if (adaLatin) {
-
-            kontenTambahan += `
-                <p class="text-teal-700 font-semibold text-sm mb-4 leading-relaxed text-justify">
-                    ${teksLatin}
-                </p>
-            `;
-        }
-
-        if (adaArti) {
-
-            kontenTambahan += `
-                <p class="text-sm text-slate-500 italic leading-relaxed text-justify">
-                    "${teksArti}"
-                </p>
-            `;
-        }
-
-        const tampilanDetail = (adaLatin || adaArti)
-
-            ? `
-                <div class="mt-2 text-center mb-4">
-
-                    <button
-                        onclick="toggleTerjemahan()"
-                        id="btn-toggle-terjemahan"
-                        class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
-
-                        <i class="fa-solid fa-eye mr-1"></i>
-
-                        Tampilkan Terjemahan
-
+            // PERUBAHAN DI SINI: display default menjadi "none" dan teks "Tampilkan Terjemahan"
+            const tampilanDetail = (adaLatin || adaArti) 
+                ? `<div class="mt-2 text-center mb-4">
+                       <button onclick="toggleTerjemahan()" id="btn-toggle-terjemahan" class="text-[10px] font-bold text-teal-700 uppercase tracking-wide bg-teal-50 border border-teal-100 py-2 px-4 rounded-xl shadow-sm active:scale-95 transition-transform">
+                           <i class="fa-solid fa-eye mr-1"></i> Tampilkan Terjemahan
+                       </button>
+                   </div>
+                   <div id="doa-terjemahan-container" style="display: none;">
+                       <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
+                       ${kontenTambahan}
+                   </div>` 
+                : "";
+
+            const teksArab = Array.isArray(d.arab) ? d.arab.join('<br><br>') : d.arab;
+
+            content.innerHTML = `
+                <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
+                    <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+                    <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
+                    
+                    <p class="font-arab text-3xl mb-8 leading-[2.5]" style="text-align: justify;" dir="rtl">
+                        ${teksArab}
+                    </p>
+                    
+                    ${tampilanDetail}
+                </div>
+                <div class="mt-8 text-center">
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Daftar
                     </button>
-
+                </div>`;
+        } catch (e) {
+            content.innerHTML = `
+                <div class="text-center p-10">
+                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
+                    <p class="text-xs text-red-500 font-bold uppercase">Gagal memuat doa</p>
+                    <p class="text-[10px] text-slate-400 mt-2">Pastikan internet aktif dan lancar</p>
                 </div>
-
-                <div id="doa-terjemahan-container" style="display:none;">
-
-                    <div class="w-12 h-1 bg-teal-50 mx-auto mb-6 rounded-full"></div>
-
-                    ${kontenTambahan}
-
-                </div>
-            `
-            : "";
-
-        const teksArab = Array.isArray(d.arab)
-            ? d.arab.join('<br><br>')
-            : d.arab;
-
-        content.innerHTML = `
-            <div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-100">
-
-                <h3 class="font-arab text-xl text-teal-600 mb-4 leading-none">
-                    بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
-                </h3>
-
-                <div class="w-full h-[1px] bg-slate-100 mb-8"></div>
-
-                <p class="font-arab text-3xl mb-8 leading-[2.5]"
-                    style="text-align:justify;"
-                    dir="rtl">
-
-                    ${teksArab}
-
-                </p>
-
-                ${tampilanDetail}
-
-            </div>
-
-            <div class="mt-8 text-center">
-
-                <button
-                    onclick="
-                        ${dInfo.parentId
-                            ? `loadDoaSubmenu(${dInfo.parentId})`
-                            : `loadDoaList()`
-                        }
-                    "
-                    class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
-
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-
-                    Kembali ke Daftar
-
-                </button>
-
-            </div>
-        `;
-
-    } catch (e) {
-
-        content.innerHTML = `
-            <div class="text-center p-10">
-
-                <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
-
-                <p class="text-xs text-red-500 font-bold uppercase">
-                    Gagal memuat doa
-                </p>
-
-                <p class="text-[10px] text-slate-400 mt-2">
-                    Pastikan internet aktif dan lancar
-                </p>
-
-            </div>
-        `;
+                <div class="mt-4 text-center">
+                    <button onclick="window.history.back()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border border-slate-200 py-3 px-6 rounded-xl shadow-sm active:scale-95 transition-transform">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                    </button>
+                </div>`;
+        }
     }
-}
 </script>
 </section>
-
         <!-- =============================================
              KLP 9: NAVIGATION BAR & LOCATION PICKER
              ============================================= -->
@@ -2663,7 +1983,7 @@ async function renderDoaDetailLogic(id) {
         let searchTimer;
         function searchLocation(query) { clearTimeout(searchTimer); const container = document.getElementById('search-results'); if (query.length < 3) { container.innerHTML = ''; return; } searchTimer = setTimeout(async () => { try { const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=id&limit=5`); const data = await res.json(); container.innerHTML = data.map(item => `<div class="result-item" onclick="selectLocation('${item.display_name}', ${item.lat}, ${item.lon})"><i class="fa-solid fa-location-dot mr-2 text-teal-500"></i> ${item.display_name}</div>`).join(''); } catch (e) { console.error("Gagal mencari lokasi"); } }, 500); }
         function selectLocation(name, lat, lon) { const shortName = name.split(',')[0]; document.getElementById('manual-city-input').value = shortName; document.getElementById('manual-city-input').dataset.lat = lat; document.getElementById('manual-city-input').dataset.lon = lon; document.getElementById('search-results').innerHTML = ''; }
-        async function saveManualLocation() { const input = document.getElementById('manual-city-input'); const lat = input.dataset.lat; const lon = input.dataset.lon; const cityName = input.value; if (lat && lon) { document.getElementById('location-text').innerText = cityName; localStorage.setItem('last_location', cityName); const res = await safeFetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`); const json = await res.json(); if(typeof setPrayerUI === "function") setPrayerUI(json.data.timings); toggleLocationSheet(); } else { alert("Silakan pilih lokasi dari daftar."); } }
+        async function saveManualLocation() { const input = document.getElementById('manual-city-input'); const lat = input.dataset.lat; const lon = input.dataset.lon; const cityName = input.value; if (lat && lon) { document.getElementById('location-text').innerText = cityName; localStorage.setItem('last_location', cityName); const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`); const json = await res.json(); if(typeof setPrayerUI === "function") setPrayerUI(json.data.timings); toggleLocationSheet(); } else { alert("Silakan pilih lokasi dari daftar."); } }
     </script>
 </section>
 
@@ -2846,7 +2166,8 @@ window.addEventListener('popstate', () => {
          KLP 10: GLOBAL INITIALIZATION SCRIPT
          ============================================= -->
     <script>
-       
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./service-worker.js'); }
+
         function updateDateTime() {
             const now = new Date(); 
             const ds = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -2883,231 +2204,5 @@ window.addEventListener('popstate', () => {
     }, 2500); // Beri jeda sedikit lebih lama agar transisinya elegan
 };
     </script>
-
-
-<script>
-if ('serviceWorker' in navigator) {
-
-   window.addEventListener('load', () => {
-
-    setTimeout(async () => {
-
-        try {
-
-            const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=3.0.1'
-            );
-
-            console.log('Service Worker Aktif');
-
-           let updatePopupShown = false;
-
-reg.addEventListener('updatefound', () => {
-
-                const newWorker = reg.installing;
-
-                newWorker.addEventListener('statechange', () => {
-
-                   if (
-    newWorker.state === 'installed' &&
-    navigator.serviceWorker.controller &&
-    !updatePopupShown
-) {
-
-    updatePopupShown = true;
-
-
-const box = document.createElement('div');
-
-box.innerHTML = `
-<div id="update-overlay" style="
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,.55);
-    backdrop-filter:blur(10px);
-    z-index:999999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    animation:fadeIn .35s ease;
-">
-
-    <div style="
-        width:88%;
-        max-width:320px;
-        background:white;
-        border-radius:32px;
-        padding:28px 24px;
-        text-align:center;
-        box-shadow:0 25px 60px rgba(0,0,0,.25);
-        animation:popupScale .35s ease;
-        position:relative;
-        overflow:hidden;
-    ">
-
-        <div style="
-            width:72px;
-            height:72px;
-            margin:0 auto 18px;
-            border-radius:24px;
-            background:linear-gradient(135deg,#14b8a6,#0f766e);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            box-shadow:0 10px 25px rgba(13,148,136,.35);
-        ">
-            <i class="fa-solid fa-arrow-rotate-right" style="
-                color:white;
-                font-size:30px;
-            "></i>
-        </div>
-
-        <h2 style="
-            font-size:18px;
-            font-weight:800;
-            color:#0f172a;
-            margin-bottom:8px;
-        ">
-            Update Tersedia
-        </h2>
-
-        <p style="
-            font-size:12px;
-            line-height:1.7;
-            color:#64748b;
-            margin-bottom:24px;
-        ">
-            Versi terbaru aplikasi telah tersedia.<br>
-            Silakan update untuk menikmati fitur terbaru.
-        </p>
-
-        <button id="update-btn" style="
-            width:100%;
-            border:none;
-            background:linear-gradient(135deg,#14b8a6,#0f766e);
-            color:white;
-            padding:14px;
-            border-radius:18px;
-            font-size:13px;
-            font-weight:800;
-            letter-spacing:.05em;
-            text-transform:uppercase;
-            box-shadow:0 10px 25px rgba(13,148,136,.35);
-            transition:.2s;
-        ">
-            UPDATE SEKARANG
-        </button>
-
-    </div>
-
-</div>
-
-<style>
-@keyframes fadeIn{
-    from{
-        opacity:0;
-    }
-    to{
-        opacity:1;
-    }
-}
-
-@keyframes popupScale{
-    from{
-        opacity:0;
-        transform:scale(.8);
-    }
-    to{
-        opacity:1;
-        transform:scale(1);
-    }
-}
-</style>
-`;
-
-document.body.appendChild(box);
-	
-
-                      document
-    .getElementById('update-btn')
-    .onclick = () => {
-
-        document.getElementById('update-btn').innerHTML =
-            'MENGUPDATE...';
-
-        document.getElementById('update-btn').disabled = true;
-
-        newWorker.postMessage({
-            action: 'skipWaiting'
-        });
-
-    };
-                    }
-
-                });
-
-            });
-
-          let refreshing = false;
-
-navigator.serviceWorker.addEventListener(
-    'controllerchange',
-    () => {
-
-        if (refreshing) return;
-
-        refreshing = true;
-
-        window.location.reload();
-
-    }
-);
-
-} catch (err) {
-
-    console.log('SW gagal', err);
-
-}
-
-	   }, 4000);
-
-});
-
-}
-</script>
-
-	
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      await navigator.serviceWorker.register('./sw.js');
-      console.log('SW registered');
-    } catch(e) {
-      console.log('SW failed');
-    }
-  });
-}
-
-window.APP_INTERVALS = [];
-function safeInterval(fn, time){
-   const id = setInterval(fn, time);
-   window.APP_INTERVALS.push(id);
-   return id;
-}
-
-async function safeFetch(url, options = {}, timeout = 10000){
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-    try{
-        const res = await fetch(url, {...options, signal: controller.signal});
-        return res;
-    } finally {
-        clearTimeout(timer);
-    }
-}
-</script>
-
 </body>
 </html>
