@@ -510,6 +510,9 @@ body {
 <script>
 const notifAudio = new Audio('notif.mp3');
 let currentSchedule = null;
+let currentCategory = null;
+let currentParentSubmenu = null;
+let navigationStack = [];
 
 const menuData = {
     dzikir: {
@@ -775,35 +778,42 @@ function hideModalUI() { document.getElementById('app-modal').classList.remove('
 
 function handleHeaderBack() {
 
-    const title =
-        document.getElementById('modal-title')
-        .innerText;
+    if (navigationStack.length <= 1) {
 
-    // dari detail → submenu
-    if (currentParentSubmenu) {
+        document.getElementById('app-modal')
+            .classList.remove('modal-show');
+
+        document.body.style.overflow = 'auto';
+
+        return;
+    }
+
+    navigationStack.pop();
+
+    const currentView =
+        navigationStack[navigationStack.length - 1];
+
+    // kembali ke submenu
+    if (currentView === 'submenu') {
 
         loadDzikirSubmenu(
             currentCategory,
             currentParentSubmenu
         );
 
-        currentParentSubmenu = null;
+        navigationStack.pop();
 
         return;
     }
 
-    // dari submenu → kumpulan utama
-    if (
-        title !== 'KUMPULAN DZIKIR' &&
-        title !== 'KUMPULAN MAULID'
-    ) {
+    // kembali ke list utama
+    if (currentView === 'home') {
 
         loadMenuList(currentCategory);
 
         return;
     }
 
-    // dari kumpulan → beranda
     document.getElementById('app-modal')
         .classList.remove('modal-show');
 
@@ -814,11 +824,22 @@ function handleHeaderBack() {
 
 /* --- 2. LOGIKA NAVIGASI BERTINGKAT --- */
 function toggleAppModal(cat) {
+
+    navigationStack = ['home'];
+
+    currentCategory = cat;
+
     loadMenuList(cat);
+
     showModalUI();
 }
 
 function loadMenuDetail(cat, id, parentId = null) {
+
+    currentCategory = cat;
+    currentParentSubmenu = parentId;
+
+    navigationStack.push('detail');
 
     loadMenuDetailLogic(cat, id, parentId);
 }
@@ -863,6 +884,7 @@ function loadDzikirSubmenu(cat, id){
     currentCategory = cat;
     currentParentSubmenu = id;
 
+    navigationStack.push('submenu');
 
     const parent = menuData[cat]
         .items.find(x => x.id === id);
@@ -2815,7 +2837,7 @@ if ('serviceWorker' in navigator) {
         try {
 
             const reg = await navigator.serviceWorker.register(
-                './service-worker.js?v=2.0.11'
+                './service-worker.js?v=2.0.12'
             );
 
             console.log('Service Worker Aktif');
