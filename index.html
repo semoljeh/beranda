@@ -853,13 +853,15 @@ function loadMenuDetail(cat, id, parentId = null) {
     currentParentSubmenu = parentId;
 
     navigationStack.push('detail');
-	navigationStack.push('detail');
 
-history.pushState(
-   { modalOpen:true, level:'detail' },
-   '',
-   ''
-);
+    history.pushState(
+        {
+            modalOpen: true,
+            view: 'detail'
+        },
+        '',
+        ''
+    );
 
     loadMenuDetailLogic(cat, id, parentId);
 }
@@ -922,13 +924,15 @@ function loadDzikirSubmenu(cat, id){
     currentParentSubmenu = id;
 
     navigationStack.push('submenu');
-	navigationStack.push('submenu');
 
-history.pushState(
-   { modalOpen:true, level:'submenu' },
-   '',
-   ''
-);
+    history.pushState(
+        {
+            modalOpen: true,
+            view: 'submenu'
+        },
+        '',
+        ''
+    );
 
     const parent = menuData[cat]
         .items.find(x => x.id === id);
