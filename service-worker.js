@@ -1,4 +1,4 @@
-const CACHE_NAME = "semoljeh-v2.0.10";
+const CACHE_NAME = "semoljeh-v2.0.11";
 
 const urlsToCache = [
   "./",
